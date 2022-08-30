@@ -14,6 +14,7 @@
         }
     ],
     "scripts": {
+        "prepare": "husky install",
         "prebuild": "rimraf -rf ./lib",
         "build": "yarn build:esm && yarn build:cjs",
         "build:watch": "tsc --watch --module commonjs",
@@ -58,6 +59,7 @@
         "eslint-plugin-security": "^1.5.0",
         "eslint-plugin-sonarjs": "^0.15.0",
         "eslint-plugin-unused-imports": "^2.0.0",
+        "husky": "^8.0.1",
         "postcss-syntax": "^0.36.2",
         "prettier": "^2.7.1",
         "stylelint": "^14.11.0",
