@@ -1,0 +1,31 @@
+{
+    "compilerOptions": {
+        "rootDir": "./src",
+        "outDir": "lib",
+        "module": "ESNext",
+        "target": "ES2017",
+        "lib": ["ES2020"],
+        "resolveJsonModule": true,
+        "jsx": "react",
+        "declaration": true,
+        "declarationMap": true,
+        "moduleResolution": "Node",
+        "noUnusedLocals": true,
+        "noUnusedParameters": true,
+        "esModuleInterop": true,
+        "noImplicitReturns": true,
+        "noImplicitThis": true,
+        "noImplicitAny": true,
+        "strictNullChecks": true,
+        "suppressImplicitAnyIndexErrors": true,
+        "allowSyntheticDefaultImports": true,
+        "alwaysStrict": true,
+        "strictPropertyInitialization": true,
+        "skipLibCheck": true,
+        "sourceMap": true,
+        "noUncheckedIndexedAccess": true,
+        "strict": true
+    },
+    "include": ["src"],
+    "exclude": ["node_modules", "lib"]
+}
