@@ -4,7 +4,7 @@
         "outDir": "lib",
         "module": "ESNext",
         "target": "ES2017",
-        "lib": ["ES2020"],
+        "lib": ["ES2020", "dom"],
         "resolveJsonModule": true,
         "jsx": "react",
         "declaration": true,

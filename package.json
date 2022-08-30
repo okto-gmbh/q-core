@@ -38,10 +38,13 @@
         "@emotion/styled": "^11.10.4",
         "next": "^12.2.5",
         "next-seo": "^5.5.0",
+        "nodemailer": "^6.7.8",
         "react": "^18.2.0"
     },
     "devDependencies": {
         "@stylelint/postcss-css-in-js": "^0.38.0",
+        "@types/node": "^18.7.14",
+        "@types/nodemailer": "^6.4.5",
         "@types/react": "^18.0.17",
         "@typescript-eslint/eslint-plugin": "^5.36.0",
         "@typescript-eslint/parser": "^5.36.0",
