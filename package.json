@@ -33,7 +33,7 @@
     "files": [
         "/lib"
     ],
-    "dependencies": {
+    "peerDependencies": {
         "@emotion/react": "^11.10.4",
         "@emotion/styled": "^11.10.4",
         "next": "^12.2.5",
