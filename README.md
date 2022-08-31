@@ -7,7 +7,7 @@
 ```json
 {
     "preinstall": "yarn q:init",
-    "q:init": "test -d ./q-core/lib && exit 0 || git submodule init && yarn q:build",
+    "q:init": "test -d ./q-core/lib && exit 0 || git submodule init && yarn q:update",
     "q:update": "git submodule update && yarn q:build",
     "q:upgrade": "cd q-core && git checkout main && git pull && cd .. && yarn q:build",
     "q:build": "cd q-core && yarn install && yarn build && cd ..",
