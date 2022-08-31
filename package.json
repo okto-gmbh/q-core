@@ -14,7 +14,6 @@
         }
     ],
     "scripts": {
-        "prepare": "husky install",
         "prebuild": "rimraf -rf ./lib",
         "build": "yarn build:esm && yarn build:cjs",
         "build:watch": "tsc --watch --module commonjs",
@@ -45,10 +44,6 @@
     "devDependencies": {
         "@emotion/react": "^11.10.4",
         "@emotion/styled": "^11.10.4",
-        "next": "^12.2.5",
-        "next-seo": "^5.5.0",
-        "nodemailer": "^6.7.8",
-        "react": "^18.2.0",
         "@stylelint/postcss-css-in-js": "^0.38.0",
         "@typescript-eslint/eslint-plugin": "^5.36.1",
         "@typescript-eslint/parser": "^5.36.1",
@@ -62,9 +57,12 @@
         "eslint-plugin-security": "^1.5.0",
         "eslint-plugin-sonarjs": "^0.15.0",
         "eslint-plugin-unused-imports": "^2.0.0",
-        "husky": "^8.0.1",
+        "next": "^12.2.5",
+        "next-seo": "^5.5.0",
+        "nodemailer": "^6.7.8",
         "postcss-syntax": "^0.36.2",
         "prettier": "^2.7.1",
+        "react": "^18.2.0",
         "stylelint": "^14.11.0",
         "stylelint-config-idiomatic-order": "^8.1.0",
         "stylelint-config-prettier": "^9.0.3",
