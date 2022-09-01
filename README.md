@@ -14,6 +14,20 @@
 }
 ```
 
+**Add path to jsconfig.json**
+
+```json
+{
+    "compilerOptions": {
+        // ...
+        "paths": {
+            // ...
+            "@core/*": ["q-core/lib/*"]
+        }
+    }
+}
+```
+
 **Add q-core as a git submodule:**
 
 `git submodule add https://github.com/authentiqagency/q-core.git`
