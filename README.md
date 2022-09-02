@@ -30,6 +30,17 @@
 }
 ```
 
+```javascript
+// jest.config.js
+module.exports = {
+    // ...
+    moduleNameMapper: {
+        // ...
+        '^@core/(.*)$': '<rootDir>/q-core/lib/$1'
+    }
+}
+```
+
 **Add q-core as a git submodule:**
 
 `git submodule add https://github.com/authentiqagency/q-core.git`
