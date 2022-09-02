@@ -15,9 +15,10 @@
 }
 ```
 
-**Add path to jsconfig.json**
+**Add absolute path resolution**
 
 ```json
+// jsconfig.json
 {
     "compilerOptions": {
         // ...
