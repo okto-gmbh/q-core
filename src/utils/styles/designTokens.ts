@@ -303,7 +303,7 @@ export const generateDesignTokens = (projectTokens: Partial<DesignTokens>) => {
 
     const fontWeights = Array.from(new Set(Object.values(settings.fontWeights)))
     const googleFonts = (
-        Object.values(projectTokens?.fonts || {}).filter(
+        Array.from(new Set(Object.values(projectTokens?.fonts || {}))).filter(
             (font) => typeof font !== 'string'
         ) as GoogleFont[]
     ).map(({ name }) => `${name}:wght@${fontWeights.join(';')}`)
