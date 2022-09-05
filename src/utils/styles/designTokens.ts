@@ -157,15 +157,15 @@ const coreTokens: DesignTokens = {
         h5: 0
     },
     colors: {
-        primary: 'mint',
-        danger: 'red',
-        success: 'green',
-        info: 'blue',
-        white: 'white',
-        black: 'black'
+        primary: '#6a94a0',
+        danger: '#f04141',
+        success: '#10dc60',
+        info: '#10dc60',
+        white: '#ffffff',
+        black: '#2b2b2b'
     },
     backgrounds: {
-        default: 'white',
+        default: '#ffffff',
         modal: 'rgba(0, 0, 0, 0.3)'
     },
     sizes: {
