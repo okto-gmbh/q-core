@@ -18,7 +18,7 @@ const renderTokens = (tokens: DesignTokens | ResponsiveTokens): string =>
         .flat()
         .join('\n')
 
-export const generate = ({
+export const generateGlobalStyles = ({
     tokens,
     customVariables,
     customReset

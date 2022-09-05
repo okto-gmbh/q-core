@@ -1,5 +1,5 @@
-import merge from 'lodash.merge'
 import Color from 'color'
+import merge from 'lodash.merge'
 
 export type Spacings =
     | 'tiny'
@@ -233,7 +233,7 @@ const buildLineHeightClamp = ([min, max, value, faktor = 1.1]: number[]) =>
 
 // TODO: Generate on build for memoization
 const colorPercentage = [10, 20, 30, 40, 50, 60, 70, 80, 90]
-export const generate = (projectTokens: DesignTokens) => {
+export const generateDesignTokens = (projectTokens: Partial<DesignTokens>) => {
     const settings = merge(coreTokens, projectTokens)
 
     settings.colors = {
@@ -303,7 +303,7 @@ export const generate = (projectTokens: DesignTokens) => {
 
     const fontWeights = new Array(new Set(Object.values(settings.fontWeights)))
     const googleFonts = (
-        Object.values(projectTokens.fonts).filter(
+        Object.values(projectTokens?.fonts || {}).filter(
             (font) => typeof font !== 'string'
         ) as GoogleFont[]
     ).map(({ name }) => `${name}:wght@${fontWeights.join(';')}`)
