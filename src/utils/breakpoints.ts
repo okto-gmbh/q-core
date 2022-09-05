@@ -1,12 +1,14 @@
-const SIZES = {
-    mobile: '320px',
-    mobileL: '480px',
-    tabletS: '610px',
-    tablet: '740px',
-    desktop: '980px',
-    wide: '1300px',
-    megaWide: '1700px',
-    ultraWide: '2000px'
+import { Breakpoints } from './styles/designTokens'
+
+const SIZES: Breakpoints = {
+    mobilePortrait: '320px',
+    mobileLandscape: '480px',
+    tabletPortrait: '610px',
+    tabletLandscape: '740px',
+    desktopS: '980px',
+    desktopM: '1300px',
+    desktopL: '1700px',
+    desktopXL: '2000px'
 }
 
 const buildMediaQueries = (direction: 'min' | 'max') =>

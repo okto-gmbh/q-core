@@ -2,13 +2,16 @@ import { css, SerializedStyles } from '@emotion/react'
 import { DesignTokens, ResponsiveTokens } from './designTokens'
 import { from } from '../breakpoints'
 
-const renderTokens = (tokens: DesignTokens | ResponsiveTokens): string =>
+const renderTokens = (tokens: DesignTokens | ResponsiveTokens = {}): string =>
     Object.entries(tokens)
         .filter(
             ([namespace]) =>
-                !['breakpoints', 'responsiveTokens', 'fontSizes'].includes(
-                    namespace
-                )
+                ![
+                    'breakpoints',
+                    'responsiveTokens',
+                    'fontSizes',
+                    'googleFonts'
+                ].includes(namespace)
         )
         .map(([namespace, token]) =>
             Object.entries(token).map(
@@ -30,22 +33,23 @@ export const generateGlobalStyles = ({
     :root {
         ${renderTokens(tokens)}
 
-        ${Object.entries(tokens.fontSizes)
+        ${Object.entries(tokens.fontSizes || {})
             .filter(([, value]) => typeof value !== 'string')
             .map(
-                ([name, value]) => css`
-            --fontSizes-${name}: calc(var(--baseline) * ${value});
-        `
+                ([name, value]) =>
+                    `--fontSizes-${name}: calc(var(--baseline) * ${value});`
             )
             .join('\n')}
 
-        ${Object.entries(tokens.responsiveTokens).map(
-            ([breakpoint, responsiveTokens]) => css`
-                @media ${from[breakpoint]} {
-                    ${renderTokens(responsiveTokens)}
-                }
-            `
-        )}
+        ${Object.entries(tokens.responsiveTokens || {})
+            .map(
+                ([breakpoint, responsiveTokens]) => `
+                    @media ${from[breakpoint]} {
+                        ${renderTokens(responsiveTokens)}
+                    }
+                `
+            )
+            .join('\n')}
 
         ${customVariables}
     }

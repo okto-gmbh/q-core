@@ -19,14 +19,14 @@ export type Fonts = {
 }
 
 export type Breakpoints = {
-    mobilePortrait: number
-    mobileLandscape: number
-    tabletPortrait: number
-    tabletLandscape: number
-    desktopS: number
-    desktopM: number
-    desktopL: number
-    desktopXL: number
+    mobilePortrait: number | string
+    mobileLandscape: number | string
+    tabletPortrait: number | string
+    tabletLandscape: number | string
+    desktopS: number | string
+    desktopM: number | string
+    desktopL: number | string
+    desktopXL: number | string
 }
 
 export type ResponsiveTokens = {
@@ -43,26 +43,35 @@ export type ResponsiveTokens = {
 
 export type Headings = 'h1' | 'h2' | 'h3' | 'h4' | 'h5'
 
+type TokenSpacings = {
+    baseline: number
+    [key: 'gap' | string]: Spacings | number
+}
+
+type TokenFontSizes = {
+    [
+        key:
+            | 'tiny'
+            | 'small'
+            | 'default'
+            | 'medium'
+            | 'large'
+            | Headings
+            | string
+    ]: string | number | number[]
+}
+
+type TokenLineHeights = {
+    [key: string]: string | number
+}
+
 export type DesignTokens = {
     fonts: Fonts
     fontWeights: {
         [key: 'default' | 'bold' | Headings | string]: number
     }
-    fontSizes: {
-        [
-            key:
-                | 'tiny'
-                | 'small'
-                | 'default'
-                | 'medium'
-                | 'large'
-                | Headings
-                | string
-        ]: string | number | number[]
-    }
-    lineHeights: {
-        [key: string]: string | number
-    }
+    fontSizes: TokenFontSizes
+    lineHeights: TokenLineHeights
     letterSpacings: {
         [key: 'default' | Headings | string]: number
     }
@@ -84,10 +93,7 @@ export type DesignTokens = {
     sizes: {
         [key: 'wrapper' | string]: number
     }
-    spacings: {
-        baseline: number
-        [key: 'gap' | string]: Spacings | number
-    }
+    spacings: TokenSpacings
     radii: {
         [key: 'default' | string]: number
     }
@@ -231,6 +237,57 @@ const buildFontSizeClamp = ([min, max, value]: number[]) =>
 const buildLineHeightClamp = ([min, max, value, faktor = 1.1]: number[]) =>
     `clamp(calc(${min}rem * ${faktor}), calc(${value}vw * ${faktor}), calc(${max}rem) * ${faktor})`
 
+const generateSpacings = (spacings: Partial<TokenSpacings>) => {
+    const stringSpacings = Object.fromEntries(
+        Object.entries(spacings)
+            .filter(([, value]) => typeof value === 'string')
+            .map(([name, value]) => [name, `var(--spacings-${value})`])
+    )
+    const generalSpacings = spacings?.baseline
+        ? {
+              tiny: spacings.baseline,
+              small: spacings.baseline * 2,
+              medium: spacings.baseline * 3,
+              default: spacings.baseline * 4,
+              large: spacings.baseline * 8,
+              huge: spacings.baseline * 16
+          }
+        : {}
+
+    return {
+        ...spacings,
+        ...stringSpacings,
+        ...generalSpacings
+    }
+}
+
+const generateFontSizes = (fontSizes: Partial<TokenFontSizes>) => ({
+    ...fontSizes,
+    ...Object.fromEntries(
+        Object.entries(fontSizes).map(([tokenName, value]) => [
+            tokenName,
+            Array.isArray(value) ? buildFontSizeClamp(value) : value
+        ])
+    )
+})
+
+const generateLineHeights = (
+    fontSizes: Partial<TokenFontSizes>,
+    lineHeights: Partial<TokenLineHeights>
+) =>
+    Object.fromEntries(
+        (
+            Object.entries(fontSizes).filter(([, value]) =>
+                Array.isArray(value)
+            ) as [string, number[]][]
+        ).map(([tokenName, value]) => [
+            tokenName,
+            Array.isArray(value)
+                ? buildLineHeightClamp(value)
+                : `calc(${value} * ${lineHeights[tokenName]})`
+        ])
+    )
+
 // TODO: Generate on build for memoization
 const colorPercentage = [10, 20, 30, 40, 50, 60, 70, 80, 90]
 export const generateDesignTokens = (projectTokens: Partial<DesignTokens>) => {
@@ -254,15 +311,7 @@ export const generateDesignTokens = (projectTokens: Partial<DesignTokens>) => {
         ])
     }
 
-    settings.spacings = {
-        ...settings.spacings,
-        tiny: settings.spacings.baseline,
-        small: settings.spacings.baseline * 2,
-        medium: settings.spacings.baseline * 3,
-        default: settings.spacings.baseline * 4,
-        large: settings.spacings.baseline * 8,
-        huge: settings.spacings.baseline * 16
-    }
+    settings.spacings = generateSpacings(settings.spacings) as TokenSpacings
 
     settings.fonts = {
         ...settings.fonts,
@@ -278,35 +327,52 @@ export const generateDesignTokens = (projectTokens: Partial<DesignTokens>) => {
         )
     }
 
-    settings.fontSizes = {
-        ...settings.fontSizes,
-        ...Object.fromEntries(
-            Object.entries(settings.fontSizes).map(([tokenName, value]) => [
-                tokenName,
-                Array.isArray(value) ? buildFontSizeClamp(value) : value
-            ])
-        )
-    }
+    settings.fontSizes = generateFontSizes(settings.fontSizes) as TokenFontSizes
+    settings.lineHeights = generateLineHeights(
+        settings.fontSizes,
+        settings.lineHeights
+    )
 
-    settings.lineHeights = Object.fromEntries(
-        (
-            Object.entries(settings.fontSizes).filter(([, value]) =>
-                Array.isArray(value)
-            ) as [string, number[]][]
-        ).map(([tokenName, value]) => [
-            tokenName,
-            Array.isArray(value)
-                ? buildLineHeightClamp(value)
-                : `calc(${value} * ${settings.lineHeights[tokenName]})`
-        ])
+    settings.responsiveTokens = Object.fromEntries(
+        Object.entries(settings.responsiveTokens).map(
+            ([breakpoint, tokens]) => [
+                breakpoint,
+                {
+                    ...Object.fromEntries(
+                        Object.entries(tokens).map(([namespace, value]) => [
+                            namespace,
+                            namespace === 'spacings'
+                                ? generateSpacings(value as TokenSpacings)
+                                : namespace === 'fontSizes'
+                                ? generateFontSizes(value as TokenFontSizes)
+                                : value
+                        ])
+                    ),
+                    lineHeights: {
+                        ...(settings.responsiveTokens[breakpoint].lineHeights ||
+                            {}),
+                        ...generateLineHeights(
+                            settings.responsiveTokens[breakpoint].fontSizes ||
+                                {},
+                            settings.responsiveTokens[breakpoint].lineHeights ||
+                                {}
+                        )
+                    }
+                }
+            ]
+        )
     )
 
     const fontWeights = Array.from(new Set(Object.values(settings.fontWeights)))
-    const googleFonts = (
-        Array.from(new Set(Object.values(projectTokens?.fonts || {}))).filter(
-            (font) => typeof font !== 'string'
-        ) as GoogleFont[]
-    ).map(({ name }) => `${name}:wght@${fontWeights.join(';')}`)
+    const googleFonts = Array.from(
+        new Set(
+            (
+                Object.values(projectTokens?.fonts || {}).filter(
+                    (font) => typeof font !== 'string'
+                ) as GoogleFont[]
+            ).map(({ name }) => `${name}:wght@${fontWeights.join(';')}`)
+        )
+    )
 
     return {
         ...settings,
