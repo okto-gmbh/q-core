@@ -241,15 +241,15 @@ export const generateDesignTokens = (projectTokens: Partial<DesignTokens>) => {
         ...Object.fromEntries([
             ...colorPercentage.map((percent) => [
                 `primary-light-${percent}`,
-                new Color(settings.colors.primary).lighten(percent / 100)
+                new Color(settings.colors.primary).lighten(percent / 100).hex()
             ]),
             ...colorPercentage.map((percent) => [
                 `primary-dark-${percent}`,
-                new Color(settings.colors.primary).darken(percent / 100)
+                new Color(settings.colors.primary).darken(percent / 100).hex()
             ]),
             ...colorPercentage.map((percent) => [
                 `gray-${percent}`,
-                new Color(settings.colors.black).lighten(percent / 100)
+                new Color(settings.colors.black).lighten(percent / 100).hex()
             ])
         ])
     }
