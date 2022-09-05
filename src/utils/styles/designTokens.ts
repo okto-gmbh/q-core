@@ -301,7 +301,7 @@ export const generateDesignTokens = (projectTokens: Partial<DesignTokens>) => {
         ])
     )
 
-    const fontWeights = new Array(new Set(Object.values(settings.fontWeights)))
+    const fontWeights = Array.from(new Set(Object.values(settings.fontWeights)))
     const googleFonts = (
         Object.values(projectTokens?.fonts || {}).filter(
             (font) => typeof font !== 'string'
