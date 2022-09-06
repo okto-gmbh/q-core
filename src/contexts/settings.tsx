@@ -7,15 +7,16 @@ type SettingsProps = {
 
 type SettingsProviderProps = {
     children: JSX.Element
-} & SettingsProps
+    settings: SettingsProps
+}
 
 const SettingsContext = createContext<SettingsProps>({})
 
 const SettingsProvider: FC<SettingsProviderProps> = ({
-    designTokens,
+    settings,
     children
 }) => (
-    <SettingsContext.Provider value={{ designTokens }}>
+    <SettingsContext.Provider value={settings}>
         {children}
     </SettingsContext.Provider>
 )
