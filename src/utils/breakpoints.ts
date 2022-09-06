@@ -1,6 +1,6 @@
-import { Breakpoints } from './styles/designTokens'
+import { TokenBreakpoints } from './styles/designTokens'
 
-const SIZES: Breakpoints = {
+const SIZES: TokenBreakpoints = {
     mobilePortrait: '320px',
     mobileLandscape: '480px',
     tabletPortrait: '610px',

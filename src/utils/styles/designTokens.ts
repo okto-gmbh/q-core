@@ -14,11 +14,7 @@ export type GoogleFont = {
     fallback?: string
 }
 
-export type Fonts = {
-    [key: 'heading' | 'body' | string]: string | GoogleFont
-}
-
-export type Breakpoints = {
+export type TokenBreakpoints = {
     mobilePortrait: number | string
     mobileLandscape: number | string
     tabletPortrait: number | string
@@ -43,6 +39,14 @@ export type ResponsiveTokens = {
 
 export type Headings = 'h1' | 'h2' | 'h3' | 'h4' | 'h5'
 
+export type TokenFonts = {
+    [key: 'heading' | 'body' | string]: string | GoogleFont
+}
+
+export type TokenFontWeights = {
+    [key: 'default' | 'bold' | Headings | string]: number
+}
+
 type TokenSpacings = {
     baseline: number
     [key: 'gap' | string]: Spacings | number
@@ -65,28 +69,34 @@ type TokenLineHeights = {
     [key: string]: string | number
 }
 
+type TokenColors = {
+    [
+        key:
+            | 'primary'
+            | 'danger'
+            | 'success'
+            | 'info'
+            | 'white'
+            | 'black'
+            | string
+    ]: string
+}
+
+type TokenResponsiveTokens = {
+    [breakpoint in keyof TokenBreakpoints]?: ResponsiveTokens
+}
+
+type TokenLetterSpacings = {
+    [key: 'default' | Headings | string]: number | string
+}
+
 export type DesignTokens = {
-    fonts: Fonts
-    fontWeights: {
-        [key: 'default' | 'bold' | Headings | string]: number
-    }
+    fonts: TokenFonts
+    fontWeights: TokenFontWeights
     fontSizes: TokenFontSizes
     lineHeights: TokenLineHeights
-    letterSpacings: {
-        [key: 'default' | Headings | string]: number
-    }
-    colors: {
-        [
-            key:
-                | 'primary'
-                | 'danger'
-                | 'success'
-                | 'info'
-                | 'white'
-                | 'black'
-                | string
-        ]: string
-    }
+    letterSpacings: TokenLetterSpacings
+    colors: TokenColors
     backgrounds: {
         [key: 'default' | 'modal' | string]: string
     }
@@ -112,10 +122,8 @@ export type DesignTokens = {
     motion: {
         [key: 'default' | string]: string
     }
-    breakpoints: Breakpoints
-    responsiveTokens: {
-        [breakpoint in keyof Breakpoints]?: ResponsiveTokens
-    }
+    breakpoints: TokenBreakpoints
+    responsiveTokens: TokenResponsiveTokens
 }
 
 export const SYSTEM_FONTS_FALLBACK =
@@ -237,7 +245,7 @@ const buildFontSizeClamp = ([min, max, value]: number[]) =>
 const buildLineHeightClamp = ([min, max, value, faktor = 1.1]: number[]) =>
     `clamp(calc(${min}rem * ${faktor}), calc(${value}vw * ${faktor}), calc(${max}rem) * ${faktor})`
 
-const generateSpacings = (spacings: Partial<TokenSpacings>) => {
+const generateSpacings = (spacings: Partial<TokenSpacings> = {}) => {
     const stringSpacings = Object.fromEntries(
         Object.entries(spacings)
             .filter(([, value]) => typeof value === 'string')
@@ -245,12 +253,13 @@ const generateSpacings = (spacings: Partial<TokenSpacings>) => {
     )
     const generalSpacings = spacings?.baseline
         ? {
-              tiny: spacings.baseline,
-              small: spacings.baseline * 2,
-              medium: spacings.baseline * 3,
-              default: spacings.baseline * 4,
-              large: spacings.baseline * 8,
-              huge: spacings.baseline * 16
+              baseline: spacings.baseline + 'px',
+              tiny: spacings.baseline + 'px',
+              small: spacings.baseline * 2 + 'px',
+              medium: spacings.baseline * 3 + 'px',
+              default: spacings.baseline * 4 + 'px',
+              large: spacings.baseline * 8 + 'px',
+              huge: spacings.baseline * 16 + 'px'
           }
         : {}
 
@@ -261,121 +270,124 @@ const generateSpacings = (spacings: Partial<TokenSpacings>) => {
     }
 }
 
-const generateFontSizes = (fontSizes: Partial<TokenFontSizes>) => ({
-    ...fontSizes,
-    ...Object.fromEntries(
+const generateFontSizes = (fontSizes: Partial<TokenFontSizes> = {}) =>
+    Object.fromEntries(
         Object.entries(fontSizes).map(([tokenName, value]) => [
             tokenName,
-            Array.isArray(value) ? buildFontSizeClamp(value) : value
+            Array.isArray(value)
+                ? buildFontSizeClamp(value)
+                : `calc(var(--spacings-baseline) * ${value})`
+        ])
+    )
+
+const generateClampLineHeights = (fontSizes: Partial<TokenFontSizes> = {}) =>
+    Object.fromEntries(
+        Object.entries(fontSizes)
+            .filter(([, value]) => Array.isArray(value))
+            .map(([tokenName, value]) => [
+                tokenName,
+                buildLineHeightClamp(value as number[])
+            ])
+    )
+
+const generateRegularLineHeights = (
+    fontSizes: Partial<TokenFontSizes> = {},
+    lineHeights: Partial<TokenLineHeights> = {}
+) =>
+    Object.fromEntries(
+        Object.entries(fontSizes)
+            .filter(([, value]) => typeof value === 'number')
+            .map(([tokenName, value]) => [
+                tokenName,
+                `calc(${value} * ${lineHeights[tokenName]})`
+            ])
+    )
+
+const generateFonts = (fonts: TokenFonts) => ({
+    ...fonts,
+    ...Object.fromEntries(
+        Object.entries(fonts).map(([tokenName, value]) => [
+            tokenName,
+            typeof value === 'string'
+                ? value
+                : `'${value.name}',${value.fallback || SYSTEM_FONTS_FALLBACK}`
         ])
     )
 })
 
-const generateLineHeights = (
-    fontSizes: Partial<TokenFontSizes>,
-    lineHeights: Partial<TokenLineHeights>
+const colorPercentage = [10, 20, 30, 40, 50, 60, 70, 80, 90]
+const generateColors = (colors: TokenColors) => ({
+    ...colors,
+    ...Object.fromEntries([
+        ...colorPercentage.map((percent) => [
+            `primary-light-${percent}`,
+            new Color(colors.primary).lighten(percent / 100).hex()
+        ]),
+        ...colorPercentage.map((percent) => [
+            `primary-dark-${percent}`,
+            new Color(colors.primary).darken(percent / 100).hex()
+        ]),
+        ...colorPercentage.map((percent) => [
+            `gray-${percent}`,
+            new Color(colors.black).lightness(percent).hex()
+        ])
+    ])
+})
+
+const generateResponsiveTokens = (responsiveTokens: TokenResponsiveTokens) =>
+    Object.fromEntries(
+        Object.entries(responsiveTokens).map(([breakpoint, tokens]) => {
+            const clampLineHeights = generateClampLineHeights(tokens.fontSizes)
+            return [
+                breakpoint,
+                {
+                    ...tokens,
+                    spacings: generateSpacings(tokens.spacings),
+                    fontSizes: generateFontSizes(tokens.fontSizes),
+                    lineHeights: {
+                        ...clampLineHeights,
+                        ...generateRegularLineHeights(
+                            tokens.fontSizes,
+                            tokens.lineHeights
+                        )
+                    },
+                    letterSpacings: generateLetterSpacings(
+                        tokens.letterSpacings
+                    )
+                }
+            ]
+        })
+    )
+
+const generateLetterSpacings = (
+    letterSpacings: Partial<TokenLetterSpacings> = {}
 ) =>
     Object.fromEntries(
-        (
-            Object.entries(fontSizes).filter(([, value]) =>
-                Array.isArray(value)
-            ) as [string, number[]][]
-        ).map(([tokenName, value]) => [
+        Object.entries(letterSpacings).map(([tokenName, value]) => [
             tokenName,
-            Array.isArray(value)
-                ? buildLineHeightClamp(value)
-                : `calc(${value} * ${lineHeights[tokenName]})`
+            value + 'px'
         ])
     )
 
 // TODO: Generate on build for memoization
-const colorPercentage = [10, 20, 30, 40, 50, 60, 70, 80, 90]
 export const generateDesignTokens = (projectTokens: Partial<DesignTokens>) => {
     const settings = merge(coreTokens, projectTokens)
+    const clampLineHeights = generateClampLineHeights(settings.fontSizes)
 
-    settings.colors = {
-        ...settings.colors,
-        ...Object.fromEntries([
-            ...colorPercentage.map((percent) => [
-                `primary-light-${percent}`,
-                new Color(settings.colors.primary).lighten(percent / 100).hex()
-            ]),
-            ...colorPercentage.map((percent) => [
-                `primary-dark-${percent}`,
-                new Color(settings.colors.primary).darken(percent / 100).hex()
-            ]),
-            ...colorPercentage.map((percent) => [
-                `gray-${percent}`,
-                new Color(settings.colors.black).lighten(percent / 100).hex()
-            ])
-        ])
-    }
-
+    settings.colors = generateColors(settings.colors)
     settings.spacings = generateSpacings(settings.spacings) as TokenSpacings
-
-    settings.fonts = {
-        ...settings.fonts,
-        ...Object.fromEntries(
-            Object.entries(settings.fonts).map(([tokenName, value]) => [
-                tokenName,
-                typeof value === 'string'
-                    ? value
-                    : `"${value.name}",${
-                          value.fallback || SYSTEM_FONTS_FALLBACK
-                      }`
-            ])
-        )
-    }
-
+    settings.fonts = generateFonts(settings.fonts)
     settings.fontSizes = generateFontSizes(settings.fontSizes) as TokenFontSizes
-    settings.lineHeights = generateLineHeights(
-        settings.fontSizes,
-        settings.lineHeights
-    )
-
-    settings.responsiveTokens = Object.fromEntries(
-        Object.entries(settings.responsiveTokens).map(
-            ([breakpoint, tokens]) => [
-                breakpoint,
-                {
-                    ...Object.fromEntries(
-                        Object.entries(tokens).map(([namespace, value]) => [
-                            namespace,
-                            namespace === 'spacings'
-                                ? generateSpacings(value as TokenSpacings)
-                                : namespace === 'fontSizes'
-                                ? generateFontSizes(value as TokenFontSizes)
-                                : value
-                        ])
-                    ),
-                    lineHeights: {
-                        ...(settings.responsiveTokens[breakpoint].lineHeights ||
-                            {}),
-                        ...generateLineHeights(
-                            settings.responsiveTokens[breakpoint].fontSizes ||
-                                {},
-                            settings.responsiveTokens[breakpoint].lineHeights ||
-                                {}
-                        )
-                    }
-                }
-            ]
-        )
-    )
-
-    const fontWeights = Array.from(new Set(Object.values(settings.fontWeights)))
-    const googleFonts = Array.from(
-        new Set(
-            (
-                Object.values(projectTokens?.fonts || {}).filter(
-                    (font) => typeof font !== 'string'
-                ) as GoogleFont[]
-            ).map(({ name }) => `${name}:wght@${fontWeights.join(';')}`)
-        )
-    )
-
-    return {
-        ...settings,
-        googleFonts
+    settings.letterSpacings = generateLetterSpacings(
+        settings.letterSpacings
+    ) as TokenLetterSpacings
+    settings.lineHeights = {
+        ...clampLineHeights,
+        ...generateRegularLineHeights(settings.fontSizes, settings.lineHeights)
     }
+    settings.responsiveTokens = generateResponsiveTokens(
+        settings.responsiveTokens
+    )
+
+    return settings
 }

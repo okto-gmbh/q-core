@@ -20,22 +20,8 @@ export const Grid = styled(
 )`
     display: grid;
     align-items: ${({ alignItems }) => alignItems || 'flex-start'};
-    grid-gap: var(--grid-gap-mobile);
+    grid-gap: var(--spacings-${({ gap }) => gap || 'gap'});
     grid-template-columns: repeat(${GRID_COLS}, 1fr);
-
-    @media ${from.mobileL} {
-        grid-gap: var(--grid-gap-mobile);
-    }
-
-    @media ${from.tablet} {
-        grid-gap: ${({ gap }) =>
-            gap ? `var(--spacing-${gap}) ` : 'var(--grid-gap-desktop)'};
-    }
-
-    @media ${from.desktop} {
-        grid-gap: ${({ gap }) =>
-            gap ? `var(--spacing-${gap}) ` : 'var(--grid-gap-desktop)'};
-    }
 
     img {
         width: 100%;
