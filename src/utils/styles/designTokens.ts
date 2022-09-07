@@ -48,8 +48,14 @@ export type TokenFontWeights = {
 }
 
 type TokenSpacings = {
-    baseline: number
-    [key: 'gap' | string]: Spacings | number
+    baseline: number | string
+    tiny: number | string
+    small: number | string
+    medium: number | string
+    default: number | string
+    large: number | string
+    huge: number | string
+    [key: 'gap' | string]: Spacings | number | string
 }
 
 type TokenFontSizes = {
@@ -90,6 +96,10 @@ type TokenLetterSpacings = {
     [key: 'default' | Headings | string]: number | string
 }
 
+type TokenSizes = {
+    [key: 'wrapper' | string]: number | string
+}
+
 export type DesignTokens = {
     fonts: TokenFonts
     fontWeights: TokenFontWeights
@@ -100,9 +110,7 @@ export type DesignTokens = {
     backgrounds: {
         [key: 'default' | 'modal' | string]: string
     }
-    sizes: {
-        [key: 'wrapper' | string]: number
-    }
+    sizes: TokenSizes
     spacings: TokenSpacings
     radii: {
         [key: 'default' | string]: number
@@ -176,7 +184,9 @@ const coreTokens: DesignTokens = {
         success: '#10dc60',
         info: '#10dc60',
         white: '#ffffff',
-        black: '#2b2b2b'
+        black: '#2b2b2b',
+        link: 'var(--colors-primary)',
+        linkHover: 'var(--colors-primary-dark-20)'
     },
     backgrounds: {
         default: '#ffffff',
@@ -187,7 +197,13 @@ const coreTokens: DesignTokens = {
     },
     spacings: {
         baseline: 5.4,
-        gap: 'default'
+        gap: 'default',
+        tiny: 1,
+        small: 2,
+        medium: 3,
+        default: 4,
+        large: 8,
+        huge: 16
     },
     radii: {
         default: 0
@@ -245,28 +261,54 @@ const buildFontSizeClamp = ([min, max, value]: number[]) =>
 const buildLineHeightClamp = ([min, max, value, faktor = 1.1]: number[]) =>
     `clamp(calc(${min}rem * ${faktor}), calc(${value}vw * ${faktor}), calc(${max}rem) * ${faktor})`
 
-const generateSpacings = (spacings: Partial<TokenSpacings> = {}) => {
+const spacingDefaultTokens = [
+    'tiny',
+    'small',
+    'medium',
+    'default',
+    'large',
+    'huge'
+]
+
+const generateSpacings = (
+    originalSpacings: TokenSpacings,
+    spacings: Partial<TokenSpacings> = {}
+) => {
     const stringSpacings = Object.fromEntries(
         Object.entries(spacings)
             .filter(([, value]) => typeof value === 'string')
             .map(([name, value]) => [name, `var(--spacings-${value})`])
     )
-    const generalSpacings = spacings?.baseline
-        ? {
-              baseline: spacings.baseline + 'px',
-              tiny: spacings.baseline + 'px',
-              small: spacings.baseline * 2 + 'px',
-              medium: spacings.baseline * 3 + 'px',
-              default: spacings.baseline * 4 + 'px',
-              large: spacings.baseline * 8 + 'px',
-              huge: spacings.baseline * 16 + 'px'
-          }
-        : {}
+
+    const definedTokens = Object.keys(spacings)
+    let defaultSpacings = {}
+    if (
+        ['baseline', ...spacingDefaultTokens].some((tokenName) =>
+            definedTokens.includes(tokenName)
+        )
+    ) {
+        const baseline: number = (spacings.baseline ??
+            originalSpacings.baseline) as number
+
+        defaultSpacings = {
+            baseline: spacings.baseline + 'px',
+            ...Object.fromEntries(
+                spacingDefaultTokens.map((tokenName) => [
+                    tokenName,
+                    `${
+                        baseline *
+                        ((spacings[tokenName] ??
+                            originalSpacings[tokenName]) as number)
+                    }px`
+                ])
+            )
+        }
+    }
 
     return {
         ...spacings,
         ...stringSpacings,
-        ...generalSpacings
+        ...defaultSpacings
     }
 }
 
@@ -290,13 +332,15 @@ const generateClampLineHeights = (fontSizes: Partial<TokenFontSizes> = {}) =>
             ])
     )
 
+const defaultLineHeights = ['tiny', 'small', 'default', 'medium', 'large']
+
 const generateRegularLineHeights = (
     fontSizes: Partial<TokenFontSizes> = {},
     lineHeights: Partial<TokenLineHeights> = {}
 ) =>
     Object.fromEntries(
         Object.entries(fontSizes)
-            .filter(([, value]) => typeof value === 'number')
+            .filter(([tokenName]) => defaultLineHeights.includes(tokenName))
             .map(([tokenName, value]) => [
                 tokenName,
                 `calc(${value} * ${lineHeights[tokenName]})`
@@ -334,7 +378,10 @@ const generateColors = (colors: TokenColors) => ({
     ])
 })
 
-const generateResponsiveTokens = (responsiveTokens: TokenResponsiveTokens) =>
+const generateResponsiveTokens = (
+    originalSpacings: TokenSpacings,
+    responsiveTokens: TokenResponsiveTokens
+) =>
     Object.fromEntries(
         Object.entries(responsiveTokens).map(([breakpoint, tokens]) => {
             const clampLineHeights = generateClampLineHeights(tokens.fontSizes)
@@ -342,7 +389,10 @@ const generateResponsiveTokens = (responsiveTokens: TokenResponsiveTokens) =>
                 breakpoint,
                 {
                     ...tokens,
-                    spacings: generateSpacings(tokens.spacings),
+                    spacings: generateSpacings(
+                        originalSpacings,
+                        tokens.spacings
+                    ),
                     fontSizes: generateFontSizes(tokens.fontSizes),
                     lineHeights: {
                         ...clampLineHeights,
@@ -351,19 +401,18 @@ const generateResponsiveTokens = (responsiveTokens: TokenResponsiveTokens) =>
                             tokens.lineHeights
                         )
                     },
-                    letterSpacings: generateLetterSpacings(
+                    letterSpacings: generatePixelBasedValues(
                         tokens.letterSpacings
-                    )
+                    ),
+                    sizes: generatePixelBasedValues(tokens.sizes)
                 }
             ]
         })
     )
 
-const generateLetterSpacings = (
-    letterSpacings: Partial<TokenLetterSpacings> = {}
-) =>
+const generatePixelBasedValues = (tokens: Partial<DesignTokens> = {}) =>
     Object.fromEntries(
-        Object.entries(letterSpacings).map(([tokenName, value]) => [
+        Object.entries(tokens).map(([tokenName, value]) => [
             tokenName,
             value + 'px'
         ])
@@ -374,18 +423,22 @@ export const generateDesignTokens = (projectTokens: Partial<DesignTokens>) => {
     const settings = merge(coreTokens, projectTokens)
     const clampLineHeights = generateClampLineHeights(settings.fontSizes)
 
+    const originalSpacings = settings.spacings
     settings.colors = generateColors(settings.colors)
-    settings.spacings = generateSpacings(settings.spacings) as TokenSpacings
+    settings.spacings = generateSpacings(
+        settings.spacings,
+        settings.spacings
+    ) as TokenSpacings
     settings.fonts = generateFonts(settings.fonts)
     settings.fontSizes = generateFontSizes(settings.fontSizes) as TokenFontSizes
-    settings.letterSpacings = generateLetterSpacings(
-        settings.letterSpacings
-    ) as TokenLetterSpacings
+    settings.letterSpacings = generatePixelBasedValues(settings.letterSpacings)
+    settings.sizes = generatePixelBasedValues(settings.sizes)
     settings.lineHeights = {
         ...clampLineHeights,
         ...generateRegularLineHeights(settings.fontSizes, settings.lineHeights)
     }
     settings.responsiveTokens = generateResponsiveTokens(
+        originalSpacings,
         settings.responsiveTokens
     )
 
