@@ -372,6 +372,14 @@ const generateColors = (colors: TokenColors) => ({
             new Color(colors.primary).darken(percent / 100).hex()
         ]),
         ...colorPercentage.map((percent) => [
+            `secondary-light-${percent}`,
+            new Color(colors.secondary).lighten(percent / 100).hex()
+        ]),
+        ...colorPercentage.map((percent) => [
+            `secondary-dark-${percent}`,
+            new Color(colors.secondary).darken(percent / 100).hex()
+        ]),
+        ...colorPercentage.map((percent) => [
             `gray-${percent}`,
             new Color(colors.black).lightness(percent).hex()
         ])
