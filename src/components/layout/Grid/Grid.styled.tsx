@@ -35,7 +35,7 @@ export const Grid = styled(
         ${({ cols }) =>
             cols === 2 &&
             css`
-                @media ${from.tabletS} {
+                @media ${from.tabletPortrait} {
                     grid-column-end: span 6;
                 }
             `}
@@ -43,11 +43,11 @@ export const Grid = styled(
         ${({ cols }) =>
             cols === 3 &&
             css`
-                @media ${from.tabletS} {
+                @media ${from.tabletPortrait} {
                     grid-column-end: span 6;
                 }
 
-                @media ${from.desktop} {
+                @media ${from.desktopS} {
                     grid-column-end: span 4;
                 }
             `}
@@ -55,15 +55,15 @@ export const Grid = styled(
         ${({ cols }) =>
             cols === 4 &&
             css`
-                @media ${from.mobileL} {
+                @media ${from.mobileLandcape} {
                     grid-column-end: span 6;
                 }
 
-                @media ${from.desktop} {
+                @media ${from.desktopS} {
                     grid-column-end: span 4;
                 }
 
-                @media ${from.wide} {
+                @media ${from.desktopM} {
                     grid-column-end: span 3;
                 }
             `}
@@ -72,19 +72,19 @@ export const Grid = styled(
         ${({ cols }) =>
             cols === 6 &&
             css`
-                @media ${from.mobileL} {
+                @media ${from.mobileLandcape} {
                     grid-column-end: span 6;
                 }
 
-                @media ${from.tablet} {
+                @media ${from.tabletLandscape} {
                     grid-column-end: span 4;
                 }
 
-                @media ${from.desktop} {
+                @media ${from.desktopS} {
                     grid-column-end: span 3;
                 }
 
-                @media ${from.wide} {
+                @media ${from.desktopM} {
                     grid-column-end: span 2;
                 }
             `}

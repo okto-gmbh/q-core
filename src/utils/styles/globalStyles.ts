@@ -107,7 +107,7 @@ export const generateGlobalStyles = ({
         -ms-overflow-style: scrollbar;
         overflow-y: scroll;
 
-        @media ${until.desktop} {
+        @media ${until.desktopS} {
             &.noscroll {
                 position: fixed;
                 overflow: hidden;
