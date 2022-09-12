@@ -13,7 +13,7 @@ export const Element = styled(({ fluid: _fluid, ...rest }: WrapperProps) => (
     margin-right: auto;
     margin-left: auto;
 
-    @media ${from.tablet} {
+    @media ${from.tabletPortrait} {
         padding-right: var(--spacings-large);
         padding-left: var(--spacings-large);
     }

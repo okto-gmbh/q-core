@@ -20,8 +20,12 @@ export const Grid = styled(
 )`
     display: grid;
     align-items: ${({ alignItems }) => alignItems || 'flex-start'};
-    grid-gap: var(--spacings-${({ gap }) => gap || 'gap'});
+    grid-gap: var(--spacings-${({ gap }) => gap || 'gap'}) 0;
     grid-template-columns: repeat(${GRID_COLS}, 1fr);
+
+    @media ${from.tabletPortrait} {
+        grid-gap: var(--spacings-${({ gap }) => gap || 'gap'});
+    }
 
     img {
         width: 100%;
