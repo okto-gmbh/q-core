@@ -131,7 +131,7 @@ export type DesignTokens = {
         [key: 'default' | string]: string
     }
     breakpoints: TokenBreakpoints
-    responsiveTokens: TokenResponsiveTokens
+    responsiveTokens?: TokenResponsiveTokens
 }
 
 export const SYSTEM_FONTS_FALLBACK =
@@ -172,8 +172,8 @@ const coreTokens: DesignTokens = {
     },
     letterSpacings: {
         default: 0,
-        h1: -0.3,
-        h2: -0.3,
+        h1: -1,
+        h2: -1,
         h3: -1,
         h4: 0,
         h5: 0
@@ -196,7 +196,7 @@ const coreTokens: DesignTokens = {
         wrapper: 1800
     },
     spacings: {
-        baseline: 5.4,
+        baseline: 6,
         gap: 'default',
         tiny: 1,
         small: 2,
@@ -232,26 +232,6 @@ const coreTokens: DesignTokens = {
         desktopM: 1300,
         desktopL: 1700,
         desktopXL: 2000
-    },
-    responsiveTokens: {
-        tabletLandscape: {
-            spacings: {
-                baseline: 6
-            }
-        },
-        desktopS: {
-            spacings: {
-                gap: 'large'
-            },
-            letterSpacings: {
-                default: 0,
-                h1: -1,
-                h2: -1,
-                h3: -1,
-                h4: 0,
-                h5: 0
-            }
-        }
     }
 }
 
@@ -388,11 +368,15 @@ const generateColors = (colors: TokenColors) => ({
 
 const generateResponsiveTokens = (
     originalSpacings: TokenSpacings,
+    originalLineHeights: TokenLineHeights,
+    originalFontSizes: TokenFontSizes,
     responsiveTokens: TokenResponsiveTokens
 ) =>
     Object.fromEntries(
         Object.entries(responsiveTokens).map(([breakpoint, tokens]) => {
-            const clampLineHeights = generateClampLineHeights(tokens.fontSizes)
+            const clampLineHeights = generateClampLineHeights(
+                merge(originalFontSizes, tokens.fontSizes)
+            )
             return [
                 breakpoint,
                 {
@@ -405,8 +389,10 @@ const generateResponsiveTokens = (
                     lineHeights: {
                         ...clampLineHeights,
                         ...generateRegularLineHeights(
-                            tokens.fontSizes,
-                            tokens.lineHeights
+                            generateFontSizes(
+                                merge(originalFontSizes, tokens.fontSizes)
+                            ),
+                            merge(originalLineHeights, tokens.lineHeights)
                         )
                     },
                     letterSpacings: generatePixelBasedValues(
@@ -432,6 +418,8 @@ export const generateDesignTokens = (projectTokens: Partial<DesignTokens>) => {
     const clampLineHeights = generateClampLineHeights(settings.fontSizes)
 
     const originalSpacings = settings.spacings
+    const originalFontSizes = settings.fontSizes
+    const originalLineHeights = settings.lineHeights
     settings.colors = generateColors(settings.colors)
     settings.spacings = generateSpacings(
         settings.spacings,
@@ -447,7 +435,9 @@ export const generateDesignTokens = (projectTokens: Partial<DesignTokens>) => {
     }
     settings.responsiveTokens = generateResponsiveTokens(
         originalSpacings,
-        settings.responsiveTokens
+        originalLineHeights,
+        originalFontSizes,
+        settings.responsiveTokens || {}
     )
 
     return settings
