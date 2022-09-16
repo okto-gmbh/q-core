@@ -39,7 +39,7 @@ export const Element = styled(
         background-color: var(--colors-primary);
 
         &:hover {
-            background-color: var(--colors-primary-dark-20);
+            background-color: var(--colors-primaryHover);
         }
     }
 

@@ -76,11 +76,11 @@ export const generateGlobalStyles = ({
     }
 
     ::-webkit-scrollbar-thumb {
-        background: var(--colors-gray-20);
+        background: var(--colors-gray-50);
     }
 
     ::-webkit-scrollbar-thumb:hover {
-        background: var(--colors-primary-dark-20);
+        background: var(--colors-primaryHover);
     }
 
     ::-webkit-scrollbar-track {
@@ -95,7 +95,7 @@ export const generateGlobalStyles = ({
     html {
         accent-color: var(--colors-primary);
         color: var(--colors-black);
-        scrollbar-color: var(--colors-primary-dark-20) var(--colors-gray-90);
+        scrollbar-color: var(--colors-primaryHover) var(--colors-gray-90);
     }
 
     body {

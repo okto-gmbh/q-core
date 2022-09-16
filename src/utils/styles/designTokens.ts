@@ -180,13 +180,15 @@ const coreTokens: DesignTokens = {
     },
     colors: {
         primary: '#6a94a0',
+        primaryHover: 'var(--colors-primary-dark-20)',
+        secondary: '#6a94a0',
         danger: '#f04141',
         success: '#10dc60',
         info: '#10dc60',
         white: '#ffffff',
         black: '#2b2b2b',
         link: 'var(--colors-primary)',
-        linkHover: 'var(--colors-primary-dark-20)'
+        linkHover: 'var(--colors-primaryHover)'
     },
     backgrounds: {
         default: '#ffffff',
