@@ -7,8 +7,8 @@ export const Element = styled(({ fluid: _fluid, ...rest }: WrapperProps) => (
 ))`
     width: ${({ fluid }) => (fluid ? '100%' : undefined)};
     max-width: ${({ fluid }) => (fluid ? undefined : 'var(--sizes-wrapper)')};
-    padding-right: var(--spacings-default);
-    padding-left: var(--spacings-default);
+    padding-right: var(--spacings-wrapper);
+    padding-left: var(--spacings-wrapper);
     margin-right: auto;
     margin-left: auto;
 `
