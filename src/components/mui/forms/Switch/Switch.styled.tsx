@@ -4,6 +4,7 @@ import MaterialUISwitch, { switchClasses } from '@mui/material/Switch'
 import { SwitchProps as MuiSwitchProps } from '@mui/material'
 
 type SwitchProps = {
+    [key: string]: any
     leftIcon: string
     rightIcon: string
     leftIconActive: string
@@ -15,9 +16,24 @@ type SwitchProps = {
     buttonSize: number
 }
 
-export const Switch = styled((props: MuiSwitchProps) => (
-    <MaterialUISwitch disableRipple {...props} />
-))(
+export const Switch = styled(
+    (props: MuiSwitchProps) => <MaterialUISwitch disableRipple {...props} />,
+    {
+        shouldForwardProp(prop: keyof (MuiSwitchProps & SwitchProps)) {
+            return ![
+                'leftIcon',
+                'rightIcon',
+                'leftIconActive',
+                'rightIconActive',
+                'borderWidth',
+                'buttonSize',
+                'offset',
+                'outerHeight',
+                'outerWidth'
+            ].includes(prop as string)
+        }
+    }
+)(
     ({
         leftIcon,
         rightIcon,

@@ -55,7 +55,7 @@ type TokenSpacings = {
     default: number | string
     large: number | string
     huge: number | string
-    [key: 'gap' | string]: Spacings | number | string
+    [key: 'gap' | 'wrapper' | string]: Spacings | number | string
 }
 
 type TokenFontSizes = {
@@ -113,7 +113,7 @@ export type DesignTokens = {
     sizes: TokenSizes
     spacings: TokenSpacings
     radii: {
-        [key: 'default' | string]: number
+        [key: 'default' | string]: number | string
     }
     borders: {
         [key: 'default' | string]: string
@@ -198,6 +198,7 @@ const coreTokens: DesignTokens = {
     spacings: {
         baseline: 6,
         gap: 'default',
+        wrapper: 'default',
         tiny: 1,
         small: 2,
         medium: 3,
@@ -399,7 +400,8 @@ const generateResponsiveTokens = (
                     letterSpacings: generatePixelBasedValues(
                         tokens.letterSpacings
                     ),
-                    sizes: generatePixelBasedValues(tokens.sizes)
+                    sizes: generatePixelBasedValues(tokens.sizes),
+                    radii: generatePixelBasedValues(tokens.radii)
                 }
             ]
         })
@@ -430,6 +432,7 @@ export const generateDesignTokens = (projectTokens: Partial<DesignTokens>) => {
     settings.fontSizes = generateFontSizes(settings.fontSizes) as TokenFontSizes
     settings.letterSpacings = generatePixelBasedValues(settings.letterSpacings)
     settings.sizes = generatePixelBasedValues(settings.sizes)
+    settings.radii = generatePixelBasedValues(settings.radii)
     settings.lineHeights = {
         ...clampLineHeights,
         ...generateRegularLineHeights(settings.fontSizes, settings.lineHeights)

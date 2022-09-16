@@ -1,6 +1,5 @@
 import styled from '@emotion/styled'
 import React from 'react'
-import { from } from '../../../utils/breakpoints'
 import { WrapperProps } from './Wrapper'
 
 export const Element = styled(({ fluid: _fluid, ...rest }: WrapperProps) => (
@@ -12,9 +11,4 @@ export const Element = styled(({ fluid: _fluid, ...rest }: WrapperProps) => (
     padding-left: var(--spacings-default);
     margin-right: auto;
     margin-left: auto;
-
-    @media ${from.tabletPortrait} {
-        padding-right: var(--spacings-large);
-        padding-left: var(--spacings-large);
-    }
 `

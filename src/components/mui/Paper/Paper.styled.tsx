@@ -16,7 +16,7 @@ const StyledPaper = (
 
 export const Element = styled(forwardRef(StyledPaper))`
     position: relative;
-    box-shadow: 'var(--shadows-mui)';
+    box-shadow: var(--shadows-mui);
     border-radius: ${({ borderRadius }) =>
         borderRadius ? borderRadius : 'var(--radii-default)'};
     width: ${({ width }) => (width ? width : 'auto')};
