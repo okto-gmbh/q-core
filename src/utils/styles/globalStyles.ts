@@ -84,7 +84,7 @@ export const generateGlobalStyles = ({
     }
 
     ::-webkit-scrollbar-track {
-        background: var(--colors-gray-70);
+        background: var(--colors-gray-90);
     }
 
     :disabled {
@@ -95,7 +95,7 @@ export const generateGlobalStyles = ({
     html {
         accent-color: var(--colors-primary);
         color: var(--colors-black);
-        scrollbar-color: var(--colors-primary-dark-20) var(--colors-gray-70);
+        scrollbar-color: var(--colors-primary-dark-20) var(--colors-gray-90);
     }
 
     body {

@@ -48,7 +48,7 @@ export const Input = styled(
         },
 
         [`& .${outlinedInputClasses.notchedOutline}`]: {
-            borderColor: 'var(--color-white)',
+            borderColor: 'var(--colors-white)',
             borderWidth: '1px',
             borderStyle: 'solid',
             transition: 'border 0.2s ease-in'
