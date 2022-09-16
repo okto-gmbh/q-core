@@ -31,7 +31,7 @@ export const Grid = styled(
 )`
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(0, 1fr));
-    grid-gap: ${({ gap }) => `var(--spacing-${gap}) `};
+    grid-gap: ${({ gap }) => `var(--spacings-${gap}) `};
     grid-template-areas: ${({ areas }) => mapAreas(areas)};
 
     ${({ items }) =>

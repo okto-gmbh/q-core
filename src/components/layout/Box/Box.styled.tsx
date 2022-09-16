@@ -24,7 +24,7 @@ export const Element = styled(
     flex-direction: ${({ flexDirection }) => flexDirection};
     align-items: ${({ alignItems }) => alignItems};
     justify-content: ${({ justifyContent }) => justifyContent};
-    padding: ${({ padding }) => `var(--spacing-${padding}) `};
+    padding: ${({ padding }) => `var(--spacings-${padding}) `};
     text-align: ${({ textAlign }) => textAlign || 'left'};
 
     ${({ centered }) =>

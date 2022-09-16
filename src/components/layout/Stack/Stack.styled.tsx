@@ -39,7 +39,7 @@ export const Element = styled(
         ${({ spacing, direction }) => css`
             ${direction === 'vertical'
                 ? 'margin-top'
-                : 'margin-left'}: var(--spacing-${spacing});
+                : 'margin-left'}: var(--spacings-${spacing});
         `}
     }
 `

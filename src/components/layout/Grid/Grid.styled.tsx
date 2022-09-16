@@ -20,21 +20,11 @@ export const Grid = styled(
 )`
     display: grid;
     align-items: ${({ alignItems }) => alignItems || 'flex-start'};
-    grid-gap: var(--grid-gap-mobile);
+    grid-gap: var(--spacings-${({ gap }) => gap || 'gap'}) 0;
     grid-template-columns: repeat(${GRID_COLS}, 1fr);
 
-    @media ${from.mobileL} {
-        grid-gap: var(--grid-gap-mobile);
-    }
-
-    @media ${from.tablet} {
-        grid-gap: ${({ gap }) =>
-            gap ? `var(--spacing-${gap}) ` : 'var(--grid-gap-desktop)'};
-    }
-
-    @media ${from.desktop} {
-        grid-gap: ${({ gap }) =>
-            gap ? `var(--spacing-${gap}) ` : 'var(--grid-gap-desktop)'};
+    @media ${from.tabletPortrait} {
+        grid-gap: var(--spacings-${({ gap }) => gap || 'gap'});
     }
 
     img {
@@ -49,7 +39,7 @@ export const Grid = styled(
         ${({ cols }) =>
             cols === 2 &&
             css`
-                @media ${from.tabletS} {
+                @media ${from.tabletPortrait} {
                     grid-column-end: span 6;
                 }
             `}
@@ -57,11 +47,11 @@ export const Grid = styled(
         ${({ cols }) =>
             cols === 3 &&
             css`
-                @media ${from.tabletS} {
+                @media ${from.tabletPortrait} {
                     grid-column-end: span 6;
                 }
 
-                @media ${from.desktop} {
+                @media ${from.desktopS} {
                     grid-column-end: span 4;
                 }
             `}
@@ -69,15 +59,15 @@ export const Grid = styled(
         ${({ cols }) =>
             cols === 4 &&
             css`
-                @media ${from.mobileL} {
+                @media ${from.mobileLandcape} {
                     grid-column-end: span 6;
                 }
 
-                @media ${from.desktop} {
+                @media ${from.desktopS} {
                     grid-column-end: span 4;
                 }
 
-                @media ${from.wide} {
+                @media ${from.desktopM} {
                     grid-column-end: span 3;
                 }
             `}
@@ -86,19 +76,19 @@ export const Grid = styled(
         ${({ cols }) =>
             cols === 6 &&
             css`
-                @media ${from.mobileL} {
+                @media ${from.mobileLandcape} {
                     grid-column-end: span 6;
                 }
 
-                @media ${from.tablet} {
+                @media ${from.tabletLandscape} {
                     grid-column-end: span 4;
                 }
 
-                @media ${from.desktop} {
+                @media ${from.desktopS} {
                     grid-column-end: span 3;
                 }
 
-                @media ${from.wide} {
+                @media ${from.desktopM} {
                     grid-column-end: span 2;
                 }
             `}

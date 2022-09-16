@@ -1,10 +1,10 @@
 import styled from '@emotion/styled'
 
 export const Element = styled.a`
-    transition: color var(--transition-duration) var(--transition-ease);
+    transition: color var(--motion-default);
 
     :any-link {
-        color: var(--color-link);
+        color: var(--colors-link);
         outline: none;
         text-decoration: none;
     }
@@ -12,6 +12,6 @@ export const Element = styled.a`
     :hover,
     :focus,
     :active {
-        color: var(--color-link-hover);
+        color: var(--colors-linkHover);
     }
 `
