@@ -188,7 +188,8 @@ const coreTokens: DesignTokens = {
         disabled: 'not-allowed'
     },
     shadows: {
-        default: '0px 1px 5px rgba(0, 0, 0, 0.16)'
+        default: '0px 1px 5px rgba(0, 0, 0, 0.16)',
+        mui: 'var(--shadows-default)'
     },
     motion: {
         default: '0.2s ease-in-out'
