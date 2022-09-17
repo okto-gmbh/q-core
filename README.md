@@ -7,7 +7,7 @@
 ```json
 // package.json
 {
-    "preinstall": "yarn q:init",
+    "postinstall": "yarn q:init",
     "q:init": "test -d ./q-core/lib && exit 0 || git submodule init && yarn q:update",
     "q:dev": "cd q-core && yarn build:watch && cd ..",
     "q:update": "git submodule update && yarn q:build",
@@ -25,7 +25,7 @@
         // ...
         "paths": {
             // ...
-            "@core/*": ["q-core/lib/*"]
+            "@core/*": ["./q-core/lib/*"]
         }
     }
 }
@@ -50,10 +50,6 @@ This will fetch the submodule, install its dependencies and build the library:
 
 `yarn q:init`
 
-**Add q-core as a local file dependency:**
-
-`yarn add ./q-core`
-
 **Add q-core to eslint ignore pattern:**
 
 q-core comes with its own eslint config, therefore can be added to the ignore pattern of your project. Do not add it to .eslintignore, as linting won't work for q-core anymore.
@@ -73,3 +69,7 @@ q-core comes with its own eslint config, therefore can be added to the ignore pa
 ## Upgrade to latest version and rebuild
 
 `yarn q:upgrade`
+
+## Start watcher for automatic building of changed files
+
+`yarn q:dev`
