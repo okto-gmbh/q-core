@@ -2,6 +2,8 @@
 
 ## Add to project
 
+`git submodule add https://github.com/authentiqagency/q-core.git`
+
 **Add npm/yarn scripts:**
 
 ```json
