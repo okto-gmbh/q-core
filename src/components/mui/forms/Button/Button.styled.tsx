@@ -1,9 +1,8 @@
-import React from 'react'
 import { css } from '@emotion/react'
 import styled from '@emotion/styled'
 import Button, { buttonClasses } from '@mui/material/Button'
+import React from 'react'
 import { ButtonProps } from './Button'
-import { from } from '../../../../utils/breakpoints'
 
 export const Element = styled(
     ({ variant, look: _look, ...rest }: ButtonProps) => (
@@ -27,11 +26,7 @@ export const Element = styled(
         white-space: nowrap;
         padding: var(--spacings-small)
             calc(var(--spacings-large) - var(--spacings-small));
-        letter-spacing: var(--letterSpacings-button-mobile);
-
-        @media ${from.desktop} {
-            letter-spacing: var(--letterSpacings-button-desktop);
-        }
+        letter-spacing: var(--letterSpacings-button);
     }
 
     &.${buttonClasses.containedPrimary} {
