@@ -62,12 +62,12 @@ export const generateGlobalStyles = ({
     }
 
     ::selection {
-        background-color: var(--colors-primary);
+        background-color: var(--selection-backgroundColor);
         color: var(--colors-white);
     }
 
     ::placeholder {
-        color: var(--colors-gray-60);
+        color: var(--placeholder-color);
     }
 
     ::-webkit-scrollbar {
@@ -76,15 +76,15 @@ export const generateGlobalStyles = ({
     }
 
     ::-webkit-scrollbar-thumb {
-        background: var(--colors-gray-50);
+        background: var(--scrollbar-thumb-background);
     }
 
     ::-webkit-scrollbar-thumb:hover {
-        background: var(--colors-primaryHover);
+        background: var(--scrollbar-thumb-backgroundHover);
     }
 
     ::-webkit-scrollbar-track {
-        background: var(--colors-gray-90);
+        background: var(--scrollbar-track-background);
     }
 
     :disabled {

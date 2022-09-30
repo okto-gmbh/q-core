@@ -1,5 +1,6 @@
 import Color from 'color'
 import merge from 'lodash.merge'
+import { rootCertificates } from 'tls'
 
 export type Spacings =
     | 'tiny'
@@ -107,6 +108,7 @@ export type DesignTokens = {
     lineHeights: TokenLineHeights
     letterSpacings: TokenLetterSpacings
     colors: TokenColors
+    components: { [key: string]: { [key: string]: { [key: string]: string } } }
     backgrounds: {
         [key: 'default' | 'modal' | string]: string
     }
@@ -182,13 +184,51 @@ const coreTokens: DesignTokens = {
         primary: '#6a94a0',
         primaryHover: 'var(--colors-primary-dark-20)',
         secondary: '#6a94a0',
+        secondaryHover: 'var(--colors-secondary-dark-20)',
         danger: '#f04141',
         success: '#10dc60',
         info: '#10dc60',
         white: '#ffffff',
-        black: '#2b2b2b',
-        link: 'var(--colors-primary)',
-        linkHover: 'var(--colors-primaryHover)'
+        black: '#2b2b2b'
+    },
+    components: {
+        button: {
+            borderRadius: 'var(--radii-default)',
+            letterSpacing: 'var(--letterSpacings-default)',
+            primary: {
+                color: 'var(--colors-white)',
+                backgroundColor: 'var(--colors-primary)',
+                backgroundColorHover: 'var(--colors-primaryHover)',
+                borderColor: 'var(--colors-primary)',
+                borderColorHover: 'var(--colors-primaryHover)'
+            },
+            secondary: {
+                color: 'var(--colors-black)',
+                backgroundColor: 'var(--colors-secondary)',
+                backgroundColorHover: 'var(--colors-secondaryHover)',
+                borderColor: 'var(--colors-secondary)',
+                borderColorHover: 'var(--colors-secondaryHover)'
+            }
+        },
+        link: {
+            color: 'var(--colors-primary)',
+            colorHover: 'var(--colors-primaryHover)'
+        },
+        scrollbar: {
+            thumb: {
+                background: 'var(--colors-primary)',
+                backgroundHover: 'var(--colors-primaryHover)'
+            },
+            track: {
+                background: 'var(--colors-gray-90)'
+            }
+        },
+        selection: {
+            backgroundColor: 'var(--colors-primary)'
+        },
+        placeholder: {
+            color: 'var(--colors-gray-60)'
+        }
     },
     backgrounds: {
         default: '#ffffff',
@@ -343,7 +383,9 @@ const generateFonts = (fonts: TokenFonts) => ({
     )
 })
 
-const colorPercentage = [10, 20, 30, 40, 50, 60, 70, 80, 90]
+const colorPercentage = [
+    10, 15, 20, 25, 30, 35, 40, 45, 50, 55, 60, 65, 70, 75, 80, 85, 90, 95
+]
 const generateColors = (colors: TokenColors) => ({
     ...colors,
     ...Object.fromEntries([

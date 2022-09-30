@@ -4,7 +4,7 @@ export const Element = styled.a`
     transition: color var(--motion-default);
 
     :any-link {
-        color: var(--colors-link);
+        color: var(--link-color);
         outline: none;
         text-decoration: none;
     }
@@ -12,6 +12,6 @@ export const Element = styled.a`
     :hover,
     :focus,
     :active {
-        color: var(--colors-linkHover);
+        color: var(--link-colorHover);
     }
 `

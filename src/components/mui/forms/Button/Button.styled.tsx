@@ -19,32 +19,35 @@ export const Element = styled(
     )
 )`
     && {
-        color: var(--colors-white);
-        border-radius: var(--radii-default);
+        color: var(--button-primary-color);
+        border-radius: var(--button-primary-borderRadius);
         box-shadow: var(--shadows-mui);
         font-weight: var(--fontWeights-default);
         white-space: nowrap;
         padding: var(--spacings-small)
             calc(var(--spacings-large) - var(--spacings-small));
-        letter-spacing: var(--letterSpacings-button);
+        letter-spacing: var(--button-primary-letterSpacing);
     }
 
     &.${buttonClasses.containedPrimary} {
-        border-color: var(--colors-primary);
-        background-color: var(--colors-primary);
+        border-color: var(--button-primary-borderColor);
+        background-color: var(--button-primary-backgroundColor);
 
         &:hover {
-            background-color: var(--colors-primaryHover);
+            border-color: var(--button-primary-borderColorHover);
+            background-color: var(--button-primary-backgroundColorHover);
         }
     }
 
     &.${buttonClasses.outlinedSecondary} {
-        border-color: var(--colors-white);
-        background-color: var(--colors-white);
-        color: var(--colors-black);
+        border-radius: var(--button-secondary-borderRadius);
+        border-color: var(--button-secondary-borderColor);
+        background-color: var(--button-secondary-backgroundColor);
+        color: var(--button-secondary-color);
 
         &:hover {
-            background-color: var(--colors-gray-90);
+            border-color: var(--button-secondary-borderColorHover);
+            background-color: var(--button-secondary-backgroundColorHover);
         }
     }
 
