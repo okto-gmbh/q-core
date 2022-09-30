@@ -52,6 +52,10 @@ const Meta: FC<MetaProps> = ({
                 <link rel="manifest" href="/site.webmanifest" />
                 <meta name="msapplication-TileColor" content="#111111" />
                 <meta name="theme-color" content="#111111" />
+                <meta
+                    name="viewport"
+                    content="width=device-width, initial-scale=1, viewport-fit=cover"
+                />
                 <link
                     rel="icon"
                     type="image/png"
