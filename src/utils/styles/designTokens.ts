@@ -1,6 +1,6 @@
+/* eslint-disable sonarjs/no-duplicate-string */
 import Color from 'color'
 import merge from 'lodash.merge'
-import { rootCertificates } from 'tls'
 
 export type Spacings =
     | 'tiny'
@@ -101,6 +101,10 @@ type TokenSizes = {
     [key: 'wrapper' | string]: number | string
 }
 
+type TokenComponents = {
+    [key: string]: TokenComponents | string
+}
+
 export type DesignTokens = {
     fonts: TokenFonts
     fontWeights: TokenFontWeights
@@ -108,7 +112,7 @@ export type DesignTokens = {
     lineHeights: TokenLineHeights
     letterSpacings: TokenLetterSpacings
     colors: TokenColors
-    components: { [key: string]: { [key: string]: { [key: string]: string } } }
+    components: TokenComponents
     backgrounds: {
         [key: 'default' | 'modal' | string]: string
     }
@@ -467,6 +471,7 @@ export const generateDesignTokens = (projectTokens: Partial<DesignTokens>) => {
     const originalSpacings = settings.spacings
     const originalFontSizes = settings.fontSizes
     const originalLineHeights = settings.lineHeights
+
     settings.colors = generateColors(settings.colors)
     settings.spacings = generateSpacings(
         settings.spacings,
