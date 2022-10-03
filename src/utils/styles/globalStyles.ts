@@ -1,5 +1,5 @@
 import { css, SerializedStyles } from '@emotion/react'
-import { DesignTokens, ResponsiveTokens } from './designTokens'
+import { DesignTokens, ResponsiveTokens, TokenComponents } from './designTokens'
 import { from, until } from '../breakpoints'
 
 const renderTokens = (tokens: DesignTokens | ResponsiveTokens = {}): string =>
@@ -16,6 +16,21 @@ const renderTokens = (tokens: DesignTokens | ResponsiveTokens = {}): string =>
         .flat()
         .join('\n')
 
+const renderComponentTokens = (tokens: TokenComponents = {}): string =>
+    Object.entries(tokens)
+        .flatMap(([componentName, componentTokens]) =>
+            Object.entries(componentTokens).flatMap(
+                ([propOrVariantName, valueOrVariant]) =>
+                    typeof valueOrVariant === 'string'
+                        ? `--${componentName}-${propOrVariantName}: ${valueOrVariant};`
+                        : Object.entries(valueOrVariant).flatMap(
+                              ([propName, value]) =>
+                                  `--${componentName}-${propOrVariantName}-${propName}: ${value};`
+                          )
+            )
+        )
+        .join('\n')
+
 export const generateGlobalStyles = ({
     designTokens,
     customVariables,
@@ -27,6 +42,8 @@ export const generateGlobalStyles = ({
 }) => css`
     :root {
         ${renderTokens(designTokens)}
+
+        ${renderComponentTokens(designTokens.components)}
 
         ${customVariables}
     }

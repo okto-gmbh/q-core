@@ -101,8 +101,14 @@ type TokenSizes = {
     [key: 'wrapper' | string]: number | string
 }
 
-type TokenComponents = {
-    [key: string]: TokenComponents | string
+export type TokenComponents = {
+    [componentName: string]: {
+        [key: string]:
+            | string
+            | {
+                  [property: string]: string
+              }
+    }
 }
 
 export type DesignTokens = {
@@ -463,6 +469,44 @@ const generatePixelBasedValues = (tokens: Partial<DesignTokens> = {}) =>
         ])
     )
 
+const generateComponentTokens = (tokens: TokenComponents) =>
+    Object.fromEntries(
+        Object.entries(tokens).map(([componentName, componentTokens]) => {
+            const defaultTokens = Object.fromEntries(
+                Object.entries(componentTokens).filter(
+                    ([_, value]) => typeof value === 'string'
+                )
+            ) as { [key: string]: string }
+
+            const variants = Object.fromEntries(
+                Object.entries(componentTokens).filter(
+                    ([_, value]) => typeof value === 'object'
+                )
+            ) as {
+                [key: string]: {
+                    [key: string]: string
+                }
+            }
+
+            return Object.keys(variants).length === 0
+                ? [componentName, defaultTokens]
+                : [
+                      componentName,
+                      Object.fromEntries(
+                          Object.entries(variants).map(
+                              ([variantName, variantTokens]) => [
+                                  variantName,
+                                  {
+                                      ...defaultTokens,
+                                      ...variantTokens
+                                  }
+                              ]
+                          )
+                      )
+                  ]
+        })
+    )
+
 // TODO: Generate on build for memoization
 export const generateDesignTokens = (projectTokens: Partial<DesignTokens>) => {
     const settings = merge(coreTokens, projectTokens)
@@ -492,6 +536,7 @@ export const generateDesignTokens = (projectTokens: Partial<DesignTokens>) => {
         originalFontSizes,
         settings.responsiveTokens || {}
     )
+    settings.components = generateComponentTokens(settings.components || {})
 
     return settings
 }
