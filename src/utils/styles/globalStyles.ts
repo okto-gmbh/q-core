@@ -6,7 +6,9 @@ const renderTokens = (tokens: DesignTokens | ResponsiveTokens = {}): string =>
     Object.entries(tokens)
         .filter(
             ([namespace]) =>
-                !['breakpoints', 'responsiveTokens'].includes(namespace)
+                !['breakpoints', 'responsiveTokens', 'components'].includes(
+                    namespace
+                )
         )
         .map(([namespace, token]) =>
             Object.entries(token).map(
