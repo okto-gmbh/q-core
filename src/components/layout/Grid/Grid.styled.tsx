@@ -130,7 +130,8 @@ export const Item = styled(
                     ([breakpoint, span]) => `
                         @media ${until[breakpoint]} {
                             grid-column-end: span ${span};
-                        }`
+                        }
+                    `
                 )
                 .join('\n')}
         `}
