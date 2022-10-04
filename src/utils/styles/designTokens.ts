@@ -1,14 +1,13 @@
 /* eslint-disable sonarjs/no-duplicate-string */
 import Color from 'color'
 import merge from 'lodash.merge'
-
-export type Spacings =
-    | 'tiny'
-    | 'small'
-    | 'medium'
-    | 'default'
-    | 'large'
-    | 'huge'
+import {
+    Breakpoint,
+    Spacing,
+    Heading,
+    FontSize,
+    Color as ColorType
+} from '../../types'
 
 export type GoogleFont = {
     name: string
@@ -16,14 +15,7 @@ export type GoogleFont = {
 }
 
 export type TokenBreakpoints = {
-    mobilePortrait: number | string
-    mobileLandscape: number | string
-    tabletPortrait: number | string
-    tabletLandscape: number | string
-    desktopS: number | string
-    desktopM: number | string
-    desktopL: number | string
-    desktopXL: number | string
+    [key in keyof Breakpoint]: string
 }
 
 export type ResponsiveTokens = {
@@ -38,14 +30,12 @@ export type ResponsiveTokens = {
     >]?: Partial<DesignTokens[designToken]>
 }
 
-export type Headings = 'h1' | 'h2' | 'h3' | 'h4' | 'h5'
-
 export type TokenFonts = {
     [key: 'heading' | 'body' | string]: string | GoogleFont
 }
 
 export type TokenFontWeights = {
-    [key: 'default' | 'bold' | Headings | string]: number
+    [key: 'default' | 'bold' | Heading | string]: number
 }
 
 type TokenSpacings = {
@@ -56,20 +46,11 @@ type TokenSpacings = {
     default: number | string
     large: number | string
     huge: number | string
-    [key: 'gap' | 'wrapper' | string]: Spacings | number | string
+    [key: 'gap' | 'wrapper' | string]: Spacing | number | string
 }
 
 type TokenFontSizes = {
-    [
-        key:
-            | 'tiny'
-            | 'small'
-            | 'default'
-            | 'medium'
-            | 'large'
-            | Headings
-            | string
-    ]: string | number | number[]
+    [key: FontSize | Heading | string]: string | number | number[]
 }
 
 type TokenLineHeights = {
@@ -77,16 +58,7 @@ type TokenLineHeights = {
 }
 
 type TokenColors = {
-    [
-        key:
-            | 'primary'
-            | 'danger'
-            | 'success'
-            | 'info'
-            | 'white'
-            | 'black'
-            | string
-    ]: string
+    [key: ColorType | string]: string
 }
 
 type TokenResponsiveTokens = {
@@ -94,7 +66,7 @@ type TokenResponsiveTokens = {
 }
 
 type TokenLetterSpacings = {
-    [key: 'default' | Headings | string]: number | string
+    [key: 'default' | Heading | string]: number | string
 }
 
 type TokenSizes = {
