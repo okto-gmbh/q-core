@@ -15,7 +15,7 @@ export type GoogleFont = {
 }
 
 export type TokenBreakpoints = {
-    [key in keyof Breakpoint]: string
+    [key in Breakpoint]: string
 }
 
 export type ResponsiveTokens = {
@@ -250,14 +250,14 @@ const coreTokens: DesignTokens = {
         default: '0.2s ease-in-out'
     },
     breakpoints: {
-        mobilePortrait: 320,
-        mobileLandscape: 480,
-        tabletPortrait: 610,
-        tabletLandscape: 740,
-        desktopS: 980,
-        desktopM: 1300,
-        desktopL: 1700,
-        desktopXL: 2000
+        mobilePortrait: '320px',
+        mobileLandscape: '480px',
+        tabletPortrait: '610px',
+        tabletLandscape: '740px',
+        desktopS: '980px',
+        desktopM: '1300px',
+        desktopL: '1700px',
+        desktopXL: '2000px'
     }
 }
 
