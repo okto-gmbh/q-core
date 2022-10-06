@@ -56,6 +56,9 @@ export const generateGlobalStyles = ({
                 @media ${from[breakpoint]} {
                     :root {
                         ${renderTokens(responsiveTokens)}
+
+                        ${renderComponentTokens(responsiveTokens.components)}
+
                     }
                 }
             `

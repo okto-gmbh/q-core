@@ -1,13 +1,7 @@
 /* eslint-disable sonarjs/no-duplicate-string */
 import Color from 'color'
 import merge from 'lodash.merge'
-import {
-    Breakpoint,
-    Spacing,
-    Heading,
-    FontSize,
-    Color as ColorType
-} from '../../types'
+import { Breakpoint, Color as ColorType, FontSize, Heading } from '../../types'
 
 export type GoogleFont = {
     name: string
@@ -39,14 +33,13 @@ export type TokenFontWeights = {
 }
 
 type TokenSpacings = {
-    baseline: number | string
-    tiny: number | string
-    small: number | string
-    medium: number | string
-    default: number | string
-    large: number | string
-    huge: number | string
-    [key: 'gap' | 'wrapper' | string]: Spacing | number | string
+    baseline: number
+    tiny: number
+    small: number
+    medium: number
+    default: number
+    large: number
+    huge: number
 }
 
 type TokenFontSizes = {
@@ -69,10 +62,6 @@ type TokenLetterSpacings = {
     [key: 'default' | Heading | string]: number | string
 }
 
-type TokenSizes = {
-    [key: 'wrapper' | string]: number | string
-}
-
 export type TokenComponents = {
     [componentName: string]: {
         [key: string]:
@@ -92,9 +81,8 @@ export type DesignTokens = {
     colors: TokenColors
     components: TokenComponents
     backgrounds: {
-        [key: 'default' | 'modal' | string]: string
+        [key: 'default' | string]: string
     }
-    sizes: TokenSizes
     spacings: TokenSpacings
     radii: {
         [key: 'default' | string]: number | string
@@ -173,6 +161,47 @@ const coreTokens: DesignTokens = {
         white: '#ffffff',
         black: '#2b2b2b'
     },
+    spacings: {
+        baseline: 6,
+        tiny: 1,
+        small: 2,
+        medium: 3,
+        default: 4,
+        large: 8,
+        huge: 16
+    },
+    radii: {
+        default: 0
+    },
+    borders: {
+        default: '0px solid transparent'
+    },
+    opacity: {
+        disabled: 0.8
+    },
+    cursors: {
+        disabled: 'not-allowed'
+    },
+    shadows: {
+        default: '0px 1px 5px rgba(0, 0, 0, 0.16)',
+        mui: 'var(--shadows-default)'
+    },
+    motion: {
+        default: '0.2s ease-in-out'
+    },
+    breakpoints: {
+        mobilePortrait: '320px',
+        mobileLandscape: '480px',
+        tabletPortrait: '610px',
+        tabletLandscape: '740px',
+        desktopS: '980px',
+        desktopM: '1300px',
+        desktopL: '1700px',
+        desktopXL: '2000px'
+    },
+    backgrounds: {
+        default: '#ffffff'
+    },
     components: {
         button: {
             borderRadius: 'var(--radii-default)',
@@ -210,54 +239,15 @@ const coreTokens: DesignTokens = {
         },
         placeholder: {
             color: 'var(--colors-gray-60)'
+        },
+        wrapper: {
+            maxWidth: '1600px',
+            paddingLeft: 'var(--spacings-default)',
+            paddingRight: 'var(--spacings-default)'
+        },
+        grid: {
+            gridGap: 'var(--spacings-default)'
         }
-    },
-    backgrounds: {
-        default: '#ffffff',
-        modal: 'rgba(0, 0, 0, 0.3)'
-    },
-    sizes: {
-        wrapper: 1800
-    },
-    spacings: {
-        baseline: 6,
-        gap: 'default',
-        wrapper: 'default',
-        tiny: 1,
-        small: 2,
-        medium: 3,
-        default: 4,
-        large: 8,
-        huge: 16
-    },
-    radii: {
-        default: 0
-    },
-    borders: {
-        default: '0px solid transparent'
-    },
-    opacity: {
-        disabled: 0.8
-    },
-    cursors: {
-        disabled: 'not-allowed'
-    },
-    shadows: {
-        default: '0px 1px 5px rgba(0, 0, 0, 0.16)',
-        mui: 'var(--shadows-default)'
-    },
-    motion: {
-        default: '0.2s ease-in-out'
-    },
-    breakpoints: {
-        mobilePortrait: '320px',
-        mobileLandscape: '480px',
-        tabletPortrait: '610px',
-        tabletLandscape: '740px',
-        desktopS: '980px',
-        desktopM: '1300px',
-        desktopL: '1700px',
-        desktopXL: '2000px'
     }
 }
 
@@ -276,46 +266,22 @@ const spacingDefaultTokens = [
     'huge'
 ]
 
-const generateSpacings = (
-    originalSpacings: TokenSpacings,
-    spacings: Partial<TokenSpacings> = {}
-) => {
-    const stringSpacings = Object.fromEntries(
-        Object.entries(spacings)
-            .filter(([, value]) => typeof value === 'string')
-            .map(([name, value]) => [name, `var(--spacings-${value})`])
-    )
-
-    const definedTokens = Object.keys(spacings)
+const generateSpacings = (spacings: TokenSpacings) => {
     let defaultSpacings = {}
-    if (
-        ['baseline', ...spacingDefaultTokens].some((tokenName) =>
-            definedTokens.includes(tokenName)
+
+    const baseline: number = spacings.baseline
+
+    defaultSpacings = {
+        baseline: spacings.baseline + 'px',
+        ...Object.fromEntries(
+            spacingDefaultTokens.map((tokenName) => [
+                tokenName,
+                `${baseline * spacings[tokenName]}px`
+            ])
         )
-    ) {
-        const baseline: number = (spacings.baseline ??
-            originalSpacings.baseline) as number
-
-        defaultSpacings = {
-            baseline: spacings.baseline + 'px',
-            ...Object.fromEntries(
-                spacingDefaultTokens.map((tokenName) => [
-                    tokenName,
-                    `${
-                        baseline *
-                        ((spacings[tokenName] ??
-                            originalSpacings[tokenName]) as number)
-                    }px`
-                ])
-            )
-        }
     }
 
-    return {
-        ...spacings,
-        ...stringSpacings,
-        ...defaultSpacings
-    }
+    return defaultSpacings
 }
 
 const generateFontSizes = (fontSizes: Partial<TokenFontSizes> = {}) =>
@@ -410,8 +376,7 @@ const generateResponsiveTokens = (
                 {
                     ...tokens,
                     spacings: generateSpacings(
-                        originalSpacings,
-                        tokens.spacings
+                        merge(originalSpacings, tokens.spacings)
                     ),
                     fontSizes: generateFontSizes(tokens.fontSizes),
                     lineHeights: {
@@ -426,8 +391,10 @@ const generateResponsiveTokens = (
                     letterSpacings: generatePixelBasedValues(
                         tokens.letterSpacings
                     ),
-                    sizes: generatePixelBasedValues(tokens.sizes),
-                    radii: generatePixelBasedValues(tokens.radii)
+                    radii: generatePixelBasedValues(tokens.radii),
+                    components: generateComponentTokens(
+                        tokens.components as TokenComponents
+                    )
                 }
             ]
         })
@@ -482,21 +449,18 @@ const generateComponentTokens = (tokens: TokenComponents) =>
 // TODO: Generate on build for memoization
 export const generateDesignTokens = (projectTokens: Partial<DesignTokens>) => {
     const settings = merge(coreTokens, projectTokens)
+
     const clampLineHeights = generateClampLineHeights(settings.fontSizes)
 
-    const originalSpacings = settings.spacings
-    const originalFontSizes = settings.fontSizes
-    const originalLineHeights = settings.lineHeights
+    const originalSpacings = { ...settings.spacings }
+    const originalFontSizes = { ...settings.fontSizes }
+    const originalLineHeights = { ...settings.lineHeights }
 
     settings.colors = generateColors(settings.colors)
-    settings.spacings = generateSpacings(
-        settings.spacings,
-        settings.spacings
-    ) as TokenSpacings
+    settings.spacings = generateSpacings(settings.spacings) as TokenSpacings
     settings.fonts = generateFonts(settings.fonts)
     settings.fontSizes = generateFontSizes(settings.fontSizes) as TokenFontSizes
     settings.letterSpacings = generatePixelBasedValues(settings.letterSpacings)
-    settings.sizes = generatePixelBasedValues(settings.sizes)
     settings.radii = generatePixelBasedValues(settings.radii)
     settings.lineHeights = {
         ...clampLineHeights,
@@ -508,6 +472,7 @@ export const generateDesignTokens = (projectTokens: Partial<DesignTokens>) => {
         originalFontSizes,
         settings.responsiveTokens || {}
     )
+
     settings.components = generateComponentTokens(settings.components || {})
 
     return settings
