@@ -204,8 +204,15 @@ const coreTokens: DesignTokens = {
     },
     components: {
         button: {
-            borderRadius: 'var(--radii-default)',
+            borderRadius: 'var(--borders-radius)',
+            borderWidth: 'var(--borders-width)',
+            borderColor: 'var(--borders-color)',
             letterSpacing: 'var(--letterSpacings-default)',
+            borderStyle: 'var(--borders-style)',
+            paddingTop: 'var(--spacings-tiny)',
+            paddingRight: 'var(--spacings-small)',
+            paddingBottom: 'var(--spacings-tiny)',
+            paddingLeft: 'var(--spacings-small)',
             primary: {
                 color: 'var(--colors-white)',
                 backgroundColor: 'var(--colors-primary)',
