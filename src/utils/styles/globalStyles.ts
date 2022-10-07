@@ -123,7 +123,8 @@ export const generateGlobalStyles = ({
     html {
         accent-color: var(--colors-primary);
         color: var(--colors-black);
-        scrollbar-color: var(--colors-primaryHover) var(--colors-gray-90);
+        scrollbar-color: var(--scrollbar-thumb-background)
+            var(--scrollbar-track-background);
     }
 
     body {
