@@ -9,7 +9,7 @@ export const Button = styled('button')<ButtonProps>`
     outline: none;
 
     ${({ variant }) =>
-        variant === 'primary'
+        variant === 'primary' || variant === undefined
             ? css`
                   padding-top: var(--button-primary-paddingTop);
                   padding-right: var(--button-primary-paddingRight);
