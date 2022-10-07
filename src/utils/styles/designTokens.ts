@@ -47,7 +47,7 @@ type TokenFontSizes = {
 }
 
 type TokenLineHeights = {
-    [key: string]: string | number
+    [key: string]: number
 }
 
 type TokenColors = {
@@ -70,6 +70,10 @@ type Pixels<T extends { [key: string]: number }> = {
     [key in keyof T]: `${number}px`
 }
 
+type Stringify<T extends { [key: string]: number }> = {
+    [key in keyof T]: string
+}
+
 export type TokenComponents = {
     [componentName: string]: {
         [key: string]:
@@ -84,7 +88,7 @@ export type DesignTokens = {
     fonts: TokenFonts
     fontWeights: TokenFontWeights
     fontSizes: TokenFontSizes
-    lineHeights: TokenLineHeights
+    lineHeights: TokenLineHeights | Stringify<TokenLineHeights>
     letterSpacings: TokenLetterSpacings | Pixels<TokenLetterSpacings>
     colors: TokenColors
     components: TokenComponents
@@ -116,12 +120,14 @@ export type RawDesignTokens = DesignTokens & {
     spacings: TokenSpacings
     letterSpacings: TokenLetterSpacings
     radii: TokenRadii
+    lineHeights: TokenLineHeights
 }
 
 export type GeneratedDesignTokens = DesignTokens & {
     spacings: Pixels<TokenSpacings>
     letterSpacings: Pixels<TokenLetterSpacings>
     radii: Pixels<TokenRadii>
+    lineHeights: Stringify<TokenLineHeights>
 }
 
 export const SYSTEM_FONTS_FALLBACK =
