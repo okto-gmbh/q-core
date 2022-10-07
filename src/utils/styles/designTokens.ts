@@ -14,14 +14,14 @@ export type TokenBreakpoints = {
 
 export type ResponsiveTokens = {
     [designToken in keyof Omit<
-        DesignTokens,
+        RawDesignTokens,
         | 'responsiveTokens'
         | 'fonts'
         | 'cursors'
         | 'breakpoints'
         | 'colors'
         | 'backgrounds'
-    >]?: Partial<DesignTokens[designToken]>
+    >]?: RawDesignTokens[designToken]
 }
 
 export type TokenFonts = {
@@ -59,7 +59,15 @@ type TokenResponsiveTokens = {
 }
 
 type TokenLetterSpacings = {
-    [key: 'default' | Heading | string]: number | string
+    [key: 'default' | Heading | string]: number
+}
+
+type TokenRadii = {
+    [key: 'default' | string]: number
+}
+
+type Pixels<T extends { [key: string]: number }> = {
+    [key in keyof T]: `${number}px`
 }
 
 export type TokenComponents = {
@@ -77,16 +85,14 @@ export type DesignTokens = {
     fontWeights: TokenFontWeights
     fontSizes: TokenFontSizes
     lineHeights: TokenLineHeights
-    letterSpacings: TokenLetterSpacings
+    letterSpacings: TokenLetterSpacings | Pixels<TokenLetterSpacings>
     colors: TokenColors
     components: TokenComponents
     backgrounds: {
         [key: 'default' | string]: string
     }
-    spacings: TokenSpacings
-    radii: {
-        [key: 'default' | string]: number | string
-    }
+    spacings: TokenSpacings | Pixels<TokenSpacings>
+    radii: TokenRadii | Pixels<TokenRadii>
     borders: {
         [key: 'default' | string]: string
     }
@@ -106,10 +112,22 @@ export type DesignTokens = {
     responsiveTokens?: TokenResponsiveTokens
 }
 
+export type RawDesignTokens = DesignTokens & {
+    spacings: TokenSpacings
+    letterSpacings: TokenLetterSpacings
+    radii: TokenRadii
+}
+
+export type GeneratedDesignTokens = DesignTokens & {
+    spacings: Pixels<TokenSpacings>
+    letterSpacings: Pixels<TokenLetterSpacings>
+    radii: Pixels<TokenRadii>
+}
+
 export const SYSTEM_FONTS_FALLBACK =
     "-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Oxygen-Sans,Ubuntu,Cantarell,'Helvetica Neue',sans-serif"
 
-const coreTokens: DesignTokens = {
+const coreTokens: RawDesignTokens = {
     fonts: {
         heading: SYSTEM_FONTS_FALLBACK,
         body: SYSTEM_FONTS_FALLBACK
@@ -264,34 +282,18 @@ const buildFontSizeClamp = ([min, max, value]: number[]) =>
 const buildLineHeightClamp = ([min, max, value, faktor = 1.1]: number[]) =>
     `clamp(calc(${min}rem * ${faktor}), calc(${value}vw * ${faktor}), calc(${max}rem) * ${faktor})`
 
-const spacingDefaultTokens = [
-    'tiny',
-    'small',
-    'medium',
-    'default',
-    'large',
-    'huge'
-]
-
-const generateSpacings = (spacings: TokenSpacings) => {
-    let defaultSpacings = {}
-
-    const baseline: number = spacings.baseline
-
-    defaultSpacings = {
-        baseline: spacings.baseline + 'px',
-        ...Object.fromEntries(
-            spacingDefaultTokens.map((tokenName) => [
-                tokenName,
-                `${baseline * spacings[tokenName]}px`
-            ])
-        )
-    }
-
-    return defaultSpacings
+const generateSpacings = (spacings: TokenSpacings): Pixels<TokenSpacings> => {
+    return Object.fromEntries(
+        Object.entries(spacings).map(([tokenName, tokenValue]) => [
+            tokenName,
+            `${
+                (tokenName === 'baseline' ? 1 : spacings.baseline) * tokenValue
+            }px`
+        ])
+    ) as Pixels<TokenSpacings>
 }
 
-const generateFontSizes = (fontSizes: Partial<TokenFontSizes> = {}) =>
+const generateFontSizes = (fontSizes: TokenFontSizes = {}): TokenFontSizes =>
     Object.fromEntries(
         Object.entries(fontSizes).map(([tokenName, value]) => [
             tokenName,
@@ -301,7 +303,7 @@ const generateFontSizes = (fontSizes: Partial<TokenFontSizes> = {}) =>
         ])
     )
 
-const generateClampLineHeights = (fontSizes: Partial<TokenFontSizes> = {}) =>
+const generateClampLineHeights = (fontSizes: TokenFontSizes = {}) =>
     Object.fromEntries(
         Object.entries(fontSizes)
             .filter(([, value]) => Array.isArray(value))
@@ -314,8 +316,8 @@ const generateClampLineHeights = (fontSizes: Partial<TokenFontSizes> = {}) =>
 const defaultLineHeights = ['tiny', 'small', 'default', 'medium', 'large']
 
 const generateRegularLineHeights = (
-    fontSizes: Partial<TokenFontSizes> = {},
-    lineHeights: Partial<TokenLineHeights> = {}
+    fontSizes: TokenFontSizes = {},
+    lineHeights: TokenLineHeights = {}
 ) =>
     Object.fromEntries(
         Object.entries(fontSizes)
@@ -326,7 +328,7 @@ const generateRegularLineHeights = (
             ])
     )
 
-const generateFonts = (fonts: TokenFonts) => ({
+const generateFonts = (fonts: TokenFonts): TokenFonts => ({
     ...fonts,
     ...Object.fromEntries(
         Object.entries(fonts).map(([tokenName, value]) => [
@@ -341,7 +343,7 @@ const generateFonts = (fonts: TokenFonts) => ({
 const colorPercentage = [
     10, 15, 20, 25, 30, 35, 40, 45, 50, 55, 60, 65, 70, 75, 80, 85, 90, 95
 ]
-const generateColors = (colors: TokenColors) => ({
+const generateColors = (colors: TokenColors): TokenColors => ({
     ...colors,
     ...Object.fromEntries([
         ...colorPercentage.map((percent) => [
@@ -399,23 +401,23 @@ const generateResponsiveTokens = (
                         tokens.letterSpacings
                     ),
                     radii: generatePixelBasedValues(tokens.radii),
-                    components: generateComponentTokens(
-                        tokens.components as TokenComponents
-                    )
+                    components: generateComponentTokens(tokens.components)
                 }
             ]
         })
     )
 
-const generatePixelBasedValues = (tokens: Partial<DesignTokens> = {}) =>
+const generatePixelBasedValues = <T extends { [key: string]: number }>(
+    tokens: T = <T>{}
+): Pixels<T> =>
     Object.fromEntries(
         Object.entries(tokens).map(([tokenName, value]) => [
             tokenName,
             value + 'px'
         ])
-    )
+    ) as Pixels<T>
 
-const generateComponentTokens = (tokens: TokenComponents) =>
+const generateComponentTokens = (tokens: TokenComponents = {}) =>
     Object.fromEntries(
         Object.entries(tokens).map(([componentName, componentTokens]) => {
             const defaultTokens = Object.fromEntries(
@@ -454,33 +456,34 @@ const generateComponentTokens = (tokens: TokenComponents) =>
     )
 
 // TODO: Generate on build for memoization
-export const generateDesignTokens = (projectTokens: Partial<DesignTokens>) => {
+export const generateDesignTokens = (
+    projectTokens: Partial<RawDesignTokens>
+) => {
     const settings = merge(coreTokens, projectTokens)
 
-    const clampLineHeights = generateClampLineHeights(settings.fontSizes)
-
-    const originalSpacings = { ...settings.spacings }
-    const originalFontSizes = { ...settings.fontSizes }
-    const originalLineHeights = { ...settings.lineHeights }
-
-    settings.colors = generateColors(settings.colors)
-    settings.spacings = generateSpacings(settings.spacings) as TokenSpacings
-    settings.fonts = generateFonts(settings.fonts)
-    settings.fontSizes = generateFontSizes(settings.fontSizes) as TokenFontSizes
-    settings.letterSpacings = generatePixelBasedValues(settings.letterSpacings)
-    settings.radii = generatePixelBasedValues(settings.radii)
-    settings.lineHeights = {
-        ...clampLineHeights,
-        ...generateRegularLineHeights(settings.fontSizes, settings.lineHeights)
+    const generatedFontSizes = generateFontSizes(settings.fontSizes)
+    const generatedLineHeights = {
+        ...generateClampLineHeights(settings.fontSizes),
+        ...generateRegularLineHeights(generatedFontSizes, settings.lineHeights)
     }
-    settings.responsiveTokens = generateResponsiveTokens(
-        originalSpacings,
-        originalLineHeights,
-        originalFontSizes,
-        settings.responsiveTokens || {}
-    )
 
-    settings.components = generateComponentTokens(settings.components || {})
+    const generatedDesignTokens: GeneratedDesignTokens = {
+        ...settings,
+        colors: generateColors(settings.colors),
+        spacings: generateSpacings(settings.spacings),
+        fonts: generateFonts(settings.fonts),
+        fontSizes: generatedFontSizes,
+        letterSpacings: generatePixelBasedValues(settings.letterSpacings),
+        radii: generatePixelBasedValues(settings.radii),
+        lineHeights: generatedLineHeights,
+        responsiveTokens: generateResponsiveTokens(
+            settings.spacings,
+            settings.lineHeights,
+            settings.fontSizes,
+            settings.responsiveTokens || {}
+        ),
+        components: generateComponentTokens(settings.components)
+    }
 
-    return settings
+    return generatedDesignTokens
 }
