@@ -1,8 +1,14 @@
 import { css, SerializedStyles } from '@emotion/react'
-import { DesignTokens, ResponsiveTokens, TokenComponents } from './designTokens'
+import {
+    RawDesignTokens,
+    ResponsiveTokens,
+    TokenComponents
+} from './designTokens'
 import { from, until } from '../breakpoints'
 
-const renderTokens = (tokens: DesignTokens | ResponsiveTokens = {}): string =>
+const renderTokens = (
+    tokens: RawDesignTokens | ResponsiveTokens = {}
+): string =>
     Object.entries(tokens)
         .filter(
             ([namespace]) =>
@@ -38,7 +44,7 @@ export const generateGlobalStyles = ({
     customVariables,
     customReset
 }: {
-    designTokens: DesignTokens
+    designTokens: RawDesignTokens
     customVariables: SerializedStyles
     customReset: SerializedStyles
 }) => css`
