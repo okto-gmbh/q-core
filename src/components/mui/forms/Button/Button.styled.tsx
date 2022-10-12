@@ -33,12 +33,8 @@ export const Element = styled(
         box-shadow: var(--shadows-mui);
         font-weight: var(--fontWeights-default);
         white-space: nowrap;
-        padding: var(--spacings-small)
-            calc(var(--spacings-large) - var(--spacings-small));
+        padding: var(--_padding);
         letter-spacing: var(--_letterSpacing);
-    }
-
-    &.${buttonClasses.containedPrimary} {
         border: var(--_border);
         background-color: var(--_backgroundColor);
 
@@ -46,18 +42,14 @@ export const Element = styled(
             border-color: var(--_borderColorHover);
             background-color: var(--_backgroundColorHover);
         }
+    }
+
+    &.${buttonClasses.containedPrimary} {
+        background-color: var(--_backgroundColor);
     }
 
     &.${buttonClasses.outlinedSecondary} {
         border-radius: var(--_borderRadius);
-        border: var(--_border);
-        background-color: var(--_backgroundColor);
-        color: var(--_color);
-
-        &:hover {
-            border-color: var(--_borderColorHover);
-            background-color: var(--_backgroundColorHover);
-        }
     }
 
     ${({ look }: { look?: 'icon' }) =>

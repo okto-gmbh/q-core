@@ -14,12 +14,12 @@ export const composeButtonVariants = ({
 
     return css`
         --_padding: var(
-                ${namespaceWithVariant}-paddingX,
-                var(${namespace}-paddingX, var(--spacings-small, 12px))
-            )
-            var(
                 ${namespaceWithVariant}-paddingY,
                 var(${namespace}-paddingY, var(--spacings-tiny, 6px))
+            )
+            var(
+                ${namespaceWithVariant}-paddingX,
+                var(${namespace}-paddingX, var(--spacings-small, 12px))
             );
         --_letterSpacing: var(
             ${namespaceWithVariant}-letterSpacing,
