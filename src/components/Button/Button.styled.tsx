@@ -1,15 +1,19 @@
 import styled from '@emotion/styled'
 import { css } from '@emotion/react'
-import { ButtonProps } from './Button'
+import { ButtonVariant } from './Button'
 
-export const composeButtonVariants = ({ variant = 'primary' }: ButtonProps) => {
+export const composeButtonVariants = ({
+    variant = 'primary'
+}: {
+    variant: ButtonVariant
+}) => {
     const namespace = `--button-${variant}`
     const isPrimary = variant === 'primary'
     const color = isPrimary ? 'white' : 'black'
 
     return css`
-        --_padding: var(${namespace}-paddingX, var(--spacings-small, 15px))
-            var(${namespace}-paddingY, var(--spacings-tiny, 12px));
+        --_padding: var(${namespace}-paddingX, var(--spacings-small, 12px))
+            var(${namespace}-paddingY, var(--spacings-tiny, 6px));
         --_letterSpacing: var(
             ${namespace}-letterSpacing,
             var(--letterSpacings-default, 0)
@@ -44,7 +48,7 @@ export const composeButtonVariants = ({ variant = 'primary' }: ButtonProps) => {
     `
 }
 
-export const Button = styled('button')<ButtonProps>`
+export const Button = styled('button')`
     ${composeButtonVariants}
 
     -webkit-appearance: none;

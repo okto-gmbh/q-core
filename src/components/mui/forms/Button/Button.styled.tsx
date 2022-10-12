@@ -1,20 +1,26 @@
 import { css } from '@emotion/react'
 import styled from '@emotion/styled'
-import Button, { buttonClasses } from '@mui/material/Button'
+import Button, {
+    buttonClasses,
+    ButtonProps as MuiButtonProps
+} from '@mui/material/Button'
 import React from 'react'
+import { ButtonVariant } from '../../../Button/Button'
 import { composeButtonVariants } from '../../../Button/Button.styled'
 import { ButtonProps } from './Button'
+
+const muiVariants: {
+    [key in ButtonVariant]: MuiButtonProps['variant']
+} = {
+    primary: 'contained',
+    secondary: 'outlined'
+}
 
 export const Element = styled(
     ({ variant, look: _look, ...rest }: ButtonProps) => (
         <Button
-            variant={
-                variant === 'primary'
-                    ? 'contained'
-                    : variant === 'secondary'
-                    ? 'outlined'
-                    : undefined
-            }
+            color={variant}
+            variant={muiVariants[variant || '']}
             {...rest}
         />
     )
