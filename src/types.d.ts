@@ -1,16 +1,15 @@
-export enum Breakpoint {
-    mobilePortrait = 'mobilePortrait',
-    mobileLandscape = 'mobileLandscape',
-    tabletPortrait = 'tabletPortrait',
-    tabletLandscape = 'tabletLandscape',
-    desktopS = 'desktopS',
-    desktopM = 'desktopM',
-    desktopL = 'desktopL',
-    desktopXL = 'desktopXL'
-}
+export type Breakpoint =
+    | 'mobilePortrait'
+    | 'mobileLandscape'
+    | 'tabletPortrait'
+    | 'tabletLandscape'
+    | 'desktopS'
+    | 'desktopM'
+    | 'desktopL'
+    | 'desktopXL'
 
 export type Breakpoints = {
-    [key in keyof Breakpoint]: { [key: string]: string }
+    [key in Breakpoint]: { [key: string]: string }
 }
 
 export type Heading = 'h1' | 'h2' | 'h3' | 'h4' | 'h5'
