@@ -11,8 +11,6 @@ export interface SafeAreaProps extends Partial<HTMLAttributes<HTMLDivElement>> {
     children: React.ReactNode
 }
 
-const SafeArea: FC<SafeAreaProps> = ({ children, ...props }) => {
-    return <Styled.SafeArea {...props}>{children}</Styled.SafeArea>
-}
+const SafeArea: FC<SafeAreaProps> = (props) => <Styled.SafeArea {...props} />
 
 export default SafeArea
