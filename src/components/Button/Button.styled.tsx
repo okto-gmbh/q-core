@@ -2,53 +2,67 @@ import styled from '@emotion/styled'
 import { css } from '@emotion/react'
 import { ButtonProps } from './Button'
 
+const composeVariants = ({ variant = 'primary' }: ButtonProps) => {
+    const namespace = `--button-${variant}`
+    const isPrimary = variant === 'primary'
+    const color = isPrimary ? 'white' : 'black'
+
+    return css`
+        --_padding: var(${namespace}-paddingX, var(--spacings-small, 15px))
+            var(${namespace}-paddingY, var(--spacings-tiny, 12px));
+        --_letterSpacing: var(
+            ${namespace}-letterSpacing,
+            var(--letterSpacings-default, 0)
+        );
+        --_borderRadius: var(
+            ${namespace}-borderRadius,
+            var(--radii-default, 0)
+        );
+        --_border: var(
+                ${namespace}-borderWidth,
+                var(--borders-default-width, 0)
+            )
+            var(${namespace}-borderColor, var(--colors-${variant}, ${color}))
+            var(${namespace}-borderStyle, var(--borders-default-style, solid));
+        --_color: var(${namespace}-color, var(--colors-${color}, ${color}));
+        --_backgroundColor: var(
+            ${namespace}-backgroundColor,
+            var(--colors-${variant}, ${color})
+        );
+        --_backgroundColorHover: var(
+            ${namespace}-hover-backgroundColor,
+            var(--colors-${variant}Hover, ${color})
+        );
+        --_borderColorHover: var(
+            ${namespace}-hover-backgroundColor,
+            var(--colors-${variant}Hover, ${color})
+        );
+        --_transition: var(
+            ${namespace}-transition,
+            all var(--motion-default, 0.2s ease-in-out)
+        );
+    `
+}
+
 export const Button = styled('button')<ButtonProps>`
+    ${composeVariants}
+
     -webkit-appearance: none;
     -moz-appearance: none;
     appearance: none;
     outline: none;
+    cursor: pointer;
 
-    ${({ variant }) =>
-        variant === 'primary' || variant === undefined
-            ? css`
-                  padding-top: var(--button-primary-paddingTop);
-                  padding-right: var(--button-primary-paddingRight);
-                  padding-bottom: var(--button-primary-paddingBottom);
-                  padding-left: var(--button-primary-paddingLeft);
-                  border-style: var(--button-primary-borderStyle);
-                  border-width: var(--button-primary-borderWidth);
-                  border-radius: var(--button-primary-borderRadius);
-                  border-color: var(--button-primary-borderColor);
-                  letter-spacing: var(--button-primary-letterSpacing);
-                  background-color: var(--button-primary-backgroundColor);
-                  color: var(--button-primary-color);
+    padding: var(--_padding);
+    border: var(--_border);
+    border-radius: var(--_borderRadius);
+    letter-spacing: var(--_letterSpacing);
+    background-color: var(--_backgroundColor);
+    color: var(--_color);
+    transition: var(--_transition);
 
-                  &:hover {
-                      background-color: var(
-                          --button-primary-backgroundColorHover
-                      );
-                      border-color: var(--button-primary-borderColorHover);
-                  }
-              `
-            : variant === 'secondary' &&
-              css`
-                  padding-top: var(--button-secondary-paddingTop);
-                  padding-right: var(--button-secondary-paddingRight);
-                  padding-bottom: var(--button-secondary-paddingBottom);
-                  padding-left: var(--button-secondary-paddingLeft);
-                  border-style: var(--button-secondary-borderStyle);
-                  border-width: var(--button-secondary-borderWidth);
-                  border-radius: var(--button-secondary-borderRadius);
-                  border-color: var(--button-secondary-borderColor);
-                  letter-spacing: var(--button-secondary-letterSpacing);
-                  background-color: var(--button-secondary-backgroundColor);
-                  color: var(--button-secondary-color);
-
-                  &:hover {
-                      background-color: var(
-                          --button-secondary-backgroundColorHover
-                      );
-                      border-color: var(--button-secondary-borderColorHover);
-                  }
-              `}
+    &:hover {
+        background-color: var(--_backgroundColorHover);
+        border-color: var(--_borderColorHover);
+    }
 `

@@ -18,15 +18,17 @@ export const Grid = styled(
         ...rest
     }: GridProps) => <Component {...rest} />
 )`
+    --_gap: var(--grid-gap, var(--spacings-default, 24px));
+
     display: grid;
     align-items: ${({ alignItems }) => alignItems || 'flex-start'};
     grid-gap: ${({ gap }) =>
-        gap ? `var(--spacings-${gap}) 0` : 'var(--grid-gridGap) 0'};
+        gap ? `var(--spacings-${gap}) 0` : 'var(--_gap) 0'};
     grid-template-columns: repeat(${GRID_COLS}, 1fr);
 
     @media ${from.tabletPortrait} {
         grid-gap: ${({ gap }) =>
-            gap ? `var(--spacings-${gap})` : 'var(--grid-gridGap)'};
+            gap ? `var(--spacings-${gap})` : 'var(--_gap)'};
     }
 
     img {

@@ -74,14 +74,37 @@ type Stringify<T extends { [key: string]: number }> = {
     [key in keyof T]: string
 }
 
+export type Property = {
+    [property: string]: string
+}
+
+export type Variant = {
+    [propertyOrStates: '$states' | string]: string | Property
+}
+
+export type Variants = { [variant: '$base' | string]: Variant }
+
 export type TokenComponents = {
-    [componentName: string]: {
-        [key: string]:
-            | string
-            | {
-                  [property: string]: string
-              }
-    }
+    [componentName: string]: Variants
+}
+
+type Motion = {
+    duration: string
+    function: string
+}
+
+type TokenMotion = {
+    [key: 'default' | string]: string | Motion
+}
+
+type Border = {
+    width: string
+    style: string
+    color: string
+}
+
+type TokenBorders = {
+    [key: 'default' | string]: string | Border
 }
 
 export type DesignTokens = {
@@ -91,15 +114,13 @@ export type DesignTokens = {
     lineHeights: TokenLineHeights | Stringify<TokenLineHeights>
     letterSpacings: TokenLetterSpacings | Pixels<TokenLetterSpacings>
     colors: TokenColors
-    components: TokenComponents
+    components?: TokenComponents
     backgrounds: {
         [key: 'default' | string]: string
     }
     spacings: TokenSpacings | Pixels<TokenSpacings>
     radii: TokenRadii | Pixels<TokenRadii>
-    borders: {
-        [key: 'default' | string]: string
-    }
+    borders: TokenBorders
     opacity: {
         [key: 'disabled' | string]: number
     }
@@ -109,9 +130,7 @@ export type DesignTokens = {
     shadows: {
         [key: 'default' | string]: string
     }
-    motion: {
-        [key: 'default' | string]: string
-    }
+    motion: TokenMotion
     breakpoints: TokenBreakpoints
     responsiveTokens?: TokenResponsiveTokens
 }
@@ -198,7 +217,11 @@ const coreTokens: RawDesignTokens = {
         default: 0
     },
     borders: {
-        default: '0px solid transparent'
+        default: {
+            width: '0px',
+            style: 'solid',
+            color: 'transparent'
+        }
     },
     opacity: {
         disabled: 0.8
@@ -211,7 +234,10 @@ const coreTokens: RawDesignTokens = {
         mui: 'var(--shadows-default)'
     },
     motion: {
-        default: '0.2s ease-in-out'
+        default: {
+            duration: '.2s',
+            function: 'ease-in-out'
+        }
     },
     breakpoints: {
         mobilePortrait: '320px',
@@ -225,60 +251,6 @@ const coreTokens: RawDesignTokens = {
     },
     backgrounds: {
         default: '#ffffff'
-    },
-    components: {
-        button: {
-            borderRadius: 'var(--borders-radius)',
-            borderWidth: 'var(--borders-width)',
-            borderColor: 'var(--borders-color)',
-            letterSpacing: 'var(--letterSpacings-default)',
-            borderStyle: 'var(--borders-style)',
-            paddingTop: 'var(--spacings-tiny)',
-            paddingRight: 'var(--spacings-small)',
-            paddingBottom: 'var(--spacings-tiny)',
-            paddingLeft: 'var(--spacings-small)',
-            primary: {
-                color: 'var(--colors-white)',
-                backgroundColor: 'var(--colors-primary)',
-                backgroundColorHover: 'var(--colors-primaryHover)',
-                borderColor: 'var(--colors-primary)',
-                borderColorHover: 'var(--colors-primaryHover)'
-            },
-            secondary: {
-                color: 'var(--colors-black)',
-                backgroundColor: 'var(--colors-secondary)',
-                backgroundColorHover: 'var(--colors-secondaryHover)',
-                borderColor: 'var(--colors-secondary)',
-                borderColorHover: 'var(--colors-secondaryHover)'
-            }
-        },
-        link: {
-            color: 'var(--colors-primary)',
-            colorHover: 'var(--colors-primaryHover)'
-        },
-        scrollbar: {
-            thumb: {
-                background: 'var(--colors-primary)',
-                backgroundHover: 'var(--colors-primaryHover)'
-            },
-            track: {
-                background: 'var(--colors-gray-90)'
-            }
-        },
-        selection: {
-            backgroundColor: 'var(--colors-primary)'
-        },
-        placeholder: {
-            color: 'var(--colors-gray-60)'
-        },
-        wrapper: {
-            maxWidth: '1600px',
-            paddingLeft: 'var(--spacings-default)',
-            paddingRight: 'var(--spacings-default)'
-        },
-        grid: {
-            gridGap: 'var(--spacings-default)'
-        }
     }
 }
 
@@ -375,6 +347,36 @@ const generateColors = (colors: TokenColors): TokenColors => ({
     ])
 })
 
+const generateMotion = (motion: TokenMotion = {}): TokenMotion =>
+    Object.fromEntries(
+        Object.entries(motion).flatMap(([namespace, value]) =>
+            typeof value === 'string'
+                ? [[namespace, value]]
+                : [
+                      [namespace, `${value.duration} ${value.function}`],
+                      [`${namespace}-duration`, `${value.duration}`],
+                      [`${namespace}-function`, `${value.function}`]
+                  ]
+        )
+    )
+
+const generateBorders = (borders: TokenBorders = {}): TokenBorders =>
+    Object.fromEntries(
+        Object.entries(borders).flatMap(([namespace, border]) =>
+            typeof border === 'string'
+                ? [[namespace, border]]
+                : [
+                      [
+                          namespace,
+                          `${border.width} ${border.color} ${border.style}`
+                      ],
+                      [`${namespace}-width`, `${border.width}`],
+                      [`${namespace}-color`, `${border.color}`],
+                      [`${namespace}-style`, `${border.style}`]
+                  ]
+        )
+    )
+
 const generateResponsiveTokens = (
     originalSpacings: TokenSpacings,
     originalLineHeights: TokenLineHeights,
@@ -393,6 +395,8 @@ const generateResponsiveTokens = (
                     spacings: generateSpacings(
                         merge(originalSpacings, tokens.spacings)
                     ),
+                    motion: generateMotion(tokens.motion),
+                    borders: generateBorders(tokens.borders),
                     fontSizes: generateFontSizes(tokens.fontSizes),
                     lineHeights: {
                         ...clampLineHeights,
@@ -406,8 +410,7 @@ const generateResponsiveTokens = (
                     letterSpacings: generatePixelBasedValues(
                         tokens.letterSpacings
                     ),
-                    radii: generatePixelBasedValues(tokens.radii),
-                    components: generateComponentTokens(tokens.components)
+                    radii: generatePixelBasedValues(tokens.radii)
                 }
             ]
         })
@@ -422,44 +425,6 @@ const generatePixelBasedValues = <T extends { [key: string]: number }>(
             value + 'px'
         ])
     ) as Pixels<T>
-
-const generateComponentTokens = (tokens: TokenComponents = {}) =>
-    Object.fromEntries(
-        Object.entries(tokens).map(([componentName, componentTokens]) => {
-            const defaultTokens = Object.fromEntries(
-                Object.entries(componentTokens).filter(
-                    ([_, value]) => typeof value === 'string'
-                )
-            ) as { [key: string]: string }
-
-            const variants = Object.fromEntries(
-                Object.entries(componentTokens).filter(
-                    ([_, value]) => typeof value === 'object'
-                )
-            ) as {
-                [key: string]: {
-                    [key: string]: string
-                }
-            }
-
-            return Object.keys(variants).length === 0
-                ? [componentName, defaultTokens]
-                : [
-                      componentName,
-                      Object.fromEntries(
-                          Object.entries(variants).map(
-                              ([variantName, variantTokens]) => [
-                                  variantName,
-                                  {
-                                      ...defaultTokens,
-                                      ...variantTokens
-                                  }
-                              ]
-                          )
-                      )
-                  ]
-        })
-    )
 
 // TODO: Generate on build for memoization
 export const generateDesignTokens = (
@@ -481,14 +446,15 @@ export const generateDesignTokens = (
         fontSizes: generatedFontSizes,
         letterSpacings: generatePixelBasedValues(settings.letterSpacings),
         radii: generatePixelBasedValues(settings.radii),
+        motion: generateMotion(settings.motion),
+        borders: generateBorders(settings.borders),
         lineHeights: generatedLineHeights,
         responsiveTokens: generateResponsiveTokens(
             settings.spacings,
             settings.lineHeights,
             settings.fontSizes,
             settings.responsiveTokens || {}
-        ),
-        components: generateComponentTokens(settings.components)
+        )
     }
 
     return generatedDesignTokens

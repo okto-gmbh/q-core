@@ -8,10 +8,6 @@ export interface ButtonProps
     children: React.ReactNode
 }
 
-const Button: FC<ButtonProps> = ({ variant, children, ...props }) => (
-    <Styled.Button variant={variant} {...props}>
-        {children}
-    </Styled.Button>
-)
+const Button: FC<ButtonProps> = (props) => <Styled.Button {...props} />
 
 export default Button
