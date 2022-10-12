@@ -7,43 +7,77 @@ export const composeButtonVariants = ({
 }: {
     variant: ButtonVariant
 }) => {
-    const namespace = `--button-${variant}`
+    const namespace = `--button`
+    const namespaceWithVariant = `${namespace}-${variant}`
     const isPrimary = variant === 'primary'
     const color = isPrimary ? 'white' : 'black'
 
     return css`
-        --_padding: var(${namespace}-paddingX, var(--spacings-small, 12px))
-            var(${namespace}-paddingY, var(--spacings-tiny, 6px));
+        --_padding: var(
+                ${namespaceWithVariant}-paddingX,
+                var(${namespace}-paddingX, var(--spacings-small, 12px))
+            )
+            var(
+                ${namespaceWithVariant}-paddingY,
+                var(${namespace}-paddingY, var(--spacings-tiny, 6px))
+            );
         --_letterSpacing: var(
-            ${namespace}-letterSpacing,
-            var(--letterSpacings-default, 0)
+            ${namespaceWithVariant}-letterSpacing,
+            var(${namespace}-letterSpacing, var(--letterSpacings-default, 0))
         );
         --_borderRadius: var(
-            ${namespace}-borderRadius,
-            var(--radii-default, 0)
+            ${namespaceWithVariant}-borderRadius,
+            var(${namespace}-borderRadius, var(--radii-default, 0))
         );
         --_border: var(
-                ${namespace}-borderWidth,
-                var(--borders-default-width, 0)
+                ${namespaceWithVariant}-borderWidth,
+                var(${namespace}-borderWidth, var(--borders-default-width, 0))
             )
-            var(${namespace}-borderColor, var(--colors-${variant}, ${color}))
-            var(${namespace}-borderStyle, var(--borders-default-style, solid));
-        --_color: var(${namespace}-color, var(--colors-${color}, ${color}));
+            var(
+                ${namespaceWithVariant}-borderColor,
+                var(
+                    ${namespace}-borderColor,
+                    var(--colors-${variant}, ${color})
+                )
+            )
+            var(
+                ${namespaceWithVariant}-borderStyle,
+                var(
+                    ${namespace}-borderStyle,
+                    var(--borders-default-style, solid)
+                )
+            );
+        --_color: var(
+            ${namespaceWithVariant}-color,
+            var(${namespace}-color, var(--colors-${color}, ${color}))
+        );
         --_backgroundColor: var(
-            ${namespace}-backgroundColor,
-            var(--colors-${variant}, ${color})
+            ${namespaceWithVariant}-backgroundColor,
+            var(
+                ${namespace}-backgroundColor,
+                var(--colors-${variant}, ${color})
+            )
         );
         --_backgroundColorHover: var(
-            ${namespace}-hover-backgroundColor,
-            var(--colors-${variant}Hover, ${color})
+            ${namespaceWithVariant}-hover-backgroundColor,
+            var(
+                ${namespace}-hover-backgroundColor,
+                var(--colors-${variant}Hover, ${color})
+            )
         );
         --_borderColorHover: var(
-            ${namespace}-hover-backgroundColor,
-            var(--colors-${variant}Hover, ${color})
+            ${namespaceWithVariant}-hover-borderColor,
+            var(
+                ${namespace}-hover-borderColor,
+                var(--colors-${variant}Hover, ${color})
+            )
         );
         --_transition: var(
-            ${namespace}-transition,
-            all var(--motion-default, 0.2s ease-in-out)
+            ${namespaceWithVariant}-transition,
+            var(
+                ${namespace}-transition,
+                all var(--motion-default, 0.2s ease-in-out)
+            )
         );
     `
 }
