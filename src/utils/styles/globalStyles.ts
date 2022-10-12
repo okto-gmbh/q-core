@@ -38,7 +38,11 @@ const generateVariants = (
         propName === IDENTIFIER_STATES
             ? Object.entries(valueOrStates).flatMap(([stateName, props]) =>
                   generateVariants(
-                      `${componentName}-${variantName}`,
+                      `${componentName}${
+                          variantName !== IDENTIFIER_BASE
+                              ? `-${variantName}`
+                              : ''
+                      }`,
                       stateName,
                       props as Variant
                   )
