@@ -79,7 +79,7 @@ export type Property = {
 }
 
 export type Variant = {
-    [propertyOrStates: '$states' | string]: string | Property
+    [propertyOrStates: '$states' | string]: Property
 }
 
 export type Variants = { [variant: '$base' | string]: Variant }
@@ -88,23 +88,23 @@ export type TokenComponents = {
     [componentName: string]: Variants
 }
 
-type Motion = {
-    duration: string
-    function: string
-}
-
 type TokenMotion = {
-    [key: 'default' | string]: string | Motion
-}
-
-type Border = {
-    width: string
-    style: string
-    color: string
+    [key: 'default' | string]:
+        | string
+        | {
+              duration: string
+              function: string
+          }
 }
 
 type TokenBorders = {
-    [key: 'default' | string]: string | Border
+    [key: 'default' | string]:
+        | string
+        | {
+              width: string
+              style: string
+              color: string
+          }
 }
 
 export type DesignTokens = {
@@ -347,6 +347,12 @@ const generateColors = (colors: TokenColors): TokenColors => ({
     ])
 })
 
+const generateStyleProperties = (namespace: string, props: any) =>
+    Object.entries(props).map(([propName, value]) => [
+        `${namespace}-${propName}`,
+        value
+    ])
+
 const generateMotion = (motion: TokenMotion = {}): TokenMotion =>
     Object.fromEntries(
         Object.entries(motion).flatMap(([namespace, value]) =>
@@ -354,8 +360,7 @@ const generateMotion = (motion: TokenMotion = {}): TokenMotion =>
                 ? [[namespace, value]]
                 : [
                       [namespace, `${value.duration} ${value.function}`],
-                      [`${namespace}-duration`, `${value.duration}`],
-                      [`${namespace}-function`, `${value.function}`]
+                      ...generateStyleProperties(namespace, value)
                   ]
         )
     )
@@ -370,9 +375,7 @@ const generateBorders = (borders: TokenBorders = {}): TokenBorders =>
                           namespace,
                           `${border.width} ${border.color} ${border.style}`
                       ],
-                      [`${namespace}-width`, `${border.width}`],
-                      [`${namespace}-color`, `${border.color}`],
-                      [`${namespace}-style`, `${border.style}`]
+                      ...generateStyleProperties(namespace, border)
                   ]
         )
     )
