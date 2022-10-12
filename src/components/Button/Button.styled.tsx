@@ -1,5 +1,5 @@
-import styled from '@emotion/styled'
 import { css } from '@emotion/react'
+import styled from '@emotion/styled'
 import { ButtonVariant } from './Button'
 
 export const composeButtonVariants = ({
@@ -24,6 +24,10 @@ export const composeButtonVariants = ({
         --_letterSpacing: var(
             ${namespaceWithVariant}-letterSpacing,
             var(${namespace}-letterSpacing, var(--letterSpacings-default, 0))
+        );
+        --_textTransform: var(
+            ${namespaceWithVariant}-textTransform,
+            var(${namespace}-textTransform, undefined)
         );
         --_borderRadius: var(
             ${namespaceWithVariant}-borderRadius,
@@ -50,6 +54,10 @@ export const composeButtonVariants = ({
         --_color: var(
             ${namespaceWithVariant}-color,
             var(${namespace}-color, var(--colors-${color}, ${color}))
+        );
+        --_colorHover: var(
+            ${namespaceWithVariant}-hover-color,
+            var(${namespace}-hover-color, var(--colors-${color}, ${color}))
         );
         --_backgroundColor: var(
             ${namespaceWithVariant}-backgroundColor,
@@ -82,7 +90,12 @@ export const composeButtonVariants = ({
     `
 }
 
-export const Button = styled('button')`
+interface StyledButtonProps {
+    hasIcon: boolean
+    variant: ButtonVariant
+}
+
+export const Button = styled('button')<StyledButtonProps>`
     ${composeButtonVariants}
 
     -webkit-appearance: none;
@@ -90,7 +103,6 @@ export const Button = styled('button')`
     appearance: none;
     outline: none;
     cursor: pointer;
-
     padding: var(--_padding);
     border: var(--_border);
     border-radius: var(--_borderRadius);
@@ -98,9 +110,24 @@ export const Button = styled('button')`
     background-color: var(--_backgroundColor);
     color: var(--_color);
     transition: var(--_transition);
+    text-transform: var(--_textTransform);
 
     &:hover {
         background-color: var(--_backgroundColorHover);
         border-color: var(--_borderColorHover);
+        color: var(--_colorHover);
     }
+
+    ${({ hasIcon }) =>
+        hasIcon &&
+        css`
+            display: flex;
+            align-items: center;
+            vertical-align: middle;
+
+            > * + * {
+                margin-left: 10px;
+                flex-shrink: 0;
+            }
+        `}
 `

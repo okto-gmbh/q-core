@@ -8,10 +8,19 @@ export interface ButtonProps
     extends Partial<ButtonHTMLAttributes<HTMLButtonElement>> {
     variant: ButtonVariant
     children: React.ReactNode
+    endIcon?: React.ReactNode
 }
 
-const Button: FC<ButtonProps> = ({ variant = 'primary', ...props }) => (
-    <Styled.Button variant={variant} {...props} />
+const Button: FC<ButtonProps> = ({
+    variant = 'primary',
+    endIcon,
+    children,
+    ...props
+}) => (
+    <Styled.Button variant={variant} hasIcon={!!endIcon} {...props}>
+        <span>{children}</span>
+        {endIcon}
+    </Styled.Button>
 )
 
 export default Button
