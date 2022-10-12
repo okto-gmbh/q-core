@@ -1,6 +1,30 @@
+export type Breakpoint =
+    | 'mobilePortrait'
+    | 'mobileLandscape'
+    | 'tabletPortrait'
+    | 'tabletLandscape'
+    | 'desktopS'
+    | 'desktopM'
+    | 'desktopL'
+    | 'desktopXL'
+
+export type Breakpoints = {
+    [key in Breakpoint]: { [key: string]: string }
+}
+
+export type Heading = 'h1' | 'h2' | 'h3' | 'h4' | 'h5'
+
+export type Color =
+    | 'primary'
+    | 'danger'
+    | 'success'
+    | 'info'
+    | 'white'
+    | 'black'
+
 export type Spacing = 'tiny' | 'small' | 'medium' | 'default' | 'large' | 'huge'
 
-export type FontSize = 'tiny' | 'small' | 'default' | 'large'
+export type FontSize = 'tiny' | 'small' | 'default' | 'medium' | 'large'
 
 export type FontWeight = '300' | '600'
 

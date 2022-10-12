@@ -1,6 +1,5 @@
-import React, { AnchorHTMLAttributes, FC } from 'react'
 import NextLink from 'next/link'
-import * as Styled from './Link.styled'
+import React, { AnchorHTMLAttributes, FC } from 'react'
 
 interface LinkProps extends Partial<AnchorHTMLAttributes<HTMLAnchorElement>> {
     href: string
@@ -11,19 +10,19 @@ const Link: FC<LinkProps> = ({ href, children, ...props }) => {
 
     if (external) {
         return (
-            <Styled.Element
+            <a
                 href={href.startsWith('http') ? href : `https://${href}`}
                 target="_blank"
                 rel="noopener noreferrer"
                 {...props}>
                 {children}
-            </Styled.Element>
+            </a>
         )
     }
 
     return (
         <NextLink href={href} {...props} passHref>
-            <Styled.Element>{children}</Styled.Element>
+            <a>{children}</a>
         </NextLink>
     )
 }

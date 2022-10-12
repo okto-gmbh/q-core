@@ -1,50 +1,62 @@
 import { css } from '@emotion/react'
 import styled from '@emotion/styled'
-import Button, { buttonClasses } from '@mui/material/Button'
+import Button, {
+    buttonClasses,
+    ButtonProps as MuiButtonProps
+} from '@mui/material/Button'
 import React from 'react'
+import { ButtonVariant } from '../../../Button/Button'
+import { composeButtonVariants } from '../../../Button/Button.styled'
 import { ButtonProps } from './Button'
+
+const muiVariants: {
+    [key in ButtonVariant]: MuiButtonProps['variant']
+} = {
+    primary: 'contained',
+    secondary: 'outlined'
+}
 
 export const Element = styled(
     ({ variant, look: _look, ...rest }: ButtonProps) => (
         <Button
-            variant={
-                variant === 'primary'
-                    ? 'contained'
-                    : variant === 'secondary'
-                    ? 'outlined'
-                    : undefined
-            }
+            color={variant}
+            variant={muiVariants[variant || '']}
             {...rest}
         />
     )
 )`
+    ${composeButtonVariants}
+
     && {
-        color: var(--colors-white);
-        border-radius: var(--radii-default);
+        color: var(--_color);
+        border-radius: var(--_borderRadius);
         box-shadow: var(--shadows-mui);
         font-weight: var(--fontWeights-default);
         white-space: nowrap;
         padding: var(--spacings-small)
             calc(var(--spacings-large) - var(--spacings-small));
-        letter-spacing: var(--letterSpacings-button);
+        letter-spacing: var(--_letterSpacing);
     }
 
     &.${buttonClasses.containedPrimary} {
-        border-color: var(--colors-primary);
-        background-color: var(--colors-primary);
+        border: var(--_border);
+        background-color: var(--_backgroundColor);
 
         &:hover {
-            background-color: var(--colors-primaryHover);
+            border-color: var(--_borderColorHover);
+            background-color: var(--_backgroundColorHover);
         }
     }
 
     &.${buttonClasses.outlinedSecondary} {
-        border-color: var(--colors-white);
-        background-color: var(--colors-white);
-        color: var(--colors-black);
+        border-radius: var(--_borderRadius);
+        border: var(--_border);
+        background-color: var(--_backgroundColor);
+        color: var(--_color);
 
         &:hover {
-            background-color: var(--colors-gray-90);
+            border-color: var(--_borderColorHover);
+            background-color: var(--_backgroundColorHover);
         }
     }
 

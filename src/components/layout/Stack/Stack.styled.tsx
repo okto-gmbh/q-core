@@ -1,6 +1,7 @@
 import { css } from '@emotion/react'
 import styled from '@emotion/styled'
 import React, { forwardRef, ForwardRefRenderFunction } from 'react'
+import { until } from '../../../utils/breakpoints'
 import { StackProps } from './Stack'
 
 const StyledStack: ForwardRefRenderFunction<HTMLDivElement, StackProps> = (
@@ -36,10 +37,24 @@ export const Element = styled(
         `}
 
     > * + * {
-        ${({ spacing, direction }) => css`
-            ${direction === 'vertical'
-                ? 'margin-top'
-                : 'margin-left'}: var(--spacings-${spacing});
-        `}
+        ${({ breakpoints, spacing, direction }) => {
+            const orientation =
+                direction === 'vertical' ? 'margin-top' : 'margin-left'
+
+            return css`
+                ${orientation}: var(--spacings-${spacing});
+
+                ${breakpoints &&
+                Object.entries(breakpoints)
+                    .map(
+                        ([breakpoint, { spacing }]) => `
+                            @media ${until[breakpoint]} {
+                                ${orientation}: var(--spacings-${spacing});
+                            }
+                        `
+                    )
+                    .join('\n')}
+            `
+        }}
     }
 `

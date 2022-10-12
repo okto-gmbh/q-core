@@ -1,8 +1,8 @@
 import React, { createContext, FC, useContext } from 'react'
-import { DesignTokens } from '../utils/styles/designTokens'
+import { RawDesignTokens } from '../utils/styles/designTokens'
 
 type SettingsProps = {
-    designTokens?: DesignTokens
+    designTokens?: RawDesignTokens
 }
 
 type SettingsProviderProps = {
