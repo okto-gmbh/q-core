@@ -2,7 +2,7 @@ import styled from '@emotion/styled'
 import { css } from '@emotion/react'
 import { ButtonProps } from './Button'
 
-const composeVariants = ({ variant = 'primary' }: ButtonProps) => {
+export const composeButtonVariants = ({ variant = 'primary' }: ButtonProps) => {
     const namespace = `--button-${variant}`
     const isPrimary = variant === 'primary'
     const color = isPrimary ? 'white' : 'black'
@@ -45,7 +45,7 @@ const composeVariants = ({ variant = 'primary' }: ButtonProps) => {
 }
 
 export const Button = styled('button')<ButtonProps>`
-    ${composeVariants}
+    ${composeButtonVariants}
 
     -webkit-appearance: none;
     -moz-appearance: none;
