@@ -246,7 +246,7 @@ const coreTokens: RawDesignTokens = {
         tabletLandscape: '740px',
         desktopS: '980px',
         desktopM: '1300px',
-        desktopL: '1700px',
+        desktopL: '1600px',
         desktopXL: '2000px'
     },
     backgrounds: {

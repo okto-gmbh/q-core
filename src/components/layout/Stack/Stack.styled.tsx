@@ -49,7 +49,9 @@ export const Element = styled(
                     .map(
                         ([breakpoint, { spacing }]) => `
                             @media ${until[breakpoint]} {
-                                ${orientation}: var(--spacings-${spacing});
+                                ${orientation}: var(--spacings-${
+                            spacing ? spacing : 'default'
+                        });
                             }
                         `
                     )
