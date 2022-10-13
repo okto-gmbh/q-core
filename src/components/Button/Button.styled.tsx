@@ -27,7 +27,7 @@ export const composeButtonVariants = ({
         );
         --_textTransform: var(
             ${namespaceWithVariant}-textTransform,
-            var(${namespace}-textTransform, undefined)
+            var(${namespace}-textTransform, 'none')
         );
         --_borderRadius: var(
             ${namespaceWithVariant}-borderRadius,
@@ -90,12 +90,7 @@ export const composeButtonVariants = ({
     `
 }
 
-interface StyledButtonProps {
-    hasIcon: boolean
-    variant: ButtonVariant
-}
-
-export const Button = styled('button')<StyledButtonProps>`
+export const Button = styled('button')`
     ${composeButtonVariants}
 
     -webkit-appearance: none;
@@ -117,17 +112,4 @@ export const Button = styled('button')<StyledButtonProps>`
         border-color: var(--_borderColorHover);
         color: var(--_colorHover);
     }
-
-    ${({ hasIcon }) =>
-        hasIcon &&
-        css`
-            display: flex;
-            align-items: center;
-            vertical-align: middle;
-
-            > * + * {
-                margin-left: 10px;
-                flex-shrink: 0;
-            }
-        `}
 `

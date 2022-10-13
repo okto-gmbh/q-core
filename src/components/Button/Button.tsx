@@ -1,6 +1,6 @@
-import { ButtonHTMLAttributes } from 'react'
+import React, { ButtonHTMLAttributes, FC } from 'react'
+import Stack from '../layout/Stack'
 import * as Styled from './Button.styled'
-import React, { FC } from 'react'
 
 export type ButtonVariant = 'primary' | 'secondary'
 
@@ -16,11 +16,19 @@ const Button: FC<ButtonProps> = ({
     endIcon,
     children,
     ...props
-}) => (
-    <Styled.Button variant={variant} hasIcon={!!endIcon} {...props}>
-        <span>{children}</span>
-        {endIcon}
-    </Styled.Button>
-)
+}) => {
+    const withEndIcon = (
+        <Stack alignItems="center" direction="horizontal" spacing="small">
+            <span>{children}</span>
+            <span>{endIcon}</span>
+        </Stack>
+    )
+
+    return (
+        <Styled.Button variant={variant} {...props}>
+            {endIcon ? withEndIcon : children}
+        </Styled.Button>
+    )
+}
 
 export default Button
