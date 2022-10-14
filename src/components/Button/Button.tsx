@@ -20,7 +20,7 @@ const Button: FC<ButtonProps> = ({
     const withEndIcon = (
         <Stack alignItems="center" direction="horizontal" spacing="small">
             <span>{children}</span>
-            <span>{endIcon}</span>
+            <Styled.Icon>{endIcon}</Styled.Icon>
         </Stack>
     )
 

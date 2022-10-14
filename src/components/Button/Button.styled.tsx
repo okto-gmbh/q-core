@@ -113,3 +113,7 @@ export const Button = styled('button')`
         color: var(--_colorHover);
     }
 `
+
+export const Icon = styled.span`
+    display: flex;
+`
