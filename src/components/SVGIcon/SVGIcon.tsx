@@ -14,8 +14,14 @@ export interface SVGIconProps extends Partial<HTMLAttributes<HTMLDivElement>> {
     children: React.ReactNode
 }
 
-const SVGIcon: FC<SVGIconProps> = ({ size = 'default', children }) => (
-    <Styled.Container size={size}>{children}</Styled.Container>
+const SVGIcon: FC<SVGIconProps> = ({
+    size = 'default',
+    children,
+    ...props
+}) => (
+    <Styled.Container size={size} {...props}>
+        {children}
+    </Styled.Container>
 )
 
 export default SVGIcon
