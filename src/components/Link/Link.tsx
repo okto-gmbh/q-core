@@ -22,7 +22,7 @@ const Link: FC<LinkProps> = ({ href, children, ...props }) => {
 
     return (
         <NextLink href={href} {...props} passHref>
-            <a>{children}</a>
+            <a className={props.className}>{children}</a>
         </NextLink>
     )
 }
