@@ -106,6 +106,7 @@ export const Button = styled('button')`
     color: var(--_color);
     transition: var(--_transition);
     text-transform: var(--_textTransform);
+    vertical-align: center;
 
     &:hover {
         background-color: var(--_backgroundColorHover);
@@ -116,4 +117,5 @@ export const Button = styled('button')`
 
 export const Icon = styled.span`
     display: flex;
+    align-self: center;
 `

@@ -18,7 +18,7 @@ const Button: FC<ButtonProps> = ({
     ...props
 }) => {
     const withEndIcon = (
-        <Stack alignItems="center" direction="horizontal" spacing="small">
+        <Stack alignItems="end" direction="horizontal" spacing="small">
             <span>{children}</span>
             <Styled.Icon>{endIcon}</Styled.Icon>
         </Stack>
