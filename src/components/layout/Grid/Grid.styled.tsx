@@ -63,7 +63,7 @@ export const Grid = styled(
         ${({ cols }) =>
             cols === 4 &&
             css`
-                @media ${from.mobileLandcape} {
+                @media ${from.tabletPortrait} {
                     grid-column-end: span 6;
                 }
 
@@ -80,7 +80,7 @@ export const Grid = styled(
         ${({ cols }) =>
             cols === 6 &&
             css`
-                @media ${from.mobileLandcape} {
+                @media ${from.tabletPortrait} {
                     grid-column-end: span 6;
                 }
 
