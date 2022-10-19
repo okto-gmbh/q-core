@@ -6,6 +6,7 @@ import { GridProps } from './Grid'
 import { GridItemProps } from './GridItem'
 
 const GRID_COLS = 12
+export const GRID_ITEM_CLASS = 'pixls-grid-item'
 
 export const Grid = styled(
     ({
@@ -35,7 +36,7 @@ export const Grid = styled(
         width: 100%;
     }
 
-    > :not(.pixls-grid-item) {
+    > :not(.${GRID_ITEM_CLASS}) {
         width: 100%;
 
         grid-column-end: span ${GRID_COLS};
@@ -119,7 +120,7 @@ export const Item = styled(
         breakpoints: _breakpoints,
         ...rest
     }: GridItemProps) => (
-        <Component className={(className += ' pixls-grid-item')} {...rest} />
+        <Component className={(className += ` ${GRID_ITEM_CLASS}`)} {...rest} />
     )
 )`
     width: 100%;
