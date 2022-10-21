@@ -1,8 +1,12 @@
 import React, { useEffect, useState } from 'react'
-import Typography from '../Typography'
 import * as Styled from './CookieBanner.styled'
 
-const CookieBanner = () => {
+export interface CookieBannerProps {
+    text: React.ReactNode
+    button: React.ReactNode
+}
+
+const CookieBanner = ({ text, button }: CookieBannerProps) => {
     const [accepted, setAccepted] = useState(true)
 
     useEffect(() => {
@@ -20,15 +24,14 @@ const CookieBanner = () => {
 
     return (
         <Styled.Container>
-            <Typography>
-                Wir verwenden Cookies, lesen Sie dazu hier unsere{' '}
-                <Styled.Link href="/datenschutz">
-                    Datenschutzerklärung.
-                </Styled.Link>
-            </Typography>
-            <Styled.Button variant="primary" onClick={() => accept()}>
-                akzeptieren
-            </Styled.Button>
+            {text}
+            <span
+                onClick={() => accept()}
+                onKeyPress={() => accept()}
+                role="button"
+                tabIndex={0}>
+                {button}
+            </span>
         </Styled.Container>
     )
 }

@@ -1,13 +1,11 @@
 import styled from '@emotion/styled'
 import { from } from '../../utils/breakpoints'
-import ButtonCore from '../Button'
 import Stack from '../layout/Stack'
-import LinkCore from '../Link'
 
 export const Container = styled(Stack)`
     --_backgroundColor: var(
         --cookieBanner-backgroundColor,
-        var(--colors-primary)
+        var(--colors-gray-10)
     );
     --_color: var(--cookieBanner-color, var(--colors-white));
 
@@ -26,15 +24,5 @@ export const Container = styled(Stack)`
 
     @media ${from.mobileLandscape} {
         padding: var(--spacings-large);
-    }
-`
-
-export const Button = styled(ButtonCore)`
-    --_colorHover: var(--cookieBanner-color, var(--colors-white));
-`
-
-export const Link = styled(LinkCore)`
-    &:hover {
-        color: var(--cookieBanner-color, var(--colors-white));
     }
 `
