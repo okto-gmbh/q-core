@@ -6,6 +6,7 @@ import { GridProps } from './Grid'
 import { GridItemProps } from './GridItem'
 
 const GRID_COLS = 12
+export const GRID_ITEM_CLASS = 'pixls-grid-item'
 
 export const Grid = styled(
     ({
@@ -18,20 +19,24 @@ export const Grid = styled(
         ...rest
     }: GridProps) => <Component {...rest} />
 )`
+    --_gap: var(--grid-gap, var(--spacings-default, 24px));
+
     display: grid;
     align-items: ${({ alignItems }) => alignItems || 'flex-start'};
-    grid-gap: var(--spacings-${({ gap }) => gap || 'gap'}) 0;
+    grid-gap: ${({ gap }) =>
+        gap ? `var(--spacings-${gap}) 0` : 'var(--_gap) 0'};
     grid-template-columns: repeat(${GRID_COLS}, 1fr);
 
     @media ${from.tabletPortrait} {
-        grid-gap: var(--spacings-${({ gap }) => gap || 'gap'});
+        grid-gap: ${({ gap }) =>
+            gap ? `var(--spacings-${gap})` : 'var(--_gap)'};
     }
 
     img {
         width: 100%;
     }
 
-    > :not(.pixls-grid-item) {
+    > :not(.${GRID_ITEM_CLASS}) {
         width: 100%;
 
         grid-column-end: span ${GRID_COLS};
@@ -59,7 +64,7 @@ export const Grid = styled(
         ${({ cols }) =>
             cols === 4 &&
             css`
-                @media ${from.mobileLandcape} {
+                @media ${from.tabletPortrait} {
                     grid-column-end: span 6;
                 }
 
@@ -76,7 +81,7 @@ export const Grid = styled(
         ${({ cols }) =>
             cols === 6 &&
             css`
-                @media ${from.mobileLandcape} {
+                @media ${from.tabletPortrait} {
                     grid-column-end: span 6;
                 }
 
@@ -115,7 +120,7 @@ export const Item = styled(
         breakpoints: _breakpoints,
         ...rest
     }: GridItemProps) => (
-        <Component className={(className += ' pixls-grid-item')} {...rest} />
+        <Component className={(className += ` ${GRID_ITEM_CLASS}`)} {...rest} />
     )
 )`
     width: 100%;
@@ -124,17 +129,16 @@ export const Item = styled(
         css`
             grid-column-end: span ${span};
 
-            ${
-                breakpoints &&
-                Object.entries(breakpoints)
-                    .map(
-                        ([breakpoint, span]) => `
+            ${breakpoints &&
+            Object.entries(breakpoints)
+                .map(
+                    ([breakpoint, span]) => `
                         @media ${until[breakpoint]} {
                             grid-column-end: span ${span};
-                        }`
-                    )
-                    .join('\n')
-            }}
+                        }
+                    `
+                )
+                .join('\n')}
         `}
 
     ${({ colHeight }) =>

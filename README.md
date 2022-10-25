@@ -2,12 +2,13 @@
 
 ## Add to project
 
-**Add npm/yarn scripts:**
+To add q-core to a project, add the following scripts to the package.json file of the project:
 
-```json
+```jsonc
 // package.json
 {
     "postinstall": "yarn q:init",
+    "q:add": "git submodule add https://github.com/authentiqagency/q-core.git && yarn install",
     "q:init": "test -d ./q-core/lib && exit 0 || git submodule init && yarn q:update",
     "q:dev": "cd q-core && yarn build:watch && cd ..",
     "q:update": "git submodule update && yarn q:build",
@@ -16,9 +17,15 @@
 }
 ```
 
+After adding the scripts to the package.json file, run the following command to add q-core to the project:
+
+```bash
+yarn q:add
+```
+
 **Add absolute path resolution**
 
-```json
+```jsonc
 // jsconfig.json
 {
     "compilerOptions": {
@@ -42,19 +49,11 @@ module.exports = {
 }
 ```
 
-**Add q-core as a git submodule:**
-
-`git submodule add https://github.com/authentiqagency/q-core.git`
-
-This will fetch the submodule, install its dependencies and build the library:
-
-`yarn q:init`
-
 **Add q-core to eslint ignore pattern:**
 
 q-core comes with its own eslint config, therefore can be added to the ignore pattern of your project. Do not add it to .eslintignore, as linting won't work for q-core anymore.
 
-```json
+```jsonc
 // .eslintrc
 {
     // ...

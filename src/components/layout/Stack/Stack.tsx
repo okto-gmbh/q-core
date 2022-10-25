@@ -4,7 +4,12 @@ import React, {
     ForwardRefRenderFunction,
     HTMLAttributes
 } from 'react'
-import { AlignItems, JustifyContent, Spacing } from '../../../types'
+import {
+    AlignItems,
+    JustifyContent,
+    Spacing,
+    Breakpoints
+} from '../../../types'
 import * as Styled from './Stack.styled'
 
 type Direction = 'vertical' | 'horizontal'
@@ -15,6 +20,7 @@ export interface StackProps extends HTMLAttributes<HTMLDivElement> {
     direction?: Direction
     alignItems?: AlignItems
     justifyContent?: JustifyContent
+    breakpoints?: Breakpoints
 }
 
 const Stack: ForwardRefRenderFunction<HTMLDivElement, StackProps> = (

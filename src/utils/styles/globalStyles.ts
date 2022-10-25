@@ -1,12 +1,22 @@
 import { css, SerializedStyles } from '@emotion/react'
-import { DesignTokens, ResponsiveTokens } from './designTokens'
 import { from, until } from '../breakpoints'
+import {
+    RawDesignTokens,
+    ResponsiveTokens,
+    TokenComponents,
+    Variant,
+    Variants
+} from './designTokens'
 
-const renderTokens = (tokens: DesignTokens | ResponsiveTokens = {}): string =>
+const renderTokens = (
+    tokens: RawDesignTokens | ResponsiveTokens = {}
+): string =>
     Object.entries(tokens)
         .filter(
             ([namespace]) =>
-                !['breakpoints', 'responsiveTokens'].includes(namespace)
+                !['breakpoints', 'responsiveTokens', 'components'].includes(
+                    namespace
+                )
         )
         .map(([namespace, token]) =>
             Object.entries(token).map(
@@ -16,17 +26,87 @@ const renderTokens = (tokens: DesignTokens | ResponsiveTokens = {}): string =>
         .flat()
         .join('\n')
 
+const IDENTIFIER_BASE = '$base'
+const IDENTIFIER_STATES = '$states'
+
+const generateVariants = (
+    componentName: string,
+    variantName: string,
+    variants: Variants | Variant
+): string | string[] =>
+    Object.entries(variants).flatMap(([propName, valueOrStates]) =>
+        propName === IDENTIFIER_STATES
+            ? Object.entries(valueOrStates).flatMap(([stateName, props]) =>
+                  generateVariants(
+                      `${componentName}${
+                          variantName !== IDENTIFIER_BASE
+                              ? `-${variantName}`
+                              : ''
+                      }`,
+                      stateName,
+                      props as Variant
+                  )
+              )
+            : `--${componentName}${
+                  variantName !== IDENTIFIER_BASE ? `-${variantName}` : ''
+              }-${propName}: ${valueOrStates};`
+    )
+
+const renderComponentTokens = (tokens: TokenComponents = {}): string =>
+    Object.entries(tokens)
+        .flatMap(([componentName, componentTokens]) =>
+            Object.entries(componentTokens).flatMap(([variantName, variants]) =>
+                generateVariants(componentName, variantName, variants)
+            )
+        )
+        .join('\n')
+
 export const generateGlobalStyles = ({
     designTokens,
     customVariables,
     customReset
 }: {
-    designTokens: DesignTokens
+    designTokens: RawDesignTokens
     customVariables: SerializedStyles
     customReset: SerializedStyles
 }) => css`
     :root {
+        --_scrollbar-thumb-background: var(
+            --scrollbar-thumb-background,
+            var(--colors-primary, black)
+        );
+        --_scrollbar-thumb-hover-background: var(
+            --scrollbar-thumb-hover-background,
+            var(--colors-primaryHover, black)
+        );
+        --_scrollbar-track-background: var(
+            --scrollbar-track-background,
+            var(--colors-gray-90, grey)
+        );
+        --_selection-backgroundColor: var(
+            --selection-backgroundColor,
+            var(--colors-primary, black)
+        );
+        --_selection-color: var(--selection-color, var(--colors-white, white));
+        --_placeholder-color: var(
+            --placeholder-color,
+            var(--colors-gray-60, grey)
+        );
+        --_link-color: var(--link-color, var(--colors-primary, black));
+        --_link-textDecoration: var(--link-textDecoration, none);
+        --_link-outline: var(--link-outline, none);
+        --_link-transition: var(
+            --link-transition,
+            color var(--motion-default, 0.2s ease-in-out)
+        );
+        --_link-colorHover: var(
+            --link-hover-color,
+            var(--colors-primaryHover, black)
+        );
+
         ${renderTokens(designTokens)}
+
+        ${renderComponentTokens(designTokens.components)}
 
         ${customVariables}
     }
@@ -37,6 +117,9 @@ export const generateGlobalStyles = ({
                 @media ${from[breakpoint]} {
                     :root {
                         ${renderTokens(responsiveTokens)}
+
+                        ${renderComponentTokens(responsiveTokens.components)}
+
                     }
                 }
             `
@@ -61,13 +144,36 @@ export const generateGlobalStyles = ({
         margin: 0;
     }
 
+    fieldset {
+        min-width: 0;
+        padding: 0;
+        border: 0;
+        margin: 0;
+    }
+
+    a {
+        transition: var(--_link-transition);
+
+        :any-link {
+            color: var(--_link-color);
+            outline: var(--_link-outline);
+            text-decoration: var(--_link-textDecoration);
+        }
+
+        :hover,
+        :focus,
+        :active {
+            color: var(--_link-colorHover);
+        }
+    }
+
     ::selection {
-        background-color: var(--colors-primary);
-        color: var(--colors-white);
+        background-color: var(--_selection-backgroundColor);
+        color: var(--_selection-color);
     }
 
     ::placeholder {
-        color: var(--colors-gray-60);
+        color: var(--_placeholder-color);
     }
 
     ::-webkit-scrollbar {
@@ -76,15 +182,15 @@ export const generateGlobalStyles = ({
     }
 
     ::-webkit-scrollbar-thumb {
-        background: var(--colors-gray-50);
+        background: var(--_scrollbar-thumb-background);
     }
 
     ::-webkit-scrollbar-thumb:hover {
-        background: var(--colors-primaryHover);
+        background: var(--_scrollbar-thumb-hover-background);
     }
 
     ::-webkit-scrollbar-track {
-        background: var(--colors-gray-90);
+        background: var(--_scrollbar-track-background);
     }
 
     :disabled {
@@ -95,7 +201,8 @@ export const generateGlobalStyles = ({
     html {
         accent-color: var(--colors-primary);
         color: var(--colors-black);
-        scrollbar-color: var(--colors-primaryHover) var(--colors-gray-90);
+        scrollbar-color: var(--_scrollbar-thumb-background)
+            var(--_scrollbar-track-background);
     }
 
     body {

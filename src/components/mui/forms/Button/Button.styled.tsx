@@ -1,56 +1,55 @@
-import React from 'react'
 import { css } from '@emotion/react'
 import styled from '@emotion/styled'
-import Button, { buttonClasses } from '@mui/material/Button'
+import Button, {
+    buttonClasses,
+    ButtonProps as MuiButtonProps
+} from '@mui/material/Button'
+import React from 'react'
+import { ButtonVariant } from '../../../Button/Button'
+import { composeButtonVariants } from '../../../Button/Button.styled'
 import { ButtonProps } from './Button'
-import { from } from '../../../../utils/breakpoints'
+
+const muiVariants: {
+    [key in ButtonVariant]: MuiButtonProps['variant']
+} = {
+    primary: 'contained',
+    secondary: 'outlined'
+}
 
 export const Element = styled(
     ({ variant, look: _look, ...rest }: ButtonProps) => (
         <Button
-            variant={
-                variant === 'primary'
-                    ? 'contained'
-                    : variant === 'secondary'
-                    ? 'outlined'
-                    : undefined
-            }
+            color={variant}
+            variant={muiVariants[variant || '']}
             {...rest}
         />
     )
 )`
+    ${composeButtonVariants}
+
     && {
-        color: var(--colors-white);
-        border-radius: var(--radii-default);
+        color: var(--_color);
+        border-radius: var(--_borderRadius);
         box-shadow: var(--shadows-mui);
         font-weight: var(--fontWeights-default);
         white-space: nowrap;
-        padding: var(--spacings-small)
-            calc(var(--spacings-large) - var(--spacings-small));
-        letter-spacing: var(--letterSpacings-button-mobile);
+        padding: var(--_padding);
+        letter-spacing: var(--_letterSpacing);
+        border: var(--_border);
+        background-color: var(--_backgroundColor);
 
-        @media ${from.desktop} {
-            letter-spacing: var(--letterSpacings-button-desktop);
+        &:hover {
+            border-color: var(--_borderColorHover);
+            background-color: var(--_backgroundColorHover);
         }
     }
 
     &.${buttonClasses.containedPrimary} {
-        border-color: var(--colors-primary);
-        background-color: var(--colors-primary);
-
-        &:hover {
-            background-color: var(--colors-primaryHover);
-        }
+        background-color: var(--_backgroundColor);
     }
 
     &.${buttonClasses.outlinedSecondary} {
-        border-color: var(--colors-white);
-        background-color: var(--colors-white);
-        color: var(--colors-black);
-
-        &:hover {
-            background-color: var(--colors-gray-90);
-        }
+        border-radius: var(--_borderRadius);
     }
 
     ${({ look }: { look?: 'icon' }) =>
