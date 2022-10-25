@@ -1,6 +1,10 @@
 const [, offsetHours] = new Date(2022, 0, 1).toISOString().split('T')
 
-export const formatDate = (date: string | Date, locale = 'de-CH'): string => {
+export const formatDate = (
+    date: string | Date,
+    locale = 'de-CH',
+    timeZone = 'Europe/Zurich'
+): string => {
     if (!date) return ''
     if (typeof date === 'string') {
         date = new Date(date)
@@ -9,7 +13,8 @@ export const formatDate = (date: string | Date, locale = 'de-CH'): string => {
     return date.toLocaleDateString(locale, {
         year: 'numeric',
         month: '2-digit',
-        day: '2-digit'
+        day: '2-digit',
+        timeZone
     })
 }
 
