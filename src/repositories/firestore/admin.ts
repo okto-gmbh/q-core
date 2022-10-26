@@ -1,7 +1,15 @@
 /* eslint-disable no-redeclare */
 
 import * as admin from 'firebase-admin'
-import { Constraints, Field, ID, Table } from './common'
+import { Field, ID, Table } from './common'
+
+export interface Constraints<Collection extends admin.DocumentData[]> {
+    where?: [keyof Collection[number], admin.WhereFilterOp, any][]
+    orderBy?: {
+        [key in keyof Collection[number]]?: admin.OrderByDirection
+    }
+    limit?: number
+}
 
 async function mapDocs<Collection extends admin.firestore.DocumentData[]>(
     doc: admin.firestore.DocumentSnapshot<Collection[number]>,

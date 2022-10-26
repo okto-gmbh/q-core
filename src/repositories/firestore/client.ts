@@ -18,9 +18,18 @@ import {
     UpdateData,
     updateDoc,
     where as queryWhere,
-    WhereFilterOp
+    WhereFilterOp,
+    OrderByDirection
 } from 'firebase/firestore'
-import { Constraints, Field, ID, Table } from './common'
+import { Field, ID, Table } from './common'
+
+interface Constraints<Collection extends DocumentData[]> {
+    where?: [keyof Collection[number], WhereFilterOp, any][]
+    orderBy?: {
+        [key in keyof Collection[number]]?: OrderByDirection
+    }
+    limit?: number
+}
 
 async function mapDocs<Collection extends DocumentData[]>(
     doc: DocumentSnapshot<Collection[number]>,
