@@ -3,10 +3,12 @@
 import * as admin from 'firebase-admin'
 import { Field, ID, Table } from './common'
 
-export interface Constraints<Collection extends admin.DocumentData[]> {
-    where?: [keyof Collection[number], admin.WhereFilterOp, any][]
+export interface Constraints<
+    Collection extends admin.firestore.DocumentData[]
+> {
+    where?: [keyof Collection[number], admin.firestore.WhereFilterOp, any][]
     orderBy?: {
-        [key in keyof Collection[number]]?: admin.OrderByDirection
+        [key in keyof Collection[number]]?: admin.firestore.OrderByDirection
     }
     limit?: number
 }
