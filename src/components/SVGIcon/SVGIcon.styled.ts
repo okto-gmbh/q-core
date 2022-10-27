@@ -1,6 +1,6 @@
 import { css } from '@emotion/react'
 import styled from '@emotion/styled'
-import { until } from '../../utils/breakpoints'
+import { from } from '../../utils/breakpoints'
 import { SVGIconProps } from './SVGIcon'
 
 export const Container = styled.div<SVGIconProps>`
@@ -18,8 +18,10 @@ export const Container = styled.div<SVGIconProps>`
             ${breakpoints &&
             Object.entries(breakpoints)
                 .map(
-                    ([breakpoint, { size }]) => `
-                    @media ${until[breakpoint]} {
+                    ([breakpoint, { size }]) =>
+                        size &&
+                        `
+                    @media ${from[breakpoint]} {
                         --_width: var(--icon-${size}-width);
                         --_height: var(--icon-${size}-height);
                     }

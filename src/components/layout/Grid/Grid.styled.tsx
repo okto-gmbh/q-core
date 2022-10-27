@@ -1,7 +1,7 @@
 import { css } from '@emotion/react'
 import styled from '@emotion/styled'
 import React from 'react'
-import { from, until } from '../../../utils/breakpoints'
+import { from } from '../../../utils/breakpoints'
 import { GridProps } from './Grid'
 import { GridItemProps } from './GridItem'
 
@@ -132,8 +132,10 @@ export const Item = styled(
             ${breakpoints &&
             Object.entries(breakpoints)
                 .map(
-                    ([breakpoint, span]) => `
-                        @media ${until[breakpoint]} {
+                    ([breakpoint, { span }]) =>
+                        span &&
+                        `
+                        @media ${from[breakpoint]} {
                             grid-column-end: span ${span};
                         }
                     `
