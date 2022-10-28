@@ -2,12 +2,10 @@ import React, { FC, HTMLAttributes } from 'react'
 import * as Styled from './SafeArea.styled'
 
 export interface SafeAreaProps extends Partial<HTMLAttributes<HTMLDivElement>> {
-    paddings: {
-        top?: boolean
-        right?: boolean
-        bottom?: boolean
-        left?: boolean
-    }
+    top?: boolean
+    right?: boolean
+    bottom?: boolean
+    left?: boolean
     children: React.ReactNode
 }
 
