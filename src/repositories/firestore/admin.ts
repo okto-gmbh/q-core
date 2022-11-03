@@ -1,12 +1,16 @@
 /* eslint-disable no-redeclare */
 
 import * as admin from 'firebase-admin'
-import { Field, ID, Table } from './common'
+import { DB_Meta, ID, Table } from './common'
 
 export interface Constraints<
     Collection extends admin.firestore.DocumentData[]
 > {
-    where?: [keyof Collection[number], admin.firestore.WhereFilterOp, any][]
+    where?: [
+        Extract<keyof (Collection[number] & DB_Meta), string>,
+        admin.firestore.WhereFilterOp,
+        any
+    ][]
     orderBy?: {
         [key in keyof Collection[number]]?: admin.firestore.OrderByDirection
     }
@@ -15,17 +19,17 @@ export interface Constraints<
 
 async function mapDocs<Collection extends admin.firestore.DocumentData[]>(
     doc: admin.firestore.DocumentSnapshot<Collection[number]>,
-    fields?: string[]
-): Promise<({ id: string } & Collection[number]) | undefined>
+    fields?: (keyof (Collection[number] & DB_Meta))[]
+): Promise<(DB_Meta & Collection[number]) | undefined>
 async function mapDocs<Collection extends admin.firestore.DocumentData[]>(
     doc: admin.firestore.DocumentSnapshot<Collection[number]>[],
-    fields?: string[]
-): Promise<({ id: string } & Collection[number])[] | undefined>
+    fields?: (keyof (Collection[number] & DB_Meta))[]
+): Promise<(DB_Meta & Collection[number])[] | undefined>
 async function mapDocs<Collection extends admin.firestore.DocumentData[]>(
     doc:
         | admin.firestore.DocumentSnapshot<Collection[number]>
         | admin.firestore.DocumentSnapshot<Collection[number]>[],
-    fields?: string[]
+    fields?: (keyof (Collection[number] & DB_Meta))[]
 ) {
     if (Array.isArray(doc)) {
         return await Promise.all(
@@ -83,7 +87,7 @@ const getRepository = (db: admin.firestore.Firestore) => ({
     query: async <Collection extends admin.firestore.DocumentData[]>(
         table: Table,
         constraints: Constraints<Collection>,
-        fields?: Field[]
+        fields?: (keyof (Collection[number] & DB_Meta))[]
     ) => {
         const { where, orderBy, limit } = constraints
         let query: admin.firestore.Query<Collection[number]> =
@@ -91,13 +95,7 @@ const getRepository = (db: admin.firestore.Firestore) => ({
 
         if (where) {
             for (const condition of where) {
-                query = query.where(
-                    ...(condition as [
-                        string,
-                        admin.firestore.WhereFilterOp,
-                        any
-                    ])
-                )
+                query = query.where(...condition)
             }
         }
         if (orderBy) {
@@ -113,17 +111,17 @@ const getRepository = (db: admin.firestore.Firestore) => ({
         return await mapDocs<Collection>(docs, fields)
     },
 
-    remove: async (table: string, id: string) =>
+    remove: async (table: Table, id: ID) =>
         await db.collection(table).doc(id).delete(),
 
     update: async <Collection extends admin.firestore.DocumentData[]>(
-        table: string,
-        id: string,
+        table: Table,
+        id: ID,
         data: Partial<Collection[number]>
     ) => await db.collection(table).doc(id).update(data),
 
     create: async <Collection extends admin.firestore.DocumentData[]>(
-        table: string,
+        table: Table,
         data: Collection[number]
     ) => {
         const { id } = await db.collection(table).add(data)
