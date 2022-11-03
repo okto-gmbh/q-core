@@ -21,10 +21,14 @@ import {
     WhereFilterOp,
     OrderByDirection
 } from 'firebase/firestore'
-import { Field, ID, Table } from './common'
+import { DB_Meta, ID, Table } from './common'
 
 interface Constraints<Collection extends DocumentData[]> {
-    where?: [keyof Collection[number], WhereFilterOp, any][]
+    where?: [
+        Extract<keyof (Collection[number] & DB_Meta), string>,
+        WhereFilterOp,
+        any
+    ][]
     orderBy?: {
         [key in keyof Collection[number]]?: OrderByDirection
     }
@@ -33,17 +37,17 @@ interface Constraints<Collection extends DocumentData[]> {
 
 async function mapDocs<Collection extends DocumentData[]>(
     doc: DocumentSnapshot<Collection[number]>,
-    fields?: string[]
+    fields?: (keyof (Collection[number] & DB_Meta))[]
 ): Promise<({ id: string } & Collection[number]) | undefined>
 async function mapDocs<Collection extends DocumentData[]>(
     doc: DocumentSnapshot<Collection[number]>[],
-    fields?: string[]
+    fields?: (keyof (Collection[number] & DB_Meta))[]
 ): Promise<({ id: string } & Collection[number])[] | undefined>
 async function mapDocs<Collection extends DocumentData[]>(
     doc:
         | DocumentSnapshot<Collection[number]>
         | DocumentSnapshot<Collection[number]>[],
-    fields?: string[]
+    fields?: (keyof (Collection[number] & DB_Meta))[]
 ) {
     if (Array.isArray(doc)) {
         return await Promise.all(
@@ -94,18 +98,14 @@ const getRepository = (db: Firestore) => ({
     query: async <Collection extends DocumentData[]>(
         table: Table,
         { where = [], orderBy = {}, limit }: Constraints<Collection>,
-        fields: Field[]
+        fields: (keyof (Collection[number] & DB_Meta))[]
     ) => {
         const { docs } = await getDocs(
             queryQuery(
                 collection(db, table),
                 ...[
                     ...where.map(([field, operator, value]) =>
-                        queryWhere(
-                            field as string,
-                            operator as WhereFilterOp,
-                            value
-                        )
+                        queryWhere(field, operator, value)
                     ),
                     ...Object.entries(orderBy).map(([field, direction]) =>
                         queryOrderBy(field, direction)
