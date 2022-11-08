@@ -152,13 +152,10 @@ export const generateGlobalStyles = ({
     }
 
     a {
+        color: var(--_link-color);
+        outline: var(--_link-outline);
+        text-decoration: var(--_link-textDecoration);
         transition: var(--_link-transition);
-
-        :any-link {
-            color: var(--_link-color);
-            outline: var(--_link-outline);
-            text-decoration: var(--_link-textDecoration);
-        }
 
         :hover,
         :focus,
