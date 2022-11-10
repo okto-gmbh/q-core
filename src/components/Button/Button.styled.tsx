@@ -59,6 +59,10 @@ export const composeButtonVariants = ({
             ${namespaceWithVariant}-hover-color,
             var(${namespace}-hover-color, var(--colors-${color}, ${color}))
         );
+        --_fontWeight: var(
+            ${namespaceWithVariant}-fontWeight,
+            var(${namespace}-fontWeight, var(--fontWeights-default, '400'))
+        );
         --_backgroundColor: var(
             ${namespaceWithVariant}-backgroundColor,
             var(
@@ -107,6 +111,7 @@ export const Button = styled('button')`
     transition: var(--_transition);
     text-transform: var(--_textTransform);
     vertical-align: center;
+    font-weight: var(--_fontWeight);
 
     &:hover {
         background-color: var(--_backgroundColorHover);
