@@ -1,5 +1,4 @@
 import React, { ButtonHTMLAttributes, FC } from 'react'
-import Stack from '../layout/Stack'
 import * as Styled from './Button.styled'
 
 export type ButtonVariant = 'primary' | 'secondary'
@@ -9,24 +8,29 @@ export interface ButtonProps
     variant: ButtonVariant
     children: React.ReactNode
     endIcon?: React.ReactNode
+    startIcon?: React.ReactNode
+    isFullwidth?: boolean
 }
 
 const Button: FC<ButtonProps> = ({
     variant = 'primary',
     endIcon,
+    startIcon,
     children,
+    isFullwidth,
     ...props
 }) => {
-    const withEndIcon = (
-        <Stack alignItems="end" direction="horizontal" spacing="small">
+    const withIcon = (
+        <Styled.Stack alignItems="end" direction="horizontal" spacing="small">
+            {startIcon && <Styled.Icon>{startIcon}</Styled.Icon>}
             <span>{children}</span>
-            <Styled.Icon>{endIcon}</Styled.Icon>
-        </Stack>
+            {endIcon && <Styled.Icon>{endIcon}</Styled.Icon>}
+        </Styled.Stack>
     )
 
     return (
-        <Styled.Button variant={variant} {...props}>
-            {endIcon ? withEndIcon : children}
+        <Styled.Button variant={variant} isFullwidth={isFullwidth} {...props}>
+            {startIcon || endIcon ? withIcon : children}
         </Styled.Button>
     )
 }
