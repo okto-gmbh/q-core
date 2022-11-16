@@ -1,5 +1,5 @@
 import React, { ButtonHTMLAttributes, FC } from 'react'
-import Stack from './../layout/Stack'
+import Stack from '../layout/Stack'
 import * as Styled from './Button.styled'
 
 export type ButtonVariant = 'primary' | 'secondary'
