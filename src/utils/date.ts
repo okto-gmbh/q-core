@@ -1,22 +1,37 @@
 const [, offsetHours] = new Date(2022, 0, 1).toISOString().split('T')
 
-export const formatDate = (
+export const format = (
     date: string | Date,
-    locale = 'de-CH',
-    timeZone = 'Europe/Zurich'
+    {
+        locale,
+        ...options
+    }: Intl.DateTimeFormatOptions & { locale: Intl.LocalesArgument }
 ): string => {
     if (!date) return ''
     if (typeof date === 'string') {
         date = new Date(date)
     }
 
-    return date.toLocaleDateString(locale, {
+    const config: Intl.DateTimeFormatOptions = {
+        timeZone: options.timeZone || 'Europe/Zurich',
+        ...options
+    }
+
+    return date.toLocaleString(locale || 'de-CH', config)
+}
+
+export const formatDate = (
+    date: string | Date,
+    locale = 'de-CH',
+    timeZone = 'Europe/Zurich'
+): string =>
+    format(date, {
         year: 'numeric',
         month: '2-digit',
         day: '2-digit',
+        locale,
         timeZone
     })
-}
 
 // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types, @typescript-eslint/no-explicit-any
 export const isValidDate = (date: any): boolean =>

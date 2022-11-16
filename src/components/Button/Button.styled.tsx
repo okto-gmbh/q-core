@@ -1,6 +1,7 @@
 import { css } from '@emotion/react'
 import styled from '@emotion/styled'
-import { ButtonVariant } from './Button'
+import React from 'react'
+import { ButtonProps, ButtonVariant } from './Button'
 
 export const composeButtonVariants = ({
     variant = 'primary'
@@ -63,6 +64,10 @@ export const composeButtonVariants = ({
             ${namespaceWithVariant}-fontWeight,
             var(${namespace}-fontWeight, var(--fontWeights-default, '400'))
         );
+        --_fontSize: var(
+            ${namespaceWithVariant}-fontSize,
+            var(${namespace}-fontSize, var(--fontSizes-default, 16px))
+        );
         --_backgroundColor: var(
             ${namespaceWithVariant}-backgroundColor,
             var(
@@ -94,7 +99,9 @@ export const composeButtonVariants = ({
     `
 }
 
-export const Button = styled('button')`
+export const Button = styled(({ width: _width, ...rest }: ButtonProps) => (
+    <button {...rest} />
+))`
     ${composeButtonVariants}
 
     -webkit-appearance: none;
@@ -112,6 +119,8 @@ export const Button = styled('button')`
     text-transform: var(--_textTransform);
     vertical-align: center;
     font-weight: var(--_fontWeight);
+    font-size: var(--_fontSize);
+    width: ${({ width }) => (width ? width : undefined)};
 
     &:hover {
         background-color: var(--_backgroundColorHover);

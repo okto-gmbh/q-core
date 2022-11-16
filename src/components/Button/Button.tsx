@@ -9,24 +9,33 @@ export interface ButtonProps
     variant: ButtonVariant
     children: React.ReactNode
     endIcon?: React.ReactNode
+    startIcon?: React.ReactNode
+    width?: string
 }
 
 const Button: FC<ButtonProps> = ({
     variant = 'primary',
     endIcon,
+    startIcon,
     children,
+    width,
     ...props
 }) => {
-    const withEndIcon = (
-        <Stack alignItems="end" direction="horizontal" spacing="small">
+    const withIcon = (
+        <Stack
+            alignItems="center"
+            direction="horizontal"
+            spacing="small"
+            justifyContent="center">
+            {startIcon && <Styled.Icon>{startIcon}</Styled.Icon>}
             <span>{children}</span>
-            <Styled.Icon>{endIcon}</Styled.Icon>
+            {endIcon && <Styled.Icon>{endIcon}</Styled.Icon>}
         </Stack>
     )
 
     return (
-        <Styled.Button variant={variant} {...props}>
-            {endIcon ? withEndIcon : children}
+        <Styled.Button variant={variant} width={width} {...props}>
+            {startIcon || endIcon ? withIcon : children}
         </Styled.Button>
     )
 }
