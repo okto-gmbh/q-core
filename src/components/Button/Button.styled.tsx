@@ -1,7 +1,6 @@
 import { css } from '@emotion/react'
 import styled from '@emotion/styled'
 import React from 'react'
-import StackCore from './../layout/Stack'
 import { ButtonProps, ButtonVariant } from './Button'
 
 export const composeButtonVariants = ({
@@ -100,11 +99,9 @@ export const composeButtonVariants = ({
     `
 }
 
-export const Button = styled(
-    ({ isFullwidth: _isFullwidth, ...rest }: ButtonProps) => (
-        <button {...rest} />
-    )
-)`
+export const Button = styled(({ width: _width, ...rest }: ButtonProps) => (
+    <button {...rest} />
+))`
     ${composeButtonVariants}
 
     -webkit-appearance: none;
@@ -123,7 +120,7 @@ export const Button = styled(
     vertical-align: center;
     font-weight: var(--_fontWeight);
     font-size: var(--_fontSize);
-    width: ${({ isFullwidth }) => (isFullwidth ? '100%' : undefined)};
+    width: ${({ width }) => (width ? width : undefined)};
 
     &:hover {
         background-color: var(--_backgroundColorHover);
@@ -135,10 +132,4 @@ export const Button = styled(
 export const Icon = styled.span`
     display: flex;
     align-self: center;
-`
-
-export const Stack = styled(StackCore)`
-    width: 100%;
-    align-items: center;
-    justify-content: center;
 `
