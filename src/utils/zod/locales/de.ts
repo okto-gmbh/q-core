@@ -110,7 +110,6 @@ const errorMap: ZodErrorMap = (issue, { defaultError }) => {
             message = defaultError
             assertNever(issue)
     }
-    console.log(message)
     return { message }
 }
 
