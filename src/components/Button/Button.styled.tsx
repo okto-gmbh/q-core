@@ -99,9 +99,11 @@ export const composeButtonVariants = ({
     `
 }
 
-export const Button = styled(({ width: _width, ...rest }: ButtonProps) => (
-    <button {...rest} />
-))`
+export const Button = styled(
+    ({ width: _width, height: _height, ...rest }: ButtonProps) => (
+        <button {...rest} />
+    )
+)`
     ${composeButtonVariants}
 
     -webkit-appearance: none;
@@ -121,6 +123,7 @@ export const Button = styled(({ width: _width, ...rest }: ButtonProps) => (
     font-weight: var(--_fontWeight);
     font-size: var(--_fontSize);
     width: ${({ width }) => (width ? width : undefined)};
+    height: ${({ height }) => (height ? height : undefined)};
 
     &:hover {
         background-color: var(--_backgroundColorHover);

@@ -11,6 +11,7 @@ export interface ButtonProps
     endIcon?: React.ReactNode
     startIcon?: React.ReactNode
     width?: string
+    height?: string
 }
 
 const Button: FC<ButtonProps> = ({
@@ -19,6 +20,7 @@ const Button: FC<ButtonProps> = ({
     startIcon,
     children,
     width,
+    height,
     ...props
 }) => {
     const withIcon = (
@@ -34,7 +36,11 @@ const Button: FC<ButtonProps> = ({
     )
 
     return (
-        <Styled.Button variant={variant} width={width} {...props}>
+        <Styled.Button
+            variant={variant}
+            width={width}
+            height={height}
+            {...props}>
             {startIcon || endIcon ? withIcon : children}
         </Styled.Button>
     )
