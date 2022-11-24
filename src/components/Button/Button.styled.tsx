@@ -96,6 +96,10 @@ export const composeButtonVariants = ({
                 all var(--motion-default, 0.2s ease-in-out)
             )
         );
+        --_boxShadow: var(
+            ${namespaceWithVariant}-boxShadow,
+            var(${namespace}-boxShadow, undefined)
+        );
     `
 }
 
@@ -121,6 +125,7 @@ export const Button = styled(
     text-transform: var(--_textTransform);
     vertical-align: center;
     font-weight: var(--_fontWeight);
+    box-shadow: var(--_boxShadow);
     font-size: var(--_fontSize);
     width: ${({ width }) => (width ? width : undefined)};
     height: ${({ height }) => (height ? height : undefined)};
