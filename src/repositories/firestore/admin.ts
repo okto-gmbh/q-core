@@ -60,7 +60,10 @@ async function mapDocs<Collection extends admin.firestore.DocumentData[]>(
 
         // Map types
         if (prop instanceof admin.firestore.DocumentReference) {
-            prop = async () => await mapDocs(await prop.get())
+            prop = (
+                (origProp) => async () =>
+                    await mapDocs(await origProp.get())
+            )(prop)
         }
         if (prop instanceof admin.firestore.Timestamp) {
             prop = prop.toDate()
