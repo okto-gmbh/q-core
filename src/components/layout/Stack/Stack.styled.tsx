@@ -11,6 +11,7 @@ const StyledStack: ForwardRefRenderFunction<HTMLDivElement, StackProps> = (
         direction: _direction,
         alignItems: _alignItems,
         justifyContent: _justifyContent,
+        flexDirection: _flexDirection,
         children,
         ...rest
     },
