@@ -8,7 +8,8 @@ import {
     AlignItems,
     JustifyContent,
     Spacing,
-    Breakpoints
+    Breakpoints,
+    FlexDirection
 } from '../../../types'
 import * as Styled from './Stack.styled'
 
@@ -21,6 +22,7 @@ export interface StackProps extends HTMLAttributes<HTMLDivElement> {
     alignItems?: AlignItems
     justifyContent?: JustifyContent
     breakpoints?: Breakpoints
+    flexDirection?: FlexDirection
 }
 
 const Stack: ForwardRefRenderFunction<HTMLDivElement, StackProps> = (

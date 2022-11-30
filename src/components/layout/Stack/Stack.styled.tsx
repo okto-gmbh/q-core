@@ -21,6 +21,8 @@ export const Element = styled(
     forwardRef<HTMLDivElement, StackProps>(StyledStack)
 )`
     width: 100%;
+    flex-direction: ${({ flexDirection }) =>
+        flexDirection ? flexDirection : undefined};
 
     ${({ justifyContent }) =>
         justifyContent &&
