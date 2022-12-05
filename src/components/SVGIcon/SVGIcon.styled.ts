@@ -33,4 +33,9 @@ export const Container = styled.div<SVGIconProps>`
     display: inline-flex;
     width: var(--_width);
     height: var(--_height);
+
+    svg {
+        width: 100%;
+        height: 100%;
+    }
 `
