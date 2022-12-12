@@ -22,39 +22,81 @@ export const Element = styled(
     forwardRef<HTMLDivElement, StackProps>(StyledStack)
 )`
     width: 100%;
-    flex-direction: ${({ flexDirection }) =>
-        flexDirection ? flexDirection : undefined};
 
-    ${({ justifyContent }) =>
-        justifyContent &&
+    ${({ flexDirection, direction, justifyContent, alignItems }) =>
+        (direction === 'horizontal' ||
+            flexDirection ||
+            justifyContent ||
+            alignItems) &&
         css`
             display: flex;
             justify-content: ${justifyContent};
+            align-items: ${alignItems};
+            flex-direction: ${direction === 'horizontal'
+                ? 'row'
+                : direction === 'vertical'
+                ? 'column'
+                : flexDirection};
         `}
 
-    ${({ alignItems }) =>
-        alignItems &&
+    ${({ breakpoints }) =>
+        breakpoints &&
         css`
-            display: flex;
-            align-items: ${alignItems};
+            ${Object.entries(breakpoints)
+                .map(
+                    ([breakpoint, { flexDirection, direction }]) =>
+                        (direction === 'horizontal' || flexDirection) &&
+                        `
+                            @media ${from[breakpoint]} {
+                                display: flex;
+                                flex-direction: ${
+                                    direction === 'horizontal'
+                                        ? 'row'
+                                        : flexDirection
+                                };
+                            }
+                         `
+                )
+                .join('\n')}
         `}
+
 
     > * + * {
-        ${({ breakpoints, spacing, direction }) => {
-            const orientation =
-                direction === 'vertical' ? 'margin-top' : 'margin-left'
+        ${({ breakpoints, spacing, direction, flexDirection }) => {
+            const orientation = (direction?: string, flexDirection?: string) =>
+                direction === 'horizontal' || flexDirection === 'row'
+                    ? 'margin-left'
+                    : 'margin-top'
 
             return css`
-                ${orientation}: var(--spacings-${spacing});
+                ${orientation(
+                    direction,
+                    flexDirection
+                )}: var(--spacings-${spacing});
 
                 ${breakpoints &&
                 Object.entries(breakpoints)
                     .map(
-                        ([breakpoint, { spacing }]) =>
-                            spacing &&
-                            `
+                        ([
+                            breakpoint,
+                            {
+                                spacing: breakpointSpacing,
+                                direction: breakpointDirection,
+                                flexDirection
+                            }
+                        ]) => `
                             @media ${from[breakpoint]} {
-                                ${orientation}: var(--spacings-${spacing});
+                                margin-left: initial;
+                                margin-top: initial;
+
+                                ${orientation(
+                                    breakpointDirection
+                                        ? breakpointDirection
+                                        : direction,
+                                    flexDirection
+                                )}: var(--spacings-${
+                            breakpointSpacing ? breakpointSpacing : spacing
+                        });
                             }
                         `
                     )
