@@ -44,16 +44,29 @@ export const Element = styled(
         css`
             ${Object.entries(breakpoints)
                 .map(
-                    ([breakpoint, { flexDirection, direction }]) =>
-                        (direction === 'horizontal' || flexDirection) &&
-                        `
+                    ([
+                        breakpoint,
+                        { flexDirection, direction, alignItems }
+                    ]) => `
                             @media ${from[breakpoint]} {
-                                display: flex;
-                                flex-direction: ${
-                                    direction === 'horizontal'
-                                        ? 'row'
-                                        : flexDirection
-                                };
+                                ${
+                                    (direction === 'horizontal' ||
+                                        flexDirection) &&
+                                    `
+                                        display: flex;
+                                        flex-direction: ${
+                                            direction === 'horizontal'
+                                                ? 'row'
+                                                : flexDirection
+                                        };
+                                    `
+                                }
+                                ${
+                                    alignItems &&
+                                    `
+                                        align-items: ${alignItems};
+                                    `
+                                }
                             }
                          `
                 )
