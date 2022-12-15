@@ -1,5 +1,5 @@
 import NextLink from 'next/link'
-import React, { AnchorHTMLAttributes, FC } from 'react'
+import { AnchorHTMLAttributes, FC } from 'react'
 
 export interface LinkProps
     extends Partial<AnchorHTMLAttributes<HTMLAnchorElement>> {

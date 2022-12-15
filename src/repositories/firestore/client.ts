@@ -13,26 +13,27 @@ import {
     getDocs,
     limit as queryLimit,
     orderBy as queryOrderBy,
+    OrderByDirection,
     query as queryQuery,
     Timestamp,
     UpdateData,
     updateDoc,
     where as queryWhere,
-    WhereFilterOp,
-    OrderByDirection
+    WhereFilterOp
 } from 'firebase/firestore'
+
 import { DB_Meta, ID, Table } from './common'
 
 interface Constraints<Collection extends DocumentData[]> {
+    limit?: number
+    orderBy?: {
+        [key in keyof Collection[number]]?: OrderByDirection
+    }
     where?: [
         Extract<keyof (Collection[number] & DB_Meta), string>,
         WhereFilterOp,
         any
     ][]
-    orderBy?: {
-        [key in keyof Collection[number]]?: OrderByDirection
-    }
-    limit?: number
 }
 
 async function mapDocs<Collection extends DocumentData[]>(
@@ -90,6 +91,14 @@ async function mapDocs<Collection extends DocumentData[]>(
 }
 
 const getRepository = (db: Firestore) => ({
+    create: async <Collection extends DocumentData[]>(
+        table: Table,
+        data: Collection[number]
+    ) => {
+        const { id } = await addDoc(collection(db, table), data)
+        return id
+    },
+
     find: async <Collection extends DocumentData[]>(table: Table, id: ID) => {
         const item = await getDoc(doc(db, table, id))
         return await mapDocs<Collection>(item)
@@ -124,15 +133,7 @@ const getRepository = (db: Firestore) => ({
         table: Table,
         id: ID,
         data: UpdateData<Collection[number]>
-    ) => await updateDoc(doc(db, table, id), data),
-
-    create: async <Collection extends DocumentData[]>(
-        table: Table,
-        data: Collection[number]
-    ) => {
-        const { id } = await addDoc(collection(db, table), data)
-        return id
-    }
+    ) => await updateDoc(doc(db, table, id), data)
 })
 
 export default getRepository

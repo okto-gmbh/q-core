@@ -1,5 +1,7 @@
 import { css, SerializedStyles } from '@emotion/react'
+
 import { from, until } from '../breakpoints'
+
 import {
     RawDesignTokens,
     ResponsiveTokens,
@@ -66,9 +68,9 @@ export const generateGlobalStyles = ({
     customVariables,
     customReset
 }: {
-    designTokens: RawDesignTokens
-    customVariables: SerializedStyles
     customReset: SerializedStyles
+    customVariables: SerializedStyles
+    designTokens: RawDesignTokens
 }) => css`
     :root {
         --_scrollbar-thumb-background: var(

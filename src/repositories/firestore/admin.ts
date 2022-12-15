@@ -1,20 +1,21 @@
 /* eslint-disable no-redeclare */
 
 import * as admin from 'firebase-admin'
+
 import { DB_Meta, ID, Table } from './common'
 
 export interface Constraints<
     Collection extends admin.firestore.DocumentData[]
 > {
+    limit?: number
+    orderBy?: {
+        [key in keyof Collection[number]]?: admin.firestore.OrderByDirection
+    }
     where?: [
         Extract<keyof (Collection[number] & DB_Meta), string>,
         admin.firestore.WhereFilterOp,
         any
     ][]
-    orderBy?: {
-        [key in keyof Collection[number]]?: admin.firestore.OrderByDirection
-    }
-    limit?: number
 }
 
 async function mapDocs<Collection extends admin.firestore.DocumentData[]>(
@@ -75,6 +76,14 @@ async function mapDocs<Collection extends admin.firestore.DocumentData[]>(
 }
 
 const getRepository = (db: admin.firestore.Firestore) => ({
+    create: async <Collection extends admin.firestore.DocumentData[]>(
+        table: Table,
+        data: Collection[number]
+    ) => {
+        const { id } = await db.collection(table).add(data)
+        return id
+    },
+
     find: async <Collection extends admin.firestore.DocumentData[]>(
         table: Table,
         id: ID
@@ -121,15 +130,7 @@ const getRepository = (db: admin.firestore.Firestore) => ({
         table: Table,
         id: ID,
         data: Partial<Collection[number]>
-    ) => await db.collection(table).doc(id).update(data),
-
-    create: async <Collection extends admin.firestore.DocumentData[]>(
-        table: Table,
-        data: Collection[number]
-    ) => {
-        const { id } = await db.collection(table).add(data)
-        return id
-    }
+    ) => await db.collection(table).doc(id).update(data)
 })
 
 export default getRepository

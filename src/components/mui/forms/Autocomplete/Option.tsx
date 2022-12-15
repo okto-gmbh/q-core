@@ -1,4 +1,4 @@
-import React, { FC, LiHTMLAttributes } from 'react'
+import { FC, LiHTMLAttributes } from 'react'
 
 const Option: FC<LiHTMLAttributes<HTMLLIElement>> = (props) => <li {...props} />
 

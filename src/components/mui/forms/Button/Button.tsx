@@ -1,6 +1,8 @@
 import { ButtonProps as MuiButtonProps } from '@mui/material'
-import React, { FC } from 'react'
+import { FC } from 'react'
+
 import { ButtonVariant } from '../../../Button/Button'
+
 import * as Styled from './Button.styled'
 
 export type ButtonProps = Omit<MuiButtonProps, 'variant'> & {

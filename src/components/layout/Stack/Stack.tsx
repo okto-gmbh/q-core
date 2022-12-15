@@ -1,28 +1,30 @@
-import React, {
+import {
     ComponentType,
     forwardRef,
     ForwardRefRenderFunction,
     HTMLAttributes
 } from 'react'
+
 import {
     AlignItems,
-    JustifyContent,
-    Spacing,
     Breakpoints,
-    FlexDirection
+    FlexDirection,
+    JustifyContent,
+    Spacing
 } from '../../../types'
+
 import * as Styled from './Stack.styled'
 
 type Direction = 'vertical' | 'horizontal'
 
 export interface StackProps extends HTMLAttributes<HTMLDivElement> {
-    as?: string | ComponentType
-    spacing?: Spacing
-    direction?: Direction
     alignItems?: AlignItems
-    justifyContent?: JustifyContent
+    as?: string | ComponentType
     breakpoints?: Breakpoints
+    direction?: Direction
     flexDirection?: FlexDirection
+    justifyContent?: JustifyContent
+    spacing?: Spacing
 }
 
 const Stack: ForwardRefRenderFunction<HTMLDivElement, StackProps> = (

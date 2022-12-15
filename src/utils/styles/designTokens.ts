@@ -1,6 +1,7 @@
 /* eslint-disable sonarjs/no-duplicate-string */
 import Color from 'color'
 import merge from 'lodash.merge'
+
 import { Breakpoint, Color as ColorType, FontSize, Heading } from '../../types'
 
 export type GoogleFont = {
@@ -34,12 +35,12 @@ export type TokenFontWeights = {
 
 type TokenSpacings = {
     baseline: number
-    tiny: number
-    small: number
-    medium: number
     default: number
-    large: number
     huge: number
+    large: number
+    medium: number
+    small: number
+    tiny: number
 }
 
 type TokenFontSizes = {
@@ -101,89 +102,116 @@ type TokenBorders = {
     [key: 'default' | string]:
         | string
         | {
-              width: string
-              style: string
               color: string
+              style: string
+              width: string
           }
 }
 
 export type DesignTokens = {
-    fonts: TokenFonts
-    fontWeights: TokenFontWeights
-    fontSizes: TokenFontSizes
-    lineHeights: TokenLineHeights | Stringify<TokenLineHeights>
-    letterSpacings: TokenLetterSpacings | Pixels<TokenLetterSpacings>
-    colors: TokenColors
-    components?: TokenComponents
     backgrounds: {
         [key: 'default' | string]: string
     }
-    spacings: TokenSpacings | Pixels<TokenSpacings>
-    radii: TokenRadii | Pixels<TokenRadii>
     borders: TokenBorders
-    opacity: {
-        [key: 'disabled' | string]: number
-    }
+    breakpoints: TokenBreakpoints
+    colors: TokenColors
     cursors: {
         [key: 'disabled' | string]: string
     }
+    fontSizes: TokenFontSizes
+    fontWeights: TokenFontWeights
+    fonts: TokenFonts
+    letterSpacings: TokenLetterSpacings | Pixels<TokenLetterSpacings>
+    lineHeights: TokenLineHeights | Stringify<TokenLineHeights>
+    motion: TokenMotion
+    opacity: {
+        [key: 'disabled' | string]: number
+    }
+    radii: TokenRadii | Pixels<TokenRadii>
     shadows: {
         [key: 'default' | string]: string
     }
-    motion: TokenMotion
-    breakpoints: TokenBreakpoints
+    spacings: TokenSpacings | Pixels<TokenSpacings>
+    components?: TokenComponents
     responsiveTokens?: TokenResponsiveTokens
 }
 
 export type RawDesignTokens = DesignTokens & {
-    spacings: TokenSpacings
     letterSpacings: TokenLetterSpacings
-    radii: TokenRadii
     lineHeights: TokenLineHeights
+    radii: TokenRadii
+    spacings: TokenSpacings
 }
 
 export type GeneratedDesignTokens = DesignTokens & {
-    spacings: Pixels<TokenSpacings>
     letterSpacings: Pixels<TokenLetterSpacings>
-    radii: Pixels<TokenRadii>
     lineHeights: Stringify<TokenLineHeights>
+    radii: Pixels<TokenRadii>
+    spacings: Pixels<TokenSpacings>
 }
 
 export const SYSTEM_FONTS_FALLBACK =
     "-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Oxygen-Sans,Ubuntu,Cantarell,'Helvetica Neue',sans-serif"
 
 const coreTokens: RawDesignTokens = {
-    fonts: {
-        heading: SYSTEM_FONTS_FALLBACK,
-        body: SYSTEM_FONTS_FALLBACK
+    backgrounds: {
+        default: '#ffffff'
+    },
+    borders: {
+        default: {
+            color: 'transparent',
+            style: 'solid',
+            width: '0px'
+        }
+    },
+    breakpoints: {
+        desktopL: '1600px',
+        desktopM: '1300px',
+        desktopS: '980px',
+        desktopXL: '2000px',
+        mobileLandscape: '480px',
+        mobilePortrait: '320px',
+        tabletLandscape: '740px',
+        tabletPortrait: '610px'
+    },
+    colors: {
+        black: '#2b2b2b',
+        danger: '#f04141',
+        info: '#10dc60',
+        primary: '#6a94a0',
+        primaryHover: 'var(--colors-primary-dark-20)',
+        secondary: '#6a94a0',
+        secondaryHover: 'var(--colors-secondary-dark-20)',
+        success: '#10dc60',
+        white: '#ffffff'
+    },
+    cursors: {
+        disabled: 'not-allowed'
+    },
+    fontSizes: {
+        default: 3,
+        h1: [1.75, 3.5, 5.5, 1.125],
+        h2: [1.5, 2.5, 4.5, 1.2],
+        h3: [1.25, 2, 4, 1.3125],
+        h4: [1.125, 1.625, 3.5, 1.384615],
+        h5: [1.125, 1.625, 3.5, 1.384615],
+        large: 4,
+        medium: 3.33333,
+        small: 2.5,
+        tiny: 2
     },
     fontWeights: {
-        default: 400,
         bold: 600,
+        default: 400,
         h1: 600,
         h2: 600,
         h3: 600,
         h4: 400,
         h5: 400
     },
-    fontSizes: {
-        tiny: 2,
-        small: 2.5,
-        default: 3,
-        medium: 3.33333,
-        large: 4,
-        h1: [1.75, 3.5, 5.5, 1.125],
-        h2: [1.5, 2.5, 4.5, 1.2],
-        h3: [1.25, 2, 4, 1.3125],
-        h4: [1.125, 1.625, 3.5, 1.384615],
-        h5: [1.125, 1.625, 3.5, 1.384615]
-    },
-    lineHeights: {
-        tiny: 1.7,
-        small: 1.6,
-        default: 1.5,
-        medium: 1.4,
-        large: 1.3
+    fonts: {
+        body: SYSTEM_FONTS_FALLBACK,
+        heading: SYSTEM_FONTS_FALLBACK
     },
     letterSpacings: {
         default: 0,
@@ -193,45 +221,12 @@ const coreTokens: RawDesignTokens = {
         h4: 0,
         h5: 0
     },
-    colors: {
-        primary: '#6a94a0',
-        primaryHover: 'var(--colors-primary-dark-20)',
-        secondary: '#6a94a0',
-        secondaryHover: 'var(--colors-secondary-dark-20)',
-        danger: '#f04141',
-        success: '#10dc60',
-        info: '#10dc60',
-        white: '#ffffff',
-        black: '#2b2b2b'
-    },
-    spacings: {
-        baseline: 6,
-        tiny: 1,
-        small: 2,
-        medium: 3,
-        default: 4,
-        large: 8,
-        huge: 16
-    },
-    radii: {
-        default: 0
-    },
-    borders: {
-        default: {
-            width: '0px',
-            style: 'solid',
-            color: 'transparent'
-        }
-    },
-    opacity: {
-        disabled: 0.8
-    },
-    cursors: {
-        disabled: 'not-allowed'
-    },
-    shadows: {
-        default: '0px 1px 5px rgba(0, 0, 0, 0.16)',
-        mui: 'var(--shadows-default)'
+    lineHeights: {
+        default: 1.5,
+        large: 1.3,
+        medium: 1.4,
+        small: 1.6,
+        tiny: 1.7
     },
     motion: {
         default: {
@@ -239,18 +234,24 @@ const coreTokens: RawDesignTokens = {
             function: 'ease-in-out'
         }
     },
-    breakpoints: {
-        mobilePortrait: '320px',
-        mobileLandscape: '480px',
-        tabletPortrait: '610px',
-        tabletLandscape: '740px',
-        desktopS: '980px',
-        desktopM: '1300px',
-        desktopL: '1600px',
-        desktopXL: '2000px'
+    opacity: {
+        disabled: 0.8
     },
-    backgrounds: {
-        default: '#ffffff'
+    radii: {
+        default: 0
+    },
+    shadows: {
+        default: '0px 1px 5px rgba(0, 0, 0, 0.16)',
+        mui: 'var(--shadows-default)'
+    },
+    spacings: {
+        baseline: 6,
+        default: 4,
+        huge: 16,
+        large: 8,
+        medium: 3,
+        small: 2,
+        tiny: 1
     }
 }
 
@@ -395,12 +396,11 @@ const generateResponsiveTokens = (
                 breakpoint,
                 {
                     ...tokens,
-                    spacings: generateSpacings(
-                        merge(originalSpacings, tokens.spacings)
-                    ),
-                    motion: generateMotion(tokens.motion),
                     borders: generateBorders(tokens.borders),
                     fontSizes: generateFontSizes(tokens.fontSizes),
+                    letterSpacings: generatePixelBasedValues(
+                        tokens.letterSpacings
+                    ),
                     lineHeights: {
                         ...clampLineHeights,
                         ...generateRegularLineHeights(
@@ -410,10 +410,11 @@ const generateResponsiveTokens = (
                             merge(originalLineHeights, tokens.lineHeights)
                         )
                     },
-                    letterSpacings: generatePixelBasedValues(
-                        tokens.letterSpacings
-                    ),
-                    radii: generatePixelBasedValues(tokens.radii)
+                    motion: generateMotion(tokens.motion),
+                    radii: generatePixelBasedValues(tokens.radii),
+                    spacings: generateSpacings(
+                        merge(originalSpacings, tokens.spacings)
+                    )
                 }
             ]
         })
@@ -443,21 +444,21 @@ export const generateDesignTokens = (
 
     const generatedDesignTokens: GeneratedDesignTokens = {
         ...settings,
-        colors: generateColors(settings.colors),
-        spacings: generateSpacings(settings.spacings),
-        fonts: generateFonts(settings.fonts),
-        fontSizes: generatedFontSizes,
-        letterSpacings: generatePixelBasedValues(settings.letterSpacings),
-        radii: generatePixelBasedValues(settings.radii),
-        motion: generateMotion(settings.motion),
         borders: generateBorders(settings.borders),
+        colors: generateColors(settings.colors),
+        fontSizes: generatedFontSizes,
+        fonts: generateFonts(settings.fonts),
+        letterSpacings: generatePixelBasedValues(settings.letterSpacings),
         lineHeights: generatedLineHeights,
+        motion: generateMotion(settings.motion),
+        radii: generatePixelBasedValues(settings.radii),
         responsiveTokens: generateResponsiveTokens(
             settings.spacings,
             settings.lineHeights,
             settings.fontSizes,
             settings.responsiveTokens || {}
-        )
+        ),
+        spacings: generateSpacings(settings.spacings)
     }
 
     return generatedDesignTokens

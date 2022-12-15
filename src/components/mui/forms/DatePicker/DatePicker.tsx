@@ -1,22 +1,23 @@
+import { TextFieldProps } from '@mui/material'
 import {
     DatePicker as MuiDatePicker,
     DatePickerProps as MuiDatePickerProps
 } from '@mui/x-date-pickers-pro'
-import { TextFieldProps } from '@mui/material'
-import React, { FC } from 'react'
+import { FC } from 'react'
 import {
     Control,
     Controller,
     ControllerRenderProps,
     FieldValues
 } from 'react-hook-form'
+
 import TextInput from '../TextInput'
 
 type DatePickerProps = Omit<MuiDatePickerProps<any, any>, 'renderInput'> & {
-    error?: boolean
-    helperText?: string
     control?: Control<FieldValues>
+    error?: boolean
     fieldName?: string
+    helperText?: string
     mask?: string
 }
 
@@ -39,8 +40,8 @@ const DatePicker: FC<DatePickerProps> = ({
 
         if (control && onChange) {
             ;(onChange as any)(field.name, date, {
-                shouldValidate: true,
-                shouldDirty: true
+                shouldDirty: true,
+                shouldValidate: true
             })
         }
     }
@@ -63,8 +64,8 @@ const DatePicker: FC<DatePickerProps> = ({
 
     if (!control) {
         return renderPicker({
-            value,
-            onChange
+            onChange,
+            value
         } as ControllerRenderProps<FieldValues, string>)
     }
 

@@ -1,6 +1,6 @@
 import { css } from '@emotion/react'
 import styled from '@emotion/styled'
-import React from 'react'
+
 import { ButtonProps, ButtonVariant } from './Button'
 
 export const composeButtonVariants = ({
@@ -110,8 +110,8 @@ export const Button = styled(
 )`
     ${composeButtonVariants}
 
-    -webkit-appearance: none;
-    -moz-appearance: none;
+    appearance: none;
+    appearance: none;
     appearance: none;
     outline: none;
     cursor: pointer;
@@ -131,8 +131,8 @@ export const Button = styled(
     height: ${({ height }) => (height ? height : undefined)};
 
     &:hover {
-        background-color: var(--_backgroundColorHover);
         border-color: var(--_borderColorHover);
+        background-color: var(--_backgroundColorHover);
         color: var(--_colorHover);
     }
 `

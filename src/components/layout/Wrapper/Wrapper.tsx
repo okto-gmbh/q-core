@@ -1,4 +1,5 @@
-import React, { FC, HTMLAttributes } from 'react'
+import { FC, HTMLAttributes } from 'react'
+
 import * as Styled from './Wrapper.styled'
 
 export interface WrapperProps extends Partial<HTMLAttributes<HTMLDivElement>> {

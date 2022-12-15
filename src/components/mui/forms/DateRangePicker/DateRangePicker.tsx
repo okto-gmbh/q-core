@@ -1,26 +1,28 @@
+import { TextFieldProps } from '@mui/material'
 import {
     DateRangePicker as DateRangePickerMui,
     DateRangePickerProps as MuiDateRangePickerProps
 } from '@mui/x-date-pickers-pro/DateRangePicker'
-import { TextFieldProps } from '@mui/material'
-import React, { FC, useRef } from 'react'
+import { FC, useRef } from 'react'
 import {
     Control,
     Controller,
     ControllerRenderProps,
     FieldValues
 } from 'react-hook-form'
+
 import TextInput from '../TextInput'
+
 import * as Styled from './DateRangePicker.styled'
 
 type DateRangePickerProps = Omit<
     MuiDateRangePickerProps<TextFieldProps, any>,
     'renderInput'
 > & {
+    fieldName: string
+    control?: Control<FieldValues>
     error?: boolean
     helperText?: string
-    control?: Control<FieldValues>
-    fieldName: string
     mask?: string
 }
 
@@ -43,8 +45,8 @@ const DateRangePicker: FC<DateRangePickerProps> = ({
 
         if (control && onChange) {
             ;(onChange as any)(field.name, range, {
-                shouldValidate: true,
-                shouldDirty: true
+                shouldDirty: true,
+                shouldValidate: true
             })
         }
     }
@@ -90,8 +92,8 @@ const DateRangePicker: FC<DateRangePickerProps> = ({
 
     if (!control) {
         return renderPicker({
-            value: props.value,
-            onChange
+            onChange,
+            value: props.value
         } as ControllerRenderProps<FieldValues, string>)
     }
 

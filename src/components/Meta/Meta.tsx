@@ -1,12 +1,12 @@
-import { DefaultSeo, NextSeo, NextSeoProps } from 'next-seo'
 import Head from 'next/head'
 import { useRouter } from 'next/router'
-import React, { FC } from 'react'
+import { DefaultSeo, NextSeo, NextSeoProps } from 'next-seo'
+import { FC } from 'react'
 
 type MetaProps = NextSeoProps & {
-    siteName: string
     appBaseUrl: string
     image: string
+    siteName: string
     themeColor: string
 }
 
@@ -29,19 +29,19 @@ const Meta: FC<MetaProps> = ({
                 languageAlternates={locales
                     ?.filter((locale) => locale !== currentLocale)
                     .map((locale) => ({
-                        hrefLang: locale,
-                        href: `${appBaseUrl}/${locale}${asPath}`
+                        href: `${appBaseUrl}/${locale}${asPath}`,
+                        hrefLang: locale
                     }))}
                 openGraph={{
                     description: description,
-                    locale: currentLocale,
-                    url: `${appBaseUrl}${asPath}`,
                     images: [
                         {
                             url: image
                         }
                     ],
-                    site_name: siteName
+                    locale: currentLocale,
+                    site_name: siteName,
+                    url: `${appBaseUrl}${asPath}`
                 }}
             />
             <NextSeo noindex={noindex} nofollow={nofollow} />

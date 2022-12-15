@@ -1,4 +1,5 @@
 import styled from '@emotion/styled'
+
 import { from } from '../../utils/breakpoints'
 import Stack from '../layout/Stack'
 
@@ -13,13 +14,13 @@ export const Container = styled(Stack)`
     z-index: 1000;
     bottom: 0;
     left: 0;
+    display: flex;
     width: 100%;
+    flex-direction: column;
+    align-items: center;
     padding: var(--spacings-default);
     background-color: var(--_backgroundColor);
     color: var(--_color);
-    display: flex;
-    flex-direction: column;
-    align-items: center;
     text-align: center;
 
     @media ${from.mobileLandscape} {

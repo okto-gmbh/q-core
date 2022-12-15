@@ -1,18 +1,19 @@
 import { TextFieldProps } from '@mui/material'
-import React, { forwardRef, Ref } from 'react'
+import { forwardRef, Ref } from 'react'
 import {
     Control,
     Controller,
     ControllerRenderProps,
     FieldValues
 } from 'react-hook-form'
+
 import * as Styled from './TextInput.styled'
 
 export type TextInputProps = TextFieldProps & {
-    round?: boolean
     control?: Control<FieldValues>
     fieldName?: string
     grow?: 'auto'
+    round?: boolean
 }
 
 const TextInput = (
@@ -50,8 +51,8 @@ const TextInput = (
 
         if (control && onChange) {
             ;(onChange as any)(field.name, event.target.value, {
-                shouldValidate: true,
-                shouldDirty: true
+                shouldDirty: true,
+                shouldValidate: true
             })
         }
     }
@@ -99,8 +100,8 @@ const TextInput = (
 
     if (!control) {
         return renderInput({
-            value,
-            onChange
+            onChange,
+            value
         } as ControllerRenderProps<FieldValues, string>)
     }
 

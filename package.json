@@ -1,34 +1,25 @@
 {
-    "name": "q-core",
     "version": "0.1.1",
-    "contributors": [
-        {
-            "name": "Andres Maier",
-            "email": "andres@authentiq.ch",
-            "url": "https://www.authentiq.ch/"
-        },
-        {
-            "name": "Mike Züger",
-            "email": "mike@authentiq.ch",
-            "url": "https://www.authentiq.ch/"
-        }
-    ],
+    "name": "q-core",
     "scripts": {
-        "prebuild": "rimraf -rf ./lib",
         "build": "yarn build:esm && yarn build:cjs",
-        "build:watch": "tsc --watch --module commonjs",
-        "build:esm": "tsc --skipLibCheck --outDir lib/esm",
         "build:cjs": "tsc --skipLibCheck --module commonjs",
-        "lint:ts": "eslint \"src/**/*.{ts,tsx}\"",
-        "lint:css": "stylelint \"src/**/*.{ts,tsx}\"",
-        "lint": "yarn lint:ts && yarn lint:css",
-        "fix:ts": "eslint --fix \"src/**/*.{ts,tsx}\"",
-        "fix:css": "stylelint --fix \"src/**/*.{ts,tsx}\"",
+        "build:esm": "tsc --skipLibCheck --outDir lib/esm",
+        "build:watch": "tsc --watch --module commonjs",
         "fix": "yarn fix:ts && yarn fix:css",
+        "fix:css": "stylelint --fix \"src/**/*.{ts,tsx}\"",
+        "fix:ts": "eslint --fix \"src/**/*.{ts,tsx}\"",
+        "lint": "yarn lint:ts && yarn lint:css",
+        "lint:css": "stylelint \"src/**/*.{ts,tsx}\"",
+        "lint:ts": "eslint \"src/**/*.{ts,tsx}\"",
         "plop": "plop",
+        "prebuild": "rimraf -rf ./lib",
         "test": "jest",
-        "test:watch": "jest --watch",
-        "test:coverage": "jest --coverage"
+        "test:coverage": "jest --coverage",
+        "test:watch": "jest --watch"
+    },
+    "engines": {
+        "node": ">=16.15.0"
     },
     "files": [
         "/lib"
@@ -77,16 +68,22 @@
         "stylelint-config-standard": "28.0.0",
         "typescript": "^4.8.2"
     },
-    "engines": {
-        "node": ">=16.15.0"
-    },
     "browserslist": [
         ">0.3%",
         "not ie 11",
         "not dead",
         "not op_mini all"
     ],
-    "volta": {
-        "node": "18.8.0"
-    }
+    "contributors": [
+        {
+            "email": "andres@authentiq.ch",
+            "name": "Andres Maier",
+            "url": "https://www.authentiq.ch/"
+        },
+        {
+            "email": "mike@authentiq.ch",
+            "name": "Mike Züger",
+            "url": "https://www.authentiq.ch/"
+        }
+    ]
 }

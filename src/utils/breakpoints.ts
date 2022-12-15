@@ -1,14 +1,14 @@
 import { TokenBreakpoints } from './styles/designTokens'
 
 export const SIZES: TokenBreakpoints = {
-    mobilePortrait: '320px',
-    mobileLandscape: '480px',
-    tabletPortrait: '610px',
-    tabletLandscape: '740px',
-    desktopS: '980px',
-    desktopM: '1300px',
     desktopL: '1600px',
-    desktopXL: '2000px'
+    desktopM: '1300px',
+    desktopS: '980px',
+    desktopXL: '2000px',
+    mobileLandscape: '480px',
+    mobilePortrait: '320px',
+    tabletLandscape: '740px',
+    tabletPortrait: '610px'
 }
 
 const buildMediaQueries = (direction: 'min' | 'max') =>
