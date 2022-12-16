@@ -20,24 +20,24 @@ export const Input = styled(
     )
 )(({ round, grow }: { grow?: 'auto'; round?: boolean }) => ({
     [`& .${formLabelClasses.root}`]: {
-        textShadow: '0 0 3px white',
-        zIndex: 1
+        zIndex: 1,
+        textShadow: '0 0 3px white'
     },
 
     [`& .${inputBaseClasses.root}`]: {
         '&:hover': {
             [`&:not(.${inputBaseClasses.disabled})`]: {
                 [`& .${outlinedInputClasses.notchedOutline}`]: {
-                    borderColor: primaryColor,
-                    borderWidth: '1px'
+                    borderWidth: '1px',
+                    borderColor: primaryColor
                 }
             }
         },
-        backgroundColor: white,
+        padding: round ? '0 var(--spacings-default)' : undefined,
         borderRadius: round ? 'var(--spacings-huge)' : 'var(--radii-default)',
+        backgroundColor: white,
 
         boxShadow: 'var(--shadows-mui)',
-        padding: round ? '0 var(--spacings-default)' : undefined,
 
         [`&.${autocompleteClasses.inputRoot}`]: {
             backgroundColor: white
@@ -48,9 +48,9 @@ export const Input = styled(
         },
 
         [`& .${outlinedInputClasses.notchedOutline}`]: {
-            borderColor: 'var(--colors-white)',
-            borderStyle: 'solid',
             borderWidth: '1px',
+            borderStyle: 'solid',
+            borderColor: 'var(--colors-white)',
             transition: 'border 0.2s ease-in'
         },
 
@@ -77,8 +77,8 @@ export const Input = styled(
         [`&.${inputBaseClasses.focused}`]: {
             [`&:not(.${inputBaseClasses.disabled})`]: {
                 [`& .${outlinedInputClasses.notchedOutline}`]: {
-                    borderColor: primaryColor,
-                    borderWidth: '1px'
+                    borderWidth: '1px',
+                    borderColor: primaryColor
                 }
             },
 
