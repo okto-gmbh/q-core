@@ -1,5 +1,5 @@
 import styled from '@emotion/styled'
-import React from 'react'
+
 import { WrapperProps } from './Wrapper'
 
 export const Element = styled(({ fluid: _fluid, ...rest }: WrapperProps) => (
@@ -10,8 +10,8 @@ export const Element = styled(({ fluid: _fluid, ...rest }: WrapperProps) => (
     --_height: var(--wrapper-height, initial);
 
     width: ${({ fluid }) => (fluid ? '100%' : undefined)};
-    height: var(--_height);
     max-width: ${({ fluid }) => (fluid ? undefined : 'var(--_maxWidth)')};
+    height: var(--_height);
     padding: var(--_padding);
     margin-right: auto;
     margin-left: auto;

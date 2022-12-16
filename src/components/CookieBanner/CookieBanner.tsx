@@ -1,9 +1,10 @@
 import React, { useEffect, useState } from 'react'
+
 import * as Styled from './CookieBanner.styled'
 
 export interface CookieBannerProps {
-    text: React.ReactNode
     button: React.ReactNode
+    text: React.ReactNode
 }
 
 const CookieBanner = ({ text, button }: CookieBannerProps) => {

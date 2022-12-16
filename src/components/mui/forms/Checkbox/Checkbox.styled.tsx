@@ -1,7 +1,7 @@
+import styled from '@emotion/styled'
 import FormControl from '@mui/material/FormControl'
 import FormControlLabel from '@mui/material/FormControlLabel'
 import FormGroup from '@mui/material/FormGroup'
-import styled from '@emotion/styled'
 
 export const Group = styled(FormGroup)`
     height: 100%;

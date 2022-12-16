@@ -1,7 +1,8 @@
 import { css } from '@emotion/react'
 import styled from '@emotion/styled'
-import React from 'react'
+
 import { from } from '../../../utils/breakpoints'
+
 import { GridProps } from './Grid'
 import { GridItemProps } from './GridItem'
 
@@ -29,7 +30,7 @@ export const Grid = styled(
 
     @media ${from.tabletPortrait} {
         grid-gap: ${({ gap }) =>
-            gap ? `var(--spacings-${gap})` : 'var(--_gap)'};
+            gap ? `var(--spacings-${gap}) ` : 'var(--_gap)'};
     }
 
     img {

@@ -4,8 +4,8 @@ export const formatMoney = (
     currency = 'CHF'
 ): string =>
     (amount || 0).toLocaleString(locale, {
-        style: 'currency',
         currency,
+        maximumFractionDigits: 0,
         minimumFractionDigits: 0,
-        maximumFractionDigits: 0
+        style: 'currency'
     })

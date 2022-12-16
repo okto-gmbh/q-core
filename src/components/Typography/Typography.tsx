@@ -1,5 +1,7 @@
-import React, { ComponentType, FC, HTMLAttributes } from 'react'
+import { ComponentType, FC, HTMLAttributes } from 'react'
+
 import { Display, FontSize, FontWeight } from '../../types'
+
 import * as Styled from './Typography.styled'
 
 export interface TypographyProps

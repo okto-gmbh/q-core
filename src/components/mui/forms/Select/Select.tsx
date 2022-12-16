@@ -2,13 +2,14 @@ import { AutocompleteProps, FilterOptionsState } from '@mui/material'
 import { createFilterOptions } from '@mui/material/Autocomplete'
 import match from 'autosuggest-highlight/match'
 import parse from 'autosuggest-highlight/parse'
-import React, { forwardRef, Ref } from 'react'
+import { forwardRef, Ref } from 'react'
 import {
     Control,
     Controller,
     ControllerRenderProps,
     FieldValues
 } from 'react-hook-form'
+
 import { vars } from '../../../../utils/string'
 import Paper from '../../Paper'
 import Autocomplete, { Option } from '../Autocomplete'
@@ -17,16 +18,16 @@ import TextInput from '../TextInput'
 const selectFilter = createFilterOptions()
 
 type SelectProps = AutocompleteProps<any, any, any, any> & {
-    limitTags?: number
-    multiple?: boolean
     label: string
-    error?: boolean
-    helperText?: string
+    onCreate: (value: any) => void
+    options: Array<{ key: string; value: string }>
     control?: Control<FieldValues>
     createLabel?: string
+    error?: boolean
     fieldName?: string
-    options: Array<{ key: string; value: string }>
-    onCreate: (value: any) => void
+    helperText?: string
+    limitTags?: number
+    multiple?: boolean
 }
 
 const Select = (
@@ -60,8 +61,8 @@ const Select = (
                     ? (values as Array<{ key: string }>).map(({ key }) => key)
                     : values?.key,
                 {
-                    shouldValidate: true,
-                    shouldDirty: true
+                    shouldDirty: true,
+                    shouldValidate: true
                 }
             )
         }
@@ -86,11 +87,11 @@ const Select = (
                 : field.value !== params.inputValue)
         ) {
             filtered.push({
+                create: true,
                 key: params.inputValue,
                 value: vars(createLabel!, {
                     label: params.inputValue
-                }),
-                create: true
+                })
             })
         }
 
@@ -194,8 +195,8 @@ const Select = (
 
     if (!control) {
         return renderSelect({
-            value: props.value,
-            onChange
+            onChange,
+            value: props.value
         } as ControllerRenderProps<FieldValues, any>)
     }
 

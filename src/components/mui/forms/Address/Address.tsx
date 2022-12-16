@@ -1,44 +1,37 @@
-// eslint-disable-next-line
-// @ts-ignore: Needs this import
-import type { google } from 'google-maps'
 import { Grid, Typography } from '@mui/material'
 import parse from 'autosuggest-highlight/parse'
+// @ts-ignore: Needs this import
+import type { google } from 'google-maps'
 import throttle from 'lodash.throttle'
 import Script from 'next/script'
-import React, {
-    FC,
-    HTMLAttributes,
-    useEffect,
-    useMemo,
-    useRef,
-    useState
-} from 'react'
+import { FC, HTMLAttributes, useEffect, useMemo, useRef, useState } from 'react'
+
 import Paper from '../../Paper'
 import Autocomplete, { Option } from '../Autocomplete'
 import TextInput, { TextInputProps } from '../TextInput'
 
 type AddressResult = {
+    company: string | undefined
+    country: string | undefined
+    countryCode: string | undefined
     location:
         | {
               latitude: number
               longitude: number
           }
         | undefined
-    company: string | undefined
     street: string | undefined
     streetNo: string | undefined
-    zipCode: number | undefined
     town: string | undefined
-    country: string | undefined
-    countryCode: string | undefined
+    zipCode: number | undefined
 }
 
 interface AddressProps extends HTMLAttributes<HTMLDivElement> {
-    label: string
-    error?: boolean
     defaultValue: any | any[]
-    helperText?: string
+    label: string
     onAddress: (address: AddressResult) => void
+    error?: boolean
+    helperText?: string
     placeTypes?: string[]
     restrictions?: { country: string[] }
 }
@@ -97,9 +90,9 @@ const Address: FC<AddressProps> = ({
 
         getPlaceSuggestions(
             {
+                componentRestrictions: restrictions,
                 input: placeInput,
-                types: placeTypes,
-                componentRestrictions: restrictions
+                types: placeTypes
             },
             (results: any) => {
                 let newOptions: any[] = []
@@ -170,16 +163,16 @@ const Address: FC<AddressProps> = ({
                     : undefined
 
                 onAddress({
-                    location,
                     company,
+                    country: country?.long_name,
+                    countryCode: country?.short_name,
+                    location,
                     street: street?.long_name,
                     streetNo: streetNo?.long_name,
+                    town: town?.long_name,
                     zipCode: zipCode
                         ? parseInt(zipCode.long_name, 10)
-                        : undefined,
-                    town: town?.long_name,
-                    country: country?.long_name,
-                    countryCode: country?.short_name
+                        : undefined
                 })
             }
         )
@@ -229,7 +222,7 @@ const Address: FC<AddressProps> = ({
                     const parts = parse(
                         option?.structured_formatting?.main_text,
                         matches.map(
-                            (match: { offset: number; length: number }) => [
+                            (match: { length: number; offset: number }) => [
                                 match.offset,
                                 match.offset + match.length
                             ]

@@ -1,4 +1,5 @@
 import { ZodErrorMap, ZodIssueCode, ZodParsedType } from 'zod'
+
 import { assertNever, joinValues, jsonStringifyReplacer } from '../helpers'
 
 // eslint-disable-next-line sonarjs/cognitive-complexity
@@ -108,7 +109,7 @@ const errorMap: ZodErrorMap = (issue, { defaultError }) => {
             break
         default:
             message = defaultError
-            assertNever(issue)
+            throw new Error(issue.toString())
     }
     return { message }
 }

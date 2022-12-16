@@ -1,6 +1,6 @@
 import { css } from '@emotion/react'
 import styled from '@emotion/styled'
-import React from 'react'
+
 import { GridAreaProps } from './GridArea'
 
 const mapChildren = (children: any[]) =>
@@ -30,9 +30,9 @@ export const Grid = styled(
     }: GridAreaProps) => <Component {...rest} />
 )`
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(0, 1fr));
     grid-gap: ${({ gap }) => `var(--spacings-${gap}) `};
     grid-template-areas: ${({ areas }) => mapAreas(areas)};
+    grid-template-columns: repeat(auto-fit, minmax(0, 1fr));
 
     ${({ items }) =>
         items &&

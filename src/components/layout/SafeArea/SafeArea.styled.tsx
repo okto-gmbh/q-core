@@ -1,4 +1,5 @@
 import styled from '@emotion/styled'
+
 import { SafeAreaProps } from './SafeArea'
 
 export const SafeArea = styled.div<SafeAreaProps>`

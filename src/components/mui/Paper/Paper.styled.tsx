@@ -1,5 +1,6 @@
 import styled from '@emotion/styled'
-import React, { ForwardedRef, forwardRef } from 'react'
+import { ForwardedRef, forwardRef } from 'react'
+
 import { PaperProps } from '.'
 
 const StyledPaper = (
@@ -16,15 +17,15 @@ const StyledPaper = (
 
 export const Element = styled(forwardRef(StyledPaper))`
     position: relative;
-    box-shadow: var(--shadows-mui);
+    overflow: ${({ overflow }) => (overflow ? overflow : 'hidden')};
+    width: ${({ width }) => (width ? width : 'auto')};
+    height: ${({ height }) => (height ? height : undefined)};
     border-radius: ${({ borderRadius }) =>
         borderRadius ? borderRadius : 'var(--radii-default)'};
-    width: ${({ width }) => (width ? width : 'auto')};
     background-color: var(--colors-white);
-    overflow: ${({ overflow }) => (overflow ? overflow : 'hidden')};
+    box-shadow: var(--shadows-mui);
     overflow-x: ${({ scroll }) =>
         scroll === 'x' || scroll === 'all' ? 'auto' : undefined};
     overflow-y: ${({ scroll }) =>
         scroll === 'y' || scroll === 'all' ? 'auto' : undefined};
-    height: ${({ height }) => (height ? height : undefined)};
 `

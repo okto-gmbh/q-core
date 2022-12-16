@@ -1,4 +1,4 @@
-export * from './TextInput'
-
 import TextInput from './TextInput'
+
+export * from './TextInput'
 export default TextInput

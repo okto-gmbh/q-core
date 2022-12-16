@@ -1,6 +1,6 @@
 import { css } from '@emotion/react'
 import styled from '@emotion/styled'
-import React from 'react'
+
 import { ButtonProps, ButtonVariant } from './Button'
 
 export const composeButtonVariants = ({
@@ -109,30 +109,27 @@ export const Button = styled(
     )
 )`
     ${composeButtonVariants}
-
-    -webkit-appearance: none;
-    -moz-appearance: none;
-    appearance: none;
-    outline: none;
-    cursor: pointer;
+    width: ${({ width }) => (width ? width : undefined)};
+    height: ${({ height }) => (height ? height : undefined)};
     padding: var(--_padding);
     border: var(--_border);
     border-radius: var(--_borderRadius);
-    letter-spacing: var(--_letterSpacing);
+    appearance: none;
     background-color: var(--_backgroundColor);
-    color: var(--_color);
-    transition: var(--_transition);
-    text-transform: var(--_textTransform);
-    vertical-align: center;
-    font-weight: var(--_fontWeight);
     box-shadow: var(--_boxShadow);
+    color: var(--_color);
+    cursor: pointer;
     font-size: var(--_fontSize);
-    width: ${({ width }) => (width ? width : undefined)};
-    height: ${({ height }) => (height ? height : undefined)};
+    font-weight: var(--_fontWeight);
+    letter-spacing: var(--_letterSpacing);
+    outline: none;
+    text-transform: var(--_textTransform);
+    transition: var(--_transition);
+    vertical-align: center;
 
     &:hover {
-        background-color: var(--_backgroundColorHover);
         border-color: var(--_borderColorHover);
+        background-color: var(--_backgroundColorHover);
         color: var(--_colorHover);
     }
 `
