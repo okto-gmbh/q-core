@@ -78,9 +78,9 @@ export const Switch = styled(
                     top: 0,
                     width: '100%'
                 },
-
                 boxSizing: 'border-box',
                 height: buttonSize,
+
                 width: buttonSize
             },
 

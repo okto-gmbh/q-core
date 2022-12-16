@@ -33,9 +33,9 @@ export const Input = styled(
                 }
             }
         },
-
         backgroundColor: white,
         borderRadius: round ? 'var(--spacings-huge)' : 'var(--radii-default)',
+
         boxShadow: 'var(--shadows-mui)',
         padding: round ? '0 var(--spacings-default)' : undefined,
 
