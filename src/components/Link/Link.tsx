@@ -4,9 +4,10 @@ import { AnchorHTMLAttributes, FC } from 'react'
 export interface LinkProps
     extends Partial<AnchorHTMLAttributes<HTMLAnchorElement>> {
     href: string
+    next13?: boolean
 }
 
-const Link: FC<LinkProps> = ({ href, children, ...props }) => {
+const Link: FC<LinkProps> = ({ href, children, next13 = false, ...props }) => {
     const external = /^(https?:\/\/|www\.)/.test(href)
 
     if (external) {
@@ -18,6 +19,14 @@ const Link: FC<LinkProps> = ({ href, children, ...props }) => {
                 {...props}>
                 {children}
             </a>
+        )
+    }
+
+    if (next13) {
+        return (
+            <NextLink href={href} {...props}>
+                {children}
+            </NextLink>
         )
     }
 
