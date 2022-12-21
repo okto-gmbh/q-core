@@ -109,7 +109,7 @@ const errorMap: ZodErrorMap = (issue, { defaultError }) => {
             break
         default:
             message = defaultError
-            throw new Error(issue.toString())
+            assertNever(issue)
     }
     return { message }
 }
