@@ -21,8 +21,6 @@ const Button: FC<ButtonProps> = ({
     endIcon,
     startIcon,
     children,
-    width,
-    height,
     ...props
 }) => {
     const withIcon = (
@@ -38,11 +36,7 @@ const Button: FC<ButtonProps> = ({
     )
 
     return (
-        <Styled.Button
-            variant={variant}
-            width={width}
-            height={height}
-            {...props}>
+        <Styled.Button variant={variant} {...props}>
             {startIcon || endIcon ? withIcon : children}
         </Styled.Button>
     )
