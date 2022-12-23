@@ -84,7 +84,7 @@ const getRepository = (db: admin.firestore.Firestore) => ({
         return id
     },
 
-    find: async <Collection extends admin.firestore.DocumentData[]>(
+    find: async <Collection extends admin.firestore.DocumentData>(
         table: Table,
         id: ID
     ) => {
@@ -93,7 +93,7 @@ const getRepository = (db: admin.firestore.Firestore) => ({
             return
         }
 
-        return await mapDocs<Collection>(doc)
+        return await mapDocs<Collection[number]>(doc)
     },
 
     query: async <Collection extends admin.firestore.DocumentData[]>(
@@ -120,7 +120,7 @@ const getRepository = (db: admin.firestore.Firestore) => ({
         }
 
         const { docs } = await query.get()
-        return await mapDocs<Collection>(docs, fields)
+        return (await mapDocs<Collection>(docs, fields)) || []
     },
 
     remove: async (table: Table, id: ID) =>
