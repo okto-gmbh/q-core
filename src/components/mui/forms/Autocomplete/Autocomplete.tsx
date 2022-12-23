@@ -1,5 +1,6 @@
 import { AutocompleteProps } from '@mui/material'
-import React, { FC } from 'react'
+import { FC } from 'react'
+
 import * as Styled from './Autocomplete.styled'
 
 const Autocomplete: FC<AutocompleteProps<any, any, any, any>> = (props) => (

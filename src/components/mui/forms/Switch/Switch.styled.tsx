@@ -1,19 +1,18 @@
-import React from 'react'
+import { SwitchProps as MuiSwitchProps } from '@mui/material'
 import { styled } from '@mui/material/styles'
 import MaterialUISwitch, { switchClasses } from '@mui/material/Switch'
-import { SwitchProps as MuiSwitchProps } from '@mui/material'
 
 type SwitchProps = {
     [key: string]: any
+    borderWidth: number
+    buttonSize: number
     leftIcon: string
-    rightIcon: string
     leftIconActive: string
-    rightIconActive: string
     offset: number
     outerHeight: number
     outerWidth: number
-    borderWidth: number
-    buttonSize: number
+    rightIcon: string
+    rightIconActive: string
 }
 
 export const Switch = styled(
@@ -46,10 +45,10 @@ export const Switch = styled(
         outerWidth
     }: SwitchProps) => ({
         '&&': {
+            overflow: 'visible',
             width: `${outerWidth - offset}px`,
             height: `${outerHeight}px`,
             padding: 0,
-            overflow: 'visible',
 
             [`.${switchClasses.switchBase}`]: {
                 padding: 0,
@@ -60,7 +59,7 @@ export const Switch = styled(
                     transform: `translateX(${outerHeight - offset}px)`,
 
                     [`.${switchClasses.thumb}`]: {
-                        '&:before': {
+                        '&::before': {
                             backgroundImage: `url('data:image/svg+xml;utf8,${rightIconActive}')`
                         }
                     }
@@ -68,52 +67,53 @@ export const Switch = styled(
             },
 
             [`.${switchClasses.thumb}`]: {
-                boxSizing: 'border-box',
-                width: buttonSize,
-                height: buttonSize,
-
-                '&:before': {
-                    content: "''",
+                '&::before': {
                     position: 'absolute',
+                    top: 0,
+                    left: 0,
                     width: '100%',
                     height: '100%',
-                    left: 0,
-                    top: 0,
-                    backgroundRepeat: 'no-repeat',
+                    backgroundImage: `url('data:image/svg+xml;utf8,${leftIconActive}')`,
                     backgroundPosition: 'center',
-                    backgroundImage: `url('data:image/svg+xml;utf8,${leftIconActive}')`
-                }
+                    backgroundRepeat: 'no-repeat',
+                    content: "''"
+                },
+
+                width: buttonSize,
+                height: buttonSize,
+                boxSizing: 'border-box'
             },
 
             [`.${switchClasses.track}`]: {
-                borderRadius: buttonSize,
-                backgroundColor: 'var(--colors-white) !important',
-                opacity: '1 !important',
-                boxShadow: 'var(--shadows-mui)',
-
-                '&:before': {
-                    content: "''",
+                '&::after': {
                     position: 'absolute',
+                    top: 0,
+                    right: 0,
                     width: `${outerHeight}px`,
                     height: `${outerHeight}px`,
-                    left: 0,
-                    top: 0,
-                    backgroundRepeat: 'no-repeat',
+                    backgroundImage: `url('data:image/svg+xml;utf8,${rightIcon}')`,
                     backgroundPosition: 'center',
-                    backgroundImage: `url('data:image/svg+xml;utf8,${leftIcon}')`
+                    backgroundRepeat: 'no-repeat',
+                    content: "''"
                 },
 
-                '&:after': {
-                    content: "''",
+                '&::before': {
                     position: 'absolute',
+                    top: 0,
+                    left: 0,
                     width: `${outerHeight}px`,
                     height: `${outerHeight}px`,
-                    right: 0,
-                    top: 0,
-                    backgroundRepeat: 'no-repeat',
+                    backgroundImage: `url('data:image/svg+xml;utf8,${leftIcon}')`,
                     backgroundPosition: 'center',
-                    backgroundImage: `url('data:image/svg+xml;utf8,${rightIcon}')`
-                }
+                    backgroundRepeat: 'no-repeat',
+                    content: "''"
+                },
+                borderRadius: buttonSize,
+                backgroundColor: 'var(--colors-white) !important',
+
+                boxShadow: 'var(--shadows-mui)',
+
+                opacity: '1 !important'
             }
         }
     })

@@ -4,7 +4,7 @@ import { formLabelClasses } from '@mui/material/FormLabel'
 import { inputBaseClasses } from '@mui/material/InputBase'
 import { outlinedInputClasses } from '@mui/material/OutlinedInput'
 import TextField from '@mui/material/TextField'
-import React from 'react'
+
 import { TextInputProps } from './TextInput'
 
 const white = 'var(--colors-white)'
@@ -18,17 +18,26 @@ export const Input = styled(
     ({ round: _round, grow: _grow, ...props }: TextInputProps) => (
         <TextField {...props} variant="outlined" />
     )
-)(({ round, grow }: { round?: boolean; grow?: 'auto' }) => ({
+)(({ round, grow }: { grow?: 'auto'; round?: boolean }) => ({
     [`& .${formLabelClasses.root}`]: {
-        textShadow: '0px 0px 3px white',
-        zIndex: 1
+        zIndex: 1,
+        textShadow: '0 0 3px white'
     },
 
     [`& .${inputBaseClasses.root}`]: {
-        backgroundColor: white,
-        borderRadius: round ? 'var(--spacings-huge)' : 'var(--radii-default)',
-        boxShadow: 'var(--shadows-mui)',
+        '&:hover': {
+            [`&:not(.${inputBaseClasses.disabled})`]: {
+                [`& .${outlinedInputClasses.notchedOutline}`]: {
+                    borderWidth: '1px',
+                    borderColor: primaryColor
+                }
+            }
+        },
         padding: round ? '0 var(--spacings-default)' : undefined,
+        borderRadius: round ? 'var(--spacings-huge)' : 'var(--radii-default)',
+        backgroundColor: white,
+
+        boxShadow: 'var(--shadows-mui)',
 
         [`&.${autocompleteClasses.inputRoot}`]: {
             backgroundColor: white
@@ -38,19 +47,10 @@ export const Input = styled(
             textOverflow: 'ellipsis'
         },
 
-        '&:hover': {
-            [`&:not(.${inputBaseClasses.disabled})`]: {
-                [`& .${outlinedInputClasses.notchedOutline}`]: {
-                    borderColor: primaryColor,
-                    borderWidth: '1px'
-                }
-            }
-        },
-
         [`& .${outlinedInputClasses.notchedOutline}`]: {
-            borderColor: 'var(--colors-white)',
             borderWidth: '1px',
             borderStyle: 'solid',
+            borderColor: 'var(--colors-white)',
             transition: 'border 0.2s ease-in'
         },
 
@@ -63,13 +63,13 @@ export const Input = styled(
             [`&.${inputBaseClasses.multiline}`]:
                 grow !== 'auto'
                     ? {
-                          position: 'relative',
-                          zIndex: 3,
-
                           '> textarea': {
-                              whiteSpace: 'nowrap',
-                              textOverflow: 'ellipsis'
-                          }
+                              textOverflow: 'ellipsis',
+                              whiteSpace: 'nowrap'
+                          },
+                          position: 'relative',
+
+                          zIndex: 3
                       }
                     : undefined
         },
@@ -77,8 +77,8 @@ export const Input = styled(
         [`&.${inputBaseClasses.focused}`]: {
             [`&:not(.${inputBaseClasses.disabled})`]: {
                 [`& .${outlinedInputClasses.notchedOutline}`]: {
-                    borderColor: primaryColor,
-                    borderWidth: '1px'
+                    borderWidth: '1px',
+                    borderColor: primaryColor
                 }
             },
 

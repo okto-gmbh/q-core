@@ -1,17 +1,19 @@
 import React, { ButtonHTMLAttributes, FC } from 'react'
+
 import Stack from '../layout/Stack'
+
 import * as Styled from './Button.styled'
 
 export type ButtonVariant = 'primary' | 'secondary'
 
 export interface ButtonProps
     extends Partial<ButtonHTMLAttributes<HTMLButtonElement>> {
-    variant: ButtonVariant
     children: React.ReactNode
+    variant: ButtonVariant
     endIcon?: React.ReactNode
+    height?: string
     startIcon?: React.ReactNode
     width?: string
-    height?: string
 }
 
 const Button: FC<ButtonProps> = ({
@@ -19,8 +21,6 @@ const Button: FC<ButtonProps> = ({
     endIcon,
     startIcon,
     children,
-    width,
-    height,
     ...props
 }) => {
     const withIcon = (
@@ -36,11 +36,7 @@ const Button: FC<ButtonProps> = ({
     )
 
     return (
-        <Styled.Button
-            variant={variant}
-            width={width}
-            height={height}
-            {...props}>
+        <Styled.Button variant={variant} {...props}>
             {startIcon || endIcon ? withIcon : children}
         </Styled.Button>
     )

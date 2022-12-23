@@ -4,10 +4,12 @@ import Button, {
     buttonClasses,
     ButtonProps as MuiButtonProps
 } from '@mui/material/Button'
-import React from 'react'
+
 import { ButtonVariant } from '../../../Button/Button'
-import { composeButtonVariants } from '../../../Button/Button.styled'
+
 import { ButtonProps } from './Button'
+
+import { composeButtonVariants } from '../../../Button/Button.styled'
 
 const muiVariants: {
     [key in ButtonVariant]: MuiButtonProps['variant']
@@ -28,15 +30,15 @@ export const Element = styled(
     ${composeButtonVariants}
 
     && {
-        color: var(--_color);
-        border-radius: var(--_borderRadius);
-        box-shadow: var(--shadows-mui);
-        font-weight: var(--fontWeights-default);
-        white-space: nowrap;
         padding: var(--_padding);
-        letter-spacing: var(--_letterSpacing);
         border: var(--_border);
+        border-radius: var(--_borderRadius);
         background-color: var(--_backgroundColor);
+        box-shadow: var(--shadows-mui);
+        color: var(--_color);
+        font-weight: var(--fontWeights-default);
+        letter-spacing: var(--_letterSpacing);
+        white-space: nowrap;
 
         &:hover {
             border-color: var(--_borderColorHover);
@@ -56,18 +58,18 @@ export const Element = styled(
         look === 'icon' &&
         css`
             && {
-                width: 50px;
-                height: 50px;
                 display: flex;
-                align-items: center;
-                justify-content: center;
+                width: 50px;
+                min-width: 50px;
                 max-width: 50px;
+                height: 50px;
+                min-height: 50px;
                 max-height: 50px;
                 box-sizing: border-box;
-                border-radius: 50;
+                align-items: center;
+                justify-content: center;
                 padding: 0;
-                min-height: 50px;
-                min-width: 50px;
+                border-radius: 50;
             }
         `}
 `

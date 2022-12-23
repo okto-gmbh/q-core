@@ -1,18 +1,22 @@
-import { createTransport, TransportOptions, SendMailOptions } from 'nodemailer'
+import { createTransport, SendMailOptions, TransportOptions } from 'nodemailer'
 
 const mailTransport = createTransport({
-    service: process.env.EMAIL_SERVICE,
-    host: process.env.EMAIL_HOST,
-    port: process.env.EMAIL_PORT,
-    secure: process.env.EMAIL_INSECURE === '1' ? false : true, // use TLS
+    // use TLS
     auth: {
-        user: process.env.EMAIL_USERNAME,
-        pass: process.env.EMAIL_PASSWORD
+        pass: process.env.EMAIL_PASSWORD,
+        user: process.env.EMAIL_USERNAME
     },
+
+    host: process.env.EMAIL_HOST,
+
+    port: process.env.EMAIL_PORT,
+
+    secure: process.env.EMAIL_INSECURE === '1' ? false : true,
+    service: process.env.EMAIL_SERVICE,
     tls: {
+        ciphers: process.env.EMAIL_CIPHERS,
         // do not fail on invalid certs
-        rejectUnauthorized: false,
-        ciphers: process.env.EMAIL_CIPHERS
+        rejectUnauthorized: false
     }
 } as TransportOptions)
 

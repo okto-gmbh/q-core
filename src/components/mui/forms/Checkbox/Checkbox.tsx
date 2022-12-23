@@ -1,23 +1,24 @@
 import { SwitchProps } from '@mui/material'
 import FormHelperText from '@mui/material/FormHelperText'
 import Switch from '@mui/material/Switch'
-import React, { FC } from 'react'
+import { FC } from 'react'
 import {
     Control,
     Controller,
     ControllerRenderProps,
     FieldValues
 } from 'react-hook-form'
+
 import * as Styled from './Checkbox.styled'
 
 type CheckboxProps = SwitchProps & {
-    label: string
-    error?: boolean
-    defaultValue?: boolean
-    helperText?: string
-    control?: Control<FieldValues>
-    onChange: (name: string, value: boolean, options: any) => void
     fieldName: string
+    label: string
+    onChange: (name: string, value: boolean, options: any) => void
+    control?: Control<FieldValues>
+    defaultValue?: boolean
+    error?: boolean
+    helperText?: string
     value?: boolean
 }
 
@@ -39,8 +40,8 @@ const Checkbox: FC<CheckboxProps> = ({
 
         if (control) {
             onChange(field.name, value, {
-                shouldValidate: true,
-                shouldDirty: true
+                shouldDirty: true,
+                shouldValidate: true
             })
         }
     }
@@ -64,8 +65,8 @@ const Checkbox: FC<CheckboxProps> = ({
 
     if (!control) {
         return renderCheckbox({
-            value: props.value,
-            onChange
+            onChange,
+            value: props.value
         } as ControllerRenderProps<FieldValues, string>)
     }
 

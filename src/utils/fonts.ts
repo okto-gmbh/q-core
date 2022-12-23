@@ -4,8 +4,8 @@ export const getGoogleFontsFromDesignTokens = ({
     fonts = {},
     fontWeights = {}
 }: {
-    fonts: TokenFonts
     fontWeights: TokenFontWeights
+    fonts: TokenFonts
 }) => {
     const weights = Array.from(new Set(Object.values(fontWeights)))
     return Array.from(

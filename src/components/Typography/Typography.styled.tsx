@@ -1,5 +1,5 @@
 import styled from '@emotion/styled'
-import React from 'react'
+
 import { TypographyProps } from './Typography'
 
 export const Element = styled(
@@ -13,7 +13,9 @@ export const Element = styled(
 )`
     display: ${({ display }) => display || 'block'};
     font-size: ${({ fontSize }) =>
-        fontSize ? `var(--fontSizes-${fontSize})` : 'var(--fontSizes-default)'};
+        fontSize
+            ? `var(--fontSizes-${fontSize}) `
+            : 'var(--fontSizes-default)'};
     font-weight: ${({ fontWeight }) => fontWeight};
     line-height: ${({ fontSize }) =>
         fontSize

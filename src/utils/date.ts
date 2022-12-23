@@ -26,11 +26,11 @@ export const formatDate = (
     timeZone = 'Europe/Zurich'
 ): string =>
     format(date, {
-        year: 'numeric',
-        month: '2-digit',
         day: '2-digit',
         locale,
-        timeZone
+        month: '2-digit',
+        timeZone,
+        year: 'numeric'
     })
 
 // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types, @typescript-eslint/no-explicit-any
