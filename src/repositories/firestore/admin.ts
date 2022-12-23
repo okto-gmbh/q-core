@@ -98,7 +98,7 @@ const getRepository = (db: admin.firestore.Firestore) => ({
 
     query: async <Collection extends admin.firestore.DocumentData[]>(
         table: Table,
-        constraints: Constraints<Collection>,
+        constraints: Constraints<Collection> = {},
         fields?: (keyof (Collection[number] & DB_Meta))[]
     ) => {
         const { where, orderBy, limit } = constraints
