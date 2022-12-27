@@ -22,8 +22,7 @@ export const Login = z.object({
 })
 
 export const ForgotPassword = z.object({
-    email,
-    locale: z.string()
+    email
 })
 
 export const RenewPassword = z.object({
