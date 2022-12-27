@@ -1,4 +1,5 @@
 import { BlitzCtx } from '@blitzjs/auth'
 
-export default async (_: undefined, { session }: BlitzCtx) =>
-    await session.$revoke()
+import { destroySession } from '../../utils/blitz/session'
+
+export default async (_: undefined, ctx: BlitzCtx) => await destroySession(ctx)

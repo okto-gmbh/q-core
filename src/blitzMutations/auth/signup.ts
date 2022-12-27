@@ -1,7 +1,8 @@
-import { BlitzCtx, SecurePassword } from '@blitzjs/auth'
+import { SecurePassword } from '@blitzjs/auth'
 import { resolver } from '@blitzjs/rpc'
 
 import repo from '../../utils/db'
+import { BaseUser, getSafeUserFields, ROLE_USER } from '../../utils/user'
 
 import { Signup } from './validations'
 
@@ -10,25 +11,20 @@ type Input = {
     password: string
 }
 
-const signup = async ({ password, email }: Input, { session }: BlitzCtx) => {
+const signup = async <User extends BaseUser>({ password, email }: Input) => {
     const hashedPassword = await SecurePassword.hash(password)
     const user = {
         email,
         hashedPassword,
-        role: 'ADMIN'
+        role: ROLE_USER
     }
 
     const id = await repo.create('users', user)
-    await session.$create({
-        role: user.role,
-        userId: id
-    })
 
-    return {
+    return getSafeUserFields<User>({
         ...user,
-        email,
-        userId: session.userId
-    }
+        id
+    } as User)
 }
 
 export default resolver.pipe(resolver.zod(Signup), signup)

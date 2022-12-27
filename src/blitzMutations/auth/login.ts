@@ -2,7 +2,9 @@ import { BlitzCtx, SecurePassword } from '@blitzjs/auth'
 import { resolver } from '@blitzjs/rpc'
 import { AuthenticationError } from 'blitz'
 
+import { createSession } from '../../utils/blitz/session'
 import repo, { OP_EQUALS } from '../../utils/db'
+import { BaseUser, getSafeUserFields } from '../../utils/user'
 
 import { Login } from './validations'
 
@@ -11,13 +13,16 @@ type Input = {
     password: string
 }
 
-const authenticateUser = async (rawEmail: string, rawPassword: string) => {
+const authenticateUser = async <User extends BaseUser>(
+    rawEmail: string,
+    rawPassword: string
+): Promise<User> => {
     const { email, password } = Login.parse({
         email: rawEmail,
         password: rawPassword
     })
 
-    const [user] = await repo.query('users', {
+    const [user] = await repo.query<User[]>('users', {
         where: [['email', OP_EQUALS, email]]
     })
 
@@ -34,20 +39,17 @@ const authenticateUser = async (rawEmail: string, rawPassword: string) => {
         })
     }
 
-    const { hashedPassword: _hashedPassword, ...rest } = user
-
-    return rest
+    return user
 }
 
-const login = async ({ email, password }: Input, { session }: BlitzCtx) => {
-    const user = await authenticateUser(email, password)
+const login = async <User extends BaseUser>(
+    { email, password }: Input,
+    ctx: BlitzCtx
+) => {
+    const user = await authenticateUser<User>(email, password)
+    await createSession(ctx, user)
 
-    await session.$create({
-        role: user.role,
-        userId: user.id
-    })
-
-    return user
+    return getSafeUserFields<User>(user)
 }
 
 export default resolver.pipe(resolver.zod(Login), login)

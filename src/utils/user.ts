@@ -1,8 +1,10 @@
 type BaseRoles = 'ADMIN' | 'USER'
 
 export const ROLE_ADMIN: BaseRoles = 'ADMIN'
+export const ROLE_USER: BaseRoles = 'USER'
 
-export type BaseUser = {
+export interface BaseUser {
+    email: string
     hashedPassword: string
     id: string
     role: string
