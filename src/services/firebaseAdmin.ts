@@ -67,6 +67,9 @@ export const getStorage = (app?: App) => {
     return adminGetStorage(app)
 }
 
+export const getBucket = (app?: App) =>
+    getStorage(app).bucket(process.env.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET)
+
 export const getFirestore = (app?: App) => {
     app = app ?? getApp()
     return adminGetFirestore(app)
