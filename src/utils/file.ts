@@ -23,14 +23,17 @@ export const fileToBase64 = (file: Blob) =>
         reader.readAsArrayBuffer(file)
     })
 
-export const getImageDimensions = (url: string) =>
+export const loadImage = (url: string): Promise<HTMLImageElement> =>
     new Promise((resolve) => {
         const img = new window.Image()
-        img.onload = () => {
-            resolve({ height: img.height, width: img.width })
-        }
+        img.onload = () => resolve(img)
         img.src = url
     })
+
+export const getImageDimensions = async (url: string) => {
+    const img = await loadImage(url)
+    return { height: img.height, width: img.width }
+}
 
 export const dataUrlToBase64 = (dataUrl: string) =>
     dataUrl.substring(dataUrl.toString().indexOf(',') + 1)
