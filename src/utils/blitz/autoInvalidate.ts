@@ -3,9 +3,9 @@ import { getQueryClient } from '@blitzjs/rpc'
 export default {
     reactQueryOptions: {
         mutations: {
-            onSuccess: () => {
+            onSuccess: async () => {
                 const queryClient = getQueryClient()
-                void queryClient.invalidateQueries()
+                await queryClient.invalidateQueries()
             }
         }
     }
