@@ -1,3 +1,15 @@
+import type { SimpleRolesIsAuthorized } from '@blitzjs/auth'
+
+declare module '@blitzjs/auth' {
+    export interface Session {
+        PublicData: {
+            role: string
+            userId: string
+        }
+        isAuthorized: SimpleRolesIsAuthorized<string>
+    }
+}
+
 export type Breakpoint =
     | 'mobilePortrait'
     | 'mobileLandscape'

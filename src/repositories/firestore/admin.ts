@@ -12,7 +12,7 @@ export interface Constraints<
         [key in keyof Collection[number]]?: admin.firestore.OrderByDirection
     }
     where?: [
-        Extract<keyof (Collection[number] & DB_Meta), string>,
+        keyof (Collection[number] & { __name__: string }),
         admin.firestore.WhereFilterOp,
         any
     ][]
@@ -106,8 +106,8 @@ const getRepository = (db: admin.firestore.Firestore) => ({
             db.collection(table)
 
         if (where) {
-            for (const condition of where) {
-                query = query.where(...condition)
+            for (const [field, operation, value] of where) {
+                query = query.where(field as string, operation, value)
             }
         }
         if (orderBy) {
@@ -120,7 +120,7 @@ const getRepository = (db: admin.firestore.Firestore) => ({
         }
 
         const { docs } = await query.get()
-        return await mapDocs<Collection>(docs, fields)
+        return (await mapDocs<Collection>(docs, fields)) || []
     },
 
     remove: async (table: Table, id: ID) =>
