@@ -390,7 +390,7 @@ const generateResponsiveTokens = (
     Object.fromEntries(
         Object.entries(responsiveTokens).map(([breakpoint, tokens]) => {
             const clampLineHeights = generateClampLineHeights(
-                merge(originalFontSizes, tokens.fontSizes)
+                merge({}, originalFontSizes, tokens.fontSizes)
             )
             return [
                 breakpoint,
@@ -405,15 +405,15 @@ const generateResponsiveTokens = (
                         ...clampLineHeights,
                         ...generateRegularLineHeights(
                             generateFontSizes(
-                                merge(originalFontSizes, tokens.fontSizes)
+                                merge({}, originalFontSizes, tokens.fontSizes)
                             ),
-                            merge(originalLineHeights, tokens.lineHeights)
+                            merge({}, originalLineHeights, tokens.lineHeights)
                         )
                     },
                     motion: generateMotion(tokens.motion),
                     radii: generatePixelBasedValues(tokens.radii),
                     spacings: generateSpacings(
-                        merge(originalSpacings, tokens.spacings)
+                        merge({}, originalSpacings, tokens.spacings)
                     )
                 }
             ]
@@ -434,7 +434,7 @@ const generatePixelBasedValues = <T extends { [key: string]: number }>(
 export const generateDesignTokens = (
     projectTokens: Partial<RawDesignTokens>
 ) => {
-    const settings = merge(coreTokens, projectTokens)
+    const settings = merge({}, coreTokens, projectTokens)
 
     const generatedFontSizes = generateFontSizes(settings.fontSizes)
     const generatedLineHeights = {
