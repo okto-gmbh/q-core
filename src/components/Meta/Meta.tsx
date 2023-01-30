@@ -26,6 +26,7 @@ const Meta: FC<MetaProps> = ({
         <>
             <DefaultSeo
                 defaultTitle={title}
+                description={description}
                 languageAlternates={locales
                     ?.filter((locale) => locale !== currentLocale)
                     .map((locale) => ({
