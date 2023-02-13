@@ -1,6 +1,6 @@
 import Head from 'next/head'
 import { useRouter } from 'next/router'
-import { DefaultSeo, NextSeo, NextSeoProps } from 'next-seo'
+import { NextSeo, NextSeoProps } from 'next-seo'
 import { FC } from 'react'
 
 type MetaProps = NextSeoProps & {
@@ -24,7 +24,7 @@ const Meta: FC<MetaProps> = ({
 
     return (
         <>
-            <DefaultSeo
+            <NextSeo
                 defaultTitle={title}
                 description={description}
                 languageAlternates={locales
@@ -44,8 +44,9 @@ const Meta: FC<MetaProps> = ({
                     site_name: siteName,
                     url: `${appBaseUrl}${asPath}`
                 }}
+                noindex={noindex}
+                nofollow={nofollow}
             />
-            <NextSeo noindex={noindex} nofollow={nofollow} />
             <Head>
                 <link
                     rel="apple-touch-icon"
