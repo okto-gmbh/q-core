@@ -3,6 +3,7 @@ import styled from '@emotion/styled'
 import React, { forwardRef, ForwardRefRenderFunction } from 'react'
 
 import { from } from '../../../utils/breakpoints'
+import { getDirectionSpacing, getFlexDirection } from '../../../utils/styles'
 
 import { StackProps } from './Stack'
 
@@ -13,7 +14,6 @@ const StyledStack: ForwardRefRenderFunction<HTMLDivElement, StackProps> = (
         direction: _direction,
         alignItems: _alignItems,
         justifyContent: _justifyContent,
-        flexDirection: _flexDirection,
         children,
         ...rest
     },
@@ -24,44 +24,70 @@ export const Element = styled(
     forwardRef<HTMLDivElement, StackProps>(StyledStack)
 )`
     width: 100%;
-    flex-direction: ${({ flexDirection }) =>
-        flexDirection ? flexDirection : undefined};
 
-    ${({ justifyContent }) =>
-        justifyContent &&
+    ${({ direction, justifyContent, alignItems }) =>
+        (direction === 'horizontal' || justifyContent || alignItems) &&
         css`
             display: flex;
             justify-content: ${justifyContent};
+            align-items: ${alignItems};
+            flex-direction: ${getFlexDirection(direction)};
         `}
 
-    ${({ alignItems }) =>
-        alignItems &&
+    ${({ breakpoints }) =>
+        breakpoints &&
         css`
-            display: flex;
-            align-items: ${alignItems};
+            ${Object.entries(breakpoints)
+                .map(
+                    ([breakpoint, { direction, alignItems }]) => `
+                            @media ${from[breakpoint]} {
+                                ${
+                                    (direction || alignItems) &&
+                                    `
+                                        display: flex;
+                                        align-items: ${alignItems};
+                                        flex-direction: ${getFlexDirection(
+                                            direction
+                                        )};
+                                    `
+                                }
+                            }
+                         `
+                )
+                .join('\n')}
         `}
+
 
     > * + * {
-        ${({ breakpoints, spacing, direction }) => {
-            const orientation =
-                direction === 'vertical' ? 'margin-top' : 'margin-left'
-
-            return css`
-                ${orientation}: var(--spacings-${spacing});
+        ${({ breakpoints, spacing, direction }) =>
+            css`
+                ${getDirectionSpacing(direction)}: var(--spacings-${spacing});
 
                 ${breakpoints &&
                 Object.entries(breakpoints)
                     .map(
-                        ([breakpoint, { spacing }]) =>
-                            spacing &&
-                            `
+                        ([
+                            breakpoint,
+                            {
+                                spacing: breakpointSpacing,
+                                direction: breakpointDirection
+                            }
+                        ]) => `
                             @media ${from[breakpoint]} {
-                                ${orientation}: var(--spacings-${spacing});
+                                margin-left: initial;
+                                margin-top: initial;
+
+                                ${getDirectionSpacing(
+                                    breakpointDirection
+                                        ? breakpointDirection
+                                        : direction
+                                )}: var(--spacings-${
+                            breakpointSpacing ? breakpointSpacing : spacing
+                        });
                             }
                         `
                     )
                     .join('\n')}
-            `
-        }}
+            `}
     }
 `
