@@ -3,6 +3,7 @@ import styled from '@emotion/styled'
 import React, { forwardRef, ForwardRefRenderFunction } from 'react'
 
 import { from } from '../../../utils/breakpoints'
+import { getDirectionSpacing, getFlexDirection } from '../../../utils/styles'
 
 import { StackProps } from './Stack'
 
@@ -13,7 +14,6 @@ const StyledStack: ForwardRefRenderFunction<HTMLDivElement, StackProps> = (
         direction: _direction,
         alignItems: _alignItems,
         justifyContent: _justifyContent,
-        flexDirection: _flexDirection,
         children,
         ...rest
     },
@@ -25,20 +25,13 @@ export const Element = styled(
 )`
     width: 100%;
 
-    ${({ flexDirection, direction, justifyContent, alignItems }) =>
-        (direction === 'horizontal' ||
-            flexDirection ||
-            justifyContent ||
-            alignItems) &&
+    ${({ direction, justifyContent, alignItems }) =>
+        (direction === 'horizontal' || justifyContent || alignItems) &&
         css`
             display: flex;
             justify-content: ${justifyContent};
             align-items: ${alignItems};
-            flex-direction: ${direction === 'horizontal'
-                ? 'row'
-                : direction === 'vertical'
-                ? 'column'
-                : flexDirection};
+            flex-direction: ${getFlexDirection(direction)};
         `}
 
     ${({ breakpoints }) =>
@@ -46,27 +39,16 @@ export const Element = styled(
         css`
             ${Object.entries(breakpoints)
                 .map(
-                    ([
-                        breakpoint,
-                        { flexDirection, direction, alignItems }
-                    ]) => `
+                    ([breakpoint, { direction, alignItems }]) => `
                             @media ${from[breakpoint]} {
                                 ${
-                                    (direction === 'horizontal' ||
-                                        flexDirection) &&
+                                    (direction || alignItems) &&
                                     `
                                         display: flex;
-                                        flex-direction: ${
-                                            direction === 'horizontal'
-                                                ? 'row'
-                                                : flexDirection
-                                        };
-                                    `
-                                }
-                                ${
-                                    alignItems &&
-                                    `
                                         align-items: ${alignItems};
+                                        flex-direction: ${getFlexDirection(
+                                            direction
+                                        )};
                                     `
                                 }
                             }
@@ -77,17 +59,9 @@ export const Element = styled(
 
 
     > * + * {
-        ${({ breakpoints, spacing, direction, flexDirection }) => {
-            const orientation = (direction?: string, flexDirection?: string) =>
-                direction === 'horizontal' || flexDirection === 'row'
-                    ? 'margin-left'
-                    : 'margin-top'
-
-            return css`
-                ${orientation(
-                    direction,
-                    flexDirection
-                )}: var(--spacings-${spacing});
+        ${({ breakpoints, spacing, direction }) =>
+            css`
+                ${getDirectionSpacing(direction)}: var(--spacings-${spacing});
 
                 ${breakpoints &&
                 Object.entries(breakpoints)
@@ -96,19 +70,17 @@ export const Element = styled(
                             breakpoint,
                             {
                                 spacing: breakpointSpacing,
-                                direction: breakpointDirection,
-                                flexDirection
+                                direction: breakpointDirection
                             }
                         ]) => `
                             @media ${from[breakpoint]} {
                                 margin-left: initial;
                                 margin-top: initial;
 
-                                ${orientation(
+                                ${getDirectionSpacing(
                                     breakpointDirection
                                         ? breakpointDirection
-                                        : direction,
-                                    flexDirection
+                                        : direction
                                 )}: var(--spacings-${
                             breakpointSpacing ? breakpointSpacing : spacing
                         });
@@ -116,7 +88,6 @@ export const Element = styled(
                         `
                     )
                     .join('\n')}
-            `
-        }}
+            `}
     }
 `

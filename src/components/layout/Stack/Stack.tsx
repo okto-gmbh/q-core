@@ -8,7 +8,6 @@ import {
 import {
     AlignItems,
     Breakpoints,
-    FlexDirection,
     JustifyContent,
     Spacing
 } from '../../../types'
@@ -22,7 +21,6 @@ export interface StackProps extends HTMLAttributes<HTMLDivElement> {
     as?: string | ComponentType
     breakpoints?: Breakpoints
     direction?: Direction
-    flexDirection?: FlexDirection
     justifyContent?: JustifyContent
     spacing?: Spacing
 }
