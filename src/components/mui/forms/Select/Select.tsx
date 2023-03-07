@@ -20,6 +20,7 @@ const selectFilter = createFilterOptions()
 type SelectProps = AutocompleteProps<any, any, any, any> & {
     label: string
     onCreate: (value: any) => void
+    onInputChange: (value: any) => void
     options: Array<{ key: string; value: string }>
     control?: Control<FieldValues>
     createLabel?: string
@@ -41,6 +42,7 @@ const Select = (
         options,
         onChange,
         onCreate,
+        onInputChange,
         defaultValue,
         label,
         createLabel,
@@ -165,6 +167,7 @@ const Select = (
                         variant="filled"
                         error={error}
                         helperText={helperText}
+                        onChange={onInputChange}
                     />
                 )}
                 renderOption={(props, { value }, { inputValue }) => {

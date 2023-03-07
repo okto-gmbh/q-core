@@ -52,7 +52,7 @@ const errorMap: ZodErrorMap = (issue, { defaultError }) => {
                 } else if ('endsWith' in issue.validation) {
                     message = `Ungültige Eingabe: Muss mit "${issue.validation.endsWith}" enden`
                 } else {
-                    assertNever(issue.validation)
+                    assertNever(issue.validation as never)
                 }
             } else if (issue.validation !== 'regex') {
                 message = `Ungültiger Wert: ${issue.validation}`
@@ -76,7 +76,7 @@ const errorMap: ZodErrorMap = (issue, { defaultError }) => {
             else if (issue.type === 'date')
                 message = `Datum muss grösser ${
                     issue.inclusive ? `oder gleich ` : ``
-                }${new Date(issue.minimum)} sein`
+                }${new Date(Number(issue.minimum))} sein`
             else message = 'Ungültige Eingabe'
             break
         case ZodIssueCode.too_big:
@@ -95,7 +95,7 @@ const errorMap: ZodErrorMap = (issue, { defaultError }) => {
             else if (issue.type === 'date')
                 message = `Datum muss kleiner ${
                     issue.inclusive ? `oder gleich ` : ``
-                }${new Date(issue.maximum)} sein`
+                }${new Date(Number(issue.maximum))} sein`
             else message = 'Ungültige Eingabe'
             break
         case ZodIssueCode.custom:
