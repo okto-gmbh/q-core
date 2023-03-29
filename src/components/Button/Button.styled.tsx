@@ -139,11 +139,11 @@ export const Button = styled(
     vertical-align: center;
 
     &:hover {
+        border-width: var(--_borderWidthHover);
         border-color: var(--_borderColorHover);
         background-color: var(--_backgroundColorHover);
-        border-width: var(--_borderWidthHover);
-        color: var(--_colorHover);
         box-shadow: var(--_boxShadowHover);
+        color: var(--_colorHover);
     }
 `
 

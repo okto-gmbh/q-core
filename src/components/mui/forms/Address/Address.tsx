@@ -108,6 +108,7 @@ const Address: FC<AddressProps> = ({
                 setPlaces(newOptions)
             }
         )
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [google, place, placeInput, getPlaceSuggestions])
 
     const initPlacesService = () => {

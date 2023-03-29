@@ -1,5 +1,8 @@
 const [, offsetHours] = new Date(2022, 0, 1).toISOString().split('T')
 
+const DEFAULT_TIMEZONE = 'Europe/Zurich'
+const DEFAULT_LOCALE = 'de-CH'
+
 export const format = (
     date: string | Date,
     {
@@ -13,17 +16,17 @@ export const format = (
     }
 
     const config: Intl.DateTimeFormatOptions = {
-        timeZone: options.timeZone || 'Europe/Zurich',
+        timeZone: options.timeZone || DEFAULT_TIMEZONE,
         ...options
     }
 
-    return date.toLocaleString(locale || 'de-CH', config)
+    return date.toLocaleString(locale || DEFAULT_LOCALE, config)
 }
 
 export const formatDate = (
     date: string | Date,
-    locale = 'de-CH',
-    timeZone = 'Europe/Zurich'
+    locale = DEFAULT_LOCALE,
+    timeZone = DEFAULT_TIMEZONE
 ): string =>
     format(date, {
         day: '2-digit',
