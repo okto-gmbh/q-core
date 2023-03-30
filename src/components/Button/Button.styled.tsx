@@ -82,6 +82,13 @@ export const composeButtonVariants = ({
                 var(--colors-${variant}Hover, ${color})
             )
         );
+        --_borderWidthHover: var(
+            ${namespaceWithVariant}-hover-borderWidth,
+            var(
+                ${namespace}-hover-borderWidth,
+                var(--borders-${variant}-widthHover)
+            )
+        );
         --_borderColorHover: var(
             ${namespaceWithVariant}-hover-borderColor,
             var(
@@ -99,6 +106,10 @@ export const composeButtonVariants = ({
         --_boxShadow: var(
             ${namespaceWithVariant}-boxShadow,
             var(${namespace}-boxShadow, undefined)
+        );
+        --_boxShadowHover: var(
+            ${namespaceWithVariant}-hover-boxShadow,
+            var(${namespace}-hover-boxShadow, undefined)
         );
     `
 }
@@ -128,8 +139,10 @@ export const Button = styled(
     vertical-align: center;
 
     &:hover {
+        border-width: var(--_borderWidthHover);
         border-color: var(--_borderColorHover);
         background-color: var(--_backgroundColorHover);
+        box-shadow: var(--_boxShadowHover);
         color: var(--_colorHover);
     }
 `

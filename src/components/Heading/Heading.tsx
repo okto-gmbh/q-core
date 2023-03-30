@@ -2,7 +2,7 @@ import { ComponentType, FC, HTMLAttributes } from 'react'
 
 import * as Styled from './Heading.styled'
 
-type Headings = 'h1' | 'h2' | 'h3' | 'h4'
+type Headings = 'h1' | 'h2' | 'h3' | 'h4' | 'h5' | 'h6'
 export interface HeadingProps
     extends Partial<HTMLAttributes<HTMLHeadingElement>> {
     displayAs: Headings
@@ -11,7 +11,10 @@ export interface HeadingProps
 
 const Heading: FC<HeadingProps> = ({ as = 'h1', displayAs, ...props }) => {
     if (!displayAs) {
-        if (typeof as === 'string' && ['h1', 'h2', 'h3', 'h4'].includes(as)) {
+        if (
+            typeof as === 'string' &&
+            ['h1', 'h2', 'h3', 'h4', 'h5', 'h6'].includes(as)
+        ) {
             displayAs = as
         } else {
             displayAs = 'h1'

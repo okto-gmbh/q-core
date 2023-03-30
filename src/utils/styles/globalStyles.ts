@@ -1,6 +1,6 @@
 import { css, SerializedStyles } from '@emotion/react'
 
-import { from, until } from '../breakpoints'
+import { from } from '../breakpoints'
 
 import {
     RawDesignTokens,
@@ -138,6 +138,8 @@ export const generateGlobalStyles = ({
     h2,
     h3,
     h4,
+    h5,
+    h6,
     p,
     figure,
     blockquote,
@@ -213,12 +215,11 @@ export const generateGlobalStyles = ({
         -ms-overflow-style: scrollbar;
         overflow-y: scroll;
 
-        @media ${until.desktopS} {
-            &.noscroll {
-                position: fixed;
-                overflow: hidden;
-                width: 100%;
-            }
+        &.noscroll {
+            position: fixed;
+            overflow: hidden;
+            width: 100%;
+            padding-right: 5px;
         }
     }
 

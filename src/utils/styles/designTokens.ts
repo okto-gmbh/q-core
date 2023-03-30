@@ -296,11 +296,14 @@ const defaultLineHeights = ['tiny', 'small', 'default', 'medium', 'large']
 
 const generateRegularLineHeights = (
     fontSizes: TokenFontSizes = {},
-    lineHeights: TokenLineHeights = {}
+    lineHeights: TokenLineHeights = {},
+    tokenNames?: string[]
 ) =>
     Object.fromEntries(
         Object.entries(fontSizes)
-            .filter(([tokenName]) => defaultLineHeights.includes(tokenName))
+            .filter(([tokenName]) =>
+                (tokenNames || defaultLineHeights).includes(tokenName)
+            )
             .map(([tokenName, value]) => [
                 tokenName,
                 `calc(${value} * ${lineHeights[tokenName]})`
@@ -388,36 +391,34 @@ const generateResponsiveTokens = (
     responsiveTokens: TokenResponsiveTokens
 ) =>
     Object.fromEntries(
-        Object.entries(responsiveTokens).map(([breakpoint, tokens]) => {
-            const clampLineHeights = generateClampLineHeights(
-                merge(originalFontSizes, tokens.fontSizes)
-            )
-            return [
-                breakpoint,
-                {
-                    ...tokens,
-                    borders: generateBorders(tokens.borders),
-                    fontSizes: generateFontSizes(tokens.fontSizes),
-                    letterSpacings: generatePixelBasedValues(
-                        tokens.letterSpacings
-                    ),
-                    lineHeights: {
-                        ...clampLineHeights,
-                        ...generateRegularLineHeights(
-                            generateFontSizes(
-                                merge(originalFontSizes, tokens.fontSizes)
-                            ),
-                            merge(originalLineHeights, tokens.lineHeights)
-                        )
-                    },
-                    motion: generateMotion(tokens.motion),
-                    radii: generatePixelBasedValues(tokens.radii),
-                    spacings: generateSpacings(
-                        merge(originalSpacings, tokens.spacings)
+        Object.entries(responsiveTokens).map(([breakpoint, tokens]) => [
+            breakpoint,
+            {
+                ...tokens,
+                borders: generateBorders(tokens.borders),
+                fontSizes: generateFontSizes(tokens.fontSizes),
+                letterSpacings: generatePixelBasedValues(tokens.letterSpacings),
+                lineHeights: {
+                    ...generateRegularLineHeights(
+                        generateFontSizes(
+                            merge({}, originalFontSizes, tokens.fontSizes)
+                        ),
+                        merge({}, originalLineHeights, tokens.lineHeights),
+                        [
+                            ...Object.keys(tokens.fontSizes ?? {}),
+                            ...Object.keys(tokens.lineHeights ?? {})
+                        ]
                     )
-                }
-            ]
-        })
+                },
+                motion: generateMotion(tokens.motion),
+                radii: generatePixelBasedValues(tokens.radii),
+                spacings: tokens.spacings
+                    ? generateSpacings(
+                          merge({}, originalSpacings, tokens.spacings)
+                      )
+                    : {}
+            }
+        ])
     )
 
 const generatePixelBasedValues = <T extends { [key: string]: number }>(
@@ -434,7 +435,7 @@ const generatePixelBasedValues = <T extends { [key: string]: number }>(
 export const generateDesignTokens = (
     projectTokens: Partial<RawDesignTokens>
 ) => {
-    const settings = merge(coreTokens, projectTokens)
+    const settings = merge({}, coreTokens, projectTokens)
 
     const generatedFontSizes = generateFontSizes(settings.fontSizes)
     const generatedLineHeights = {

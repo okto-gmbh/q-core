@@ -78,8 +78,14 @@ async function mapDocs<Collection extends admin.firestore.DocumentData[]>(
 const getRepository = (db: admin.firestore.Firestore) => ({
     create: async <Collection extends admin.firestore.DocumentData[]>(
         table: Table,
-        data: Collection[number]
+        data: Collection[number],
+        createId?: string
     ) => {
+        if (createId) {
+            await db.collection(table).doc(createId).set(data)
+            return createId
+        }
+
         const { id } = await db.collection(table).add(data)
         return id
     },

@@ -21,5 +21,5 @@ export const from = buildMediaQueries('min')
 
 export const until = buildMediaQueries('max')
 
-export const between = (from: string, until: string) =>
-    `(${from} < width < ${until})`
+export const between = (minSize: string, maxSize: string) =>
+    `(min-width: ${minSize}) and (max-width: ${maxSize})`

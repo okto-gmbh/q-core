@@ -3,7 +3,7 @@ import {
     DatePicker as MuiDatePicker,
     DatePickerProps as MuiDatePickerProps
 } from '@mui/x-date-pickers-pro'
-import { FC } from 'react'
+import { FC, forwardRef, useState } from 'react'
 import {
     Control,
     Controller,
@@ -13,7 +13,7 @@ import {
 
 import TextInput from '../TextInput'
 
-type DatePickerProps = Omit<MuiDatePickerProps<any, any>, 'renderInput'> & {
+type DatePickerProps = Omit<MuiDatePickerProps<Date>, 'renderInput'> & {
     control?: Control<FieldValues>
     error?: boolean
     fieldName?: string
@@ -24,7 +24,6 @@ type DatePickerProps = Omit<MuiDatePickerProps<any, any>, 'renderInput'> & {
 const DatePicker: FC<DatePickerProps> = ({
     label,
     fieldName,
-    mask,
     control,
     onChange,
     error,
@@ -32,11 +31,13 @@ const DatePicker: FC<DatePickerProps> = ({
     value,
     ...props
 }) => {
+    const [open, setOpen] = useState(false)
+
     const handleChange = (
-        date: string,
+        date: Date | null,
         field: ControllerRenderProps<FieldValues, string>
     ) => {
-        field.onChange(date)
+        // field.onChange(date)
 
         if (control && onChange) {
             ;(onChange as any)(field.name, date, {
@@ -50,15 +51,32 @@ const DatePicker: FC<DatePickerProps> = ({
         field: ControllerRenderProps<FieldValues, string>
     ) => (
         <MuiDatePicker
-            value={field.value ?? ''}
-            mask={mask ? mask : '__.__.____'}
-            inputFormat="dd.MM.yyyy"
+            value={field.value ? new Date(field.value) : null}
             label={label}
-            renderInput={(params: TextFieldProps) => (
-                <TextInput {...params} error={error} helperText={helperText} />
-            )}
+            format="dd.MM.yyyy"
+            open={open}
+            slots={{
+                textField: forwardRef(function TextField(
+                    params: TextFieldProps,
+                    ref: any
+                ) {
+                    return (
+                        <TextInput
+                            {...params}
+                            ref={ref}
+                            onKeyDown={(e) => e.preventDefault()}
+                            onFocus={() => setOpen(true)}
+                            error={error}
+                            helperText={helperText}
+                        />
+                    )
+                })
+            }}
             {...props}
-            onChange={(date) => handleChange(date, field)}
+            onAccept={(date: Date | null) => {
+                handleChange(date, field)
+                setOpen(false)
+            }}
         />
     )
 
