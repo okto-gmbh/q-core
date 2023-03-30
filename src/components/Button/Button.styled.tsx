@@ -86,7 +86,7 @@ export const composeButtonVariants = ({
             ${namespaceWithVariant}-hover-borderWidth,
             var(
                 ${namespace}-hover-borderWidth,
-                var(--borders-${variant}-widthHover)
+                var(--borders-${variant}-widthHover, 0)
             )
         );
         --_borderColorHover: var(
