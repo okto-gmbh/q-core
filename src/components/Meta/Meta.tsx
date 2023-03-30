@@ -6,6 +6,7 @@ import { FC } from 'react'
 type MetaProps = NextSeoProps & {
     appBaseUrl: string
     image: string
+    manifest: string
     siteName: string
     themeColor: string
 }
@@ -17,6 +18,7 @@ const Meta: FC<MetaProps> = ({
     description = 'q-core',
     image = '/android-chrome-512x512.png',
     themeColor = '#111111',
+    manifest = '/site.webmanifest',
     noindex = false,
     nofollow = false
 }) => {
@@ -51,7 +53,7 @@ const Meta: FC<MetaProps> = ({
                     sizes="180x180"
                     href="/apple-touch-icon.png"
                 />
-                <link rel="manifest" href="/site.webmanifest" />
+                <link rel="manifest" href={manifest} />
                 <meta name="msapplication-TileColor" content={themeColor} />
                 <meta name="theme-color" content={themeColor} />
                 <meta
