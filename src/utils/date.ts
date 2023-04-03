@@ -1,5 +1,3 @@
-const [, offsetHours] = new Date(2022, 0, 1).toISOString().split('T')
-
 const DEFAULT_TIMEZONE = 'Europe/Zurich'
 const DEFAULT_LOCALE = 'de-CH'
 
@@ -43,8 +41,6 @@ export const isValidDate = (date: any): boolean =>
 export const dateToTimestamp = (date: Date): number | undefined => {
     if (!date) return
 
-    date = new Date(date.getTime() + date.getTimezoneOffset() * 60000)
-
     return parseInt(
         date.getFullYear() +
             (date.getMonth() + 1).toString().padStart(2, '0') +
@@ -58,15 +54,13 @@ export const timestampToDate = (timestamp: number): Date | null => {
 
     const timestampStr = timestamp.toString()
 
-    const date = new Date(
+    return new Date(
         `${timestampStr.slice(0, 4)}-${timestampStr
             .slice(4, 6)
             .toString()
             .padStart(2, '0')}-${timestampStr
             .slice(6, 8)
             .toString()
-            .padStart(2, '0')}T${offsetHours}`
+            .padStart(2, '0')}T00:00:00.000Z`
     )
-
-    return new Date(date.getTime() - date.getTimezoneOffset() * 60000)
 }

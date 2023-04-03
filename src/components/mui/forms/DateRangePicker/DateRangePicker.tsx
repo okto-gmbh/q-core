@@ -38,12 +38,12 @@ const DateRangePicker: FC<DateRangePickerProps> = ({
     helperText,
     ...props
 }) => {
-    // Do not display picker when minDate and maxDate are the same or null
+    let disabled = false
     if (
         !props.minDate ||
         props.minDate.getTime() === props.maxDate?.getTime()
     ) {
-        return null
+        disabled = true
     }
 
     const handleChange = (
@@ -76,6 +76,7 @@ const DateRangePicker: FC<DateRangePickerProps> = ({
             localeText={{ end: '', start: label }}
             onAccept={(range) => handleChange(range, field)}
             slotProps={slotProps}
+            disabled={disabled}
             slots={{
                 /*
                 field: forwardRef(function SingleInputDateRange(props, ref) {
