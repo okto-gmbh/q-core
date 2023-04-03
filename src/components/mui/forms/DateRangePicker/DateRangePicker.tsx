@@ -5,7 +5,6 @@ import {
     DateRangePickerProps as MuiDateRangePickerProps,
     PickersShortcutsItem
 } from '@mui/x-date-pickers-pro'
-import { Dayjs } from 'dayjs'
 import { FC, forwardRef } from 'react'
 import {
     Control,
@@ -17,7 +16,7 @@ import {
 import TextInput from '../TextInput'
 
 type DateRangePickerProps = Omit<
-    MuiDateRangePickerProps<Dayjs>,
+    MuiDateRangePickerProps<Date>,
     'renderInput'
 > & {
     fieldName: string
@@ -39,6 +38,14 @@ const DateRangePicker: FC<DateRangePickerProps> = ({
     helperText,
     ...props
 }) => {
+    // Do not display picker when minDate and maxDate are the same or null
+    if (
+        !props.minDate ||
+        props.minDate.getTime() === props.maxDate?.getTime()
+    ) {
+        return null
+    }
+
     const handleChange = (
         range: any[],
         field: ControllerRenderProps<FieldValues, string>

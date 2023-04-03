@@ -3,7 +3,7 @@ import {
     DatePicker as MuiDatePicker,
     DatePickerProps as MuiDatePickerProps
 } from '@mui/x-date-pickers-pro'
-import { FC, forwardRef, useState } from 'react'
+import { FC, forwardRef, useRef, useState } from 'react'
 import {
     Control,
     Controller,
@@ -32,12 +32,13 @@ const DatePicker: FC<DatePickerProps> = ({
     ...props
 }) => {
     const [open, setOpen] = useState(false)
+    const pickerRef = useRef<HTMLDivElement | null>()
 
     const handleChange = (
         date: Date | null,
         field: ControllerRenderProps<FieldValues, string>
     ) => {
-        // field.onChange(date)
+        field.onChange(date)
 
         if (control && onChange) {
             ;(onChange as any)(field.name, date, {
@@ -50,34 +51,42 @@ const DatePicker: FC<DatePickerProps> = ({
     const renderPicker = (
         field: ControllerRenderProps<FieldValues, string>
     ) => (
-        <MuiDatePicker
-            value={field.value ? new Date(field.value) : null}
-            label={label}
-            format="dd.MM.yyyy"
-            open={open}
-            slots={{
-                textField: forwardRef(function TextField(
-                    params: TextFieldProps,
-                    ref: any
-                ) {
-                    return (
-                        <TextInput
-                            {...params}
-                            ref={ref}
-                            onKeyDown={(e) => e.preventDefault()}
-                            onFocus={() => setOpen(true)}
-                            error={error}
-                            helperText={helperText}
-                        />
-                    )
-                })
-            }}
-            {...props}
-            onAccept={(date: Date | null) => {
-                handleChange(date, field)
-                setOpen(false)
-            }}
-        />
+        <div ref={(ref) => (pickerRef.current = ref)}>
+            <MuiDatePicker
+                value={field.value ? new Date(field.value) : null}
+                label={label}
+                format="dd.MM.yyyy"
+                open={open}
+                slotProps={{
+                    popper: {
+                        anchorEl: pickerRef.current
+                    }
+                }}
+                slots={{
+                    textField: forwardRef(function TextField(
+                        params: TextFieldProps,
+                        ref: any
+                    ) {
+                        return (
+                            <TextInput
+                                {...params}
+                                style={{ width: '100%' }}
+                                ref={ref}
+                                onKeyDown={(e) => e.preventDefault()}
+                                onFocus={() => setOpen(true)}
+                                error={error}
+                                helperText={helperText}
+                            />
+                        )
+                    })
+                }}
+                {...props}
+                onAccept={(date: Date | null) => {
+                    setOpen(false)
+                    handleChange(date, field)
+                }}
+            />
+        </div>
     )
 
     if (!control) {
