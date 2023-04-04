@@ -21,7 +21,7 @@ export const Input = styled(
 )(({ round, grow }: { grow?: 'auto'; round?: boolean }) => ({
     [`& .${formLabelClasses.root}`]: {
         zIndex: 1,
-        textShadow: '0 0 3px white'
+        textShadow: '0 0 3px var(--colors-white)'
     },
 
     [`& .${inputBaseClasses.root}`]: {
@@ -33,31 +33,24 @@ export const Input = styled(
                 }
             }
         },
+
         padding: round ? '0 var(--spacings-default)' : undefined,
         borderRadius: round ? 'var(--spacings-huge)' : 'var(--radii-default)',
         backgroundColor: white,
-
         boxShadow: 'var(--shadows-mui)',
 
-        [`&.${autocompleteClasses.inputRoot}`]: {
-            backgroundColor: white
-        },
-
-        [`& .${inputBaseClasses.input}`]: {
-            textOverflow: 'ellipsis'
-        },
-
-        [`& .${outlinedInputClasses.notchedOutline}`]: {
-            borderWidth: '1px',
-            borderStyle: 'solid',
-            borderColor: 'var(--colors-white)',
-            transition: 'border 0.2s ease-in'
-        },
-
-        [`&.${inputBaseClasses.disabled} .${outlinedInputClasses.notchedOutline}`]:
-            {
-                borderColor: white
+        [`&.${inputBaseClasses.focused}`]: {
+            [`&:not(.${inputBaseClasses.disabled})`]: {
+                [`& .${outlinedInputClasses.notchedOutline}`]: {
+                    borderWidth: '1px',
+                    borderColor: primaryColor
+                }
             },
+
+            [`&.${inputBaseClasses.multiline}`]: {
+                zIndex: 3
+            }
+        },
 
         [`&:not(.${inputBaseClasses.focused})`]: {
             [`&.${inputBaseClasses.multiline}`]:
@@ -74,17 +67,24 @@ export const Input = styled(
                     : undefined
         },
 
-        [`&.${inputBaseClasses.focused}`]: {
-            [`&:not(.${inputBaseClasses.disabled})`]: {
-                [`& .${outlinedInputClasses.notchedOutline}`]: {
-                    borderWidth: '1px',
-                    borderColor: primaryColor
-                }
+        [`&.${inputBaseClasses.disabled} .${outlinedInputClasses.notchedOutline}`]:
+            {
+                borderColor: white
             },
 
-            [`&.${inputBaseClasses.multiline}`]: {
-                zIndex: 3
-            }
+        [`& .${outlinedInputClasses.notchedOutline}`]: {
+            borderWidth: '1px',
+            borderStyle: 'solid',
+            borderColor: 'var(--colors-white)',
+            transition: 'border 0.2s ease-in'
+        },
+
+        [`& .${inputBaseClasses.input}`]: {
+            textOverflow: 'ellipsis'
+        },
+
+        [`&.${autocompleteClasses.inputRoot}`]: {
+            backgroundColor: white
         }
     }
 }))

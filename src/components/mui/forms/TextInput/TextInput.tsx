@@ -45,9 +45,7 @@ const TextInput = (
         event: any,
         field: ControllerRenderProps<FieldValues, string>
     ) => {
-        if (field.onChange) {
-            field.onChange(event)
-        }
+        field.onChange?.(event)
 
         if (control && onChange) {
             ;(onChange as any)(field.name, event.target.value, {

@@ -3,7 +3,7 @@ import {
     DatePicker as MuiDatePicker,
     DatePickerProps as MuiDatePickerProps
 } from '@mui/x-date-pickers-pro'
-import { FC, forwardRef, useRef, useState } from 'react'
+import { FC, forwardRef, useRef } from 'react'
 import {
     Control,
     Controller,
@@ -11,6 +11,7 @@ import {
     FieldValues
 } from 'react-hook-form'
 
+import Paper from '../../Paper'
 import TextInput from '../TextInput'
 
 type DatePickerProps = Omit<MuiDatePickerProps<Date>, 'renderInput'> & {
@@ -31,7 +32,6 @@ const DatePicker: FC<DatePickerProps> = ({
     value,
     ...props
 }) => {
-    const [open, setOpen] = useState(false)
     const pickerRef = useRef<HTMLDivElement | null>()
 
     const handleChange = (
@@ -56,24 +56,22 @@ const DatePicker: FC<DatePickerProps> = ({
                 value={field.value ? new Date(field.value) : null}
                 label={label}
                 format="dd.MM.yyyy"
-                open={open}
                 slotProps={{
                     popper: {
                         anchorEl: pickerRef.current
                     }
                 }}
                 slots={{
+                    desktopPaper: Paper,
                     textField: forwardRef(function TextField(
-                        params: TextFieldProps,
+                        props: TextFieldProps,
                         ref: any
                     ) {
                         return (
                             <TextInput
-                                {...params}
-                                style={{ width: '100%' }}
+                                {...props}
                                 ref={ref}
-                                onKeyDown={(e) => e.preventDefault()}
-                                onFocus={() => setOpen(true)}
+                                style={{ width: '100%' }}
                                 error={error}
                                 helperText={helperText}
                             />
@@ -81,10 +79,7 @@ const DatePicker: FC<DatePickerProps> = ({
                     })
                 }}
                 {...props}
-                onAccept={(date: Date | null) => {
-                    setOpen(false)
-                    handleChange(date, field)
-                }}
+                onChange={(date: Date | null) => handleChange(date, field)}
             />
         </div>
     )

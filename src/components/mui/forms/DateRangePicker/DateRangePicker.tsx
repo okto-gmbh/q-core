@@ -13,6 +13,7 @@ import {
     FieldValues
 } from 'react-hook-form'
 
+import Paper from '../../Paper'
 import TextInput from '../TextInput'
 
 type DateRangePickerProps = Omit<
@@ -78,6 +79,7 @@ const DateRangePicker: FC<DateRangePickerProps> = ({
             slotProps={slotProps}
             disabled={disabled}
             slots={{
+                desktopPaper: Paper,
                 /*
                 field: forwardRef(function SingleInputDateRange(props, ref) {
                     return <SingleInputDateRangeField {...props} ref={ref} />
@@ -85,15 +87,14 @@ const DateRangePicker: FC<DateRangePickerProps> = ({
                 */
                 fieldSeparator: () => null,
                 textField: forwardRef(function TextField(
-                    params: TextFieldProps,
+                    props: TextFieldProps,
                     ref: any
                 ) {
                     return (
                         <TextInput
-                            {...params}
+                            {...props}
                             ref={ref}
                             error={error}
-                            onKeyDown={(e) => e.preventDefault()}
                             helperText={helperText}
                         />
                     )

@@ -322,10 +322,13 @@ const generateFonts = (fonts: TokenFonts): TokenFonts => ({
     )
 })
 
+type ThemeMode = 'light' | 'dark'
+
 const colorPercentage = [
     10, 15, 20, 25, 30, 35, 40, 45, 50, 55, 60, 65, 70, 75, 80, 85, 90, 95
 ]
-const generateColors = (colors: TokenColors): TokenColors => ({
+
+const generateColors = (colors: TokenColors, mode: ThemeMode): TokenColors => ({
     ...colors,
     ...Object.fromEntries([
         ...colorPercentage.map((percent) => [
@@ -345,8 +348,10 @@ const generateColors = (colors: TokenColors): TokenColors => ({
             new Color(colors.secondary).darken(percent / 100).hex()
         ]),
         ...colorPercentage.map((percent) => [
-            `gray-${percent}`,
-            new Color(colors.black).lightness(percent).hex()
+            `gray-${mode === 'dark' ? 100 - percent : percent}`,
+            new Color(mode === 'dark' ? colors.white : colors.black)
+                .lightness(percent)
+                .hex()
         ])
     ])
 })
@@ -433,7 +438,8 @@ const generatePixelBasedValues = <T extends { [key: string]: number }>(
 
 // TODO: Generate on build for memoization
 export const generateDesignTokens = (
-    projectTokens: Partial<RawDesignTokens>
+    projectTokens: Partial<RawDesignTokens>,
+    mode: ThemeMode = 'light'
 ) => {
     const settings = merge({}, coreTokens, projectTokens)
 
@@ -446,7 +452,7 @@ export const generateDesignTokens = (
     const generatedDesignTokens: GeneratedDesignTokens = {
         ...settings,
         borders: generateBorders(settings.borders),
-        colors: generateColors(settings.colors),
+        colors: generateColors(settings.colors, mode),
         fontSizes: generatedFontSizes,
         fonts: generateFonts(settings.fonts),
         letterSpacings: generatePixelBasedValues(settings.letterSpacings),
