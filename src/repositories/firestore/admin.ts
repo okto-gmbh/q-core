@@ -69,6 +69,12 @@ async function mapDocs<Collection extends admin.firestore.DocumentData[]>(
         if (prop instanceof admin.firestore.Timestamp) {
             prop = prop.toDate()
         }
+        if (prop instanceof admin.firestore.GeoPoint) {
+            prop = {
+                latitude: prop.latitude,
+                longitude: prop.longitude
+            }
+        }
 
         acc[propName] = prop
         return acc

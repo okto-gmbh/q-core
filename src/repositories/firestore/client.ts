@@ -9,6 +9,7 @@ import {
     DocumentReference,
     DocumentSnapshot,
     Firestore,
+    GeoPoint,
     getDoc,
     getDocs,
     limit as queryLimit,
@@ -83,6 +84,12 @@ async function mapDocs<Collection extends DocumentData[]>(
         }
         if (prop instanceof Timestamp) {
             prop = prop.toDate()
+        }
+        if (prop instanceof GeoPoint) {
+            prop = {
+                latitude: prop.latitude,
+                longitude: prop.longitude
+            }
         }
 
         acc[propName] = prop
