@@ -5,6 +5,7 @@ declare module '@blitzjs/auth' {
         PublicData: {
             role: string
             userId: string
+            tenantId?: string
         }
         isAuthorized: SimpleRolesIsAuthorized<string>
     }

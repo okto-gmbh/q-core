@@ -4,10 +4,11 @@ import { BaseUser } from '../user'
 
 export const createSession = async <User extends BaseUser>(
     { session }: BlitzCtx,
-    { role, id }: User
+    { role, id, tenantId }: User
 ) =>
     await session.$create({
         role,
+        tenantId,
         userId: id
     })
 

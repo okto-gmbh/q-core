@@ -9,6 +9,7 @@ export interface BaseUser {
     hashedPassword: string
     id: string
     role: BaseRole | string
+    tenantId?: string
 }
 
 export const mapSafeUserFields = <User extends BaseUser>(users: User[]) =>
