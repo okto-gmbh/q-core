@@ -216,9 +216,11 @@ export const objectsToOptions = (
     objects: any[] = [],
     labelField = 'name'
 ): Array<{ key: string; value: string }> =>
-    objects.map(({ id, [labelField]: label }) => ({
-        key: id,
-        value: label
-    }))
+    objects
+        .map(({ id, [labelField]: label }) => ({
+            key: id,
+            value: label
+        }))
+        .sort((a, b) => a.value.localeCompare(b.value))
 
 export default forwardRef<HTMLInputElement, SelectProps>(Select)
