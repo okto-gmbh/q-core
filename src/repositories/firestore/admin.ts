@@ -100,6 +100,10 @@ const getRepository = (db: admin.firestore.Firestore) => ({
         table: Table,
         id: ID
     ) => {
+        if (!id) {
+            return
+        }
+
         const doc = await db.collection(table).doc(id).get()
         if (!doc) {
             return
