@@ -40,7 +40,7 @@ export async function createScript<ProvidedParameters extends Parameters>(
     const confirm = async () =>
         rl.question(
             `${EOL}` +
-                `${EOL}About to run the script useing the following variables:` +
+                `${EOL}About to run the script using the following variables:` +
                 `${EOL}` +
                 parameterVariables +
                 `${EOL}` +
