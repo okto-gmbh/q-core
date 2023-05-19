@@ -31,7 +31,6 @@ export async function createScript<ProvidedParameters extends Parameters>(
 
     const parameterVariables = Object.entries(resolvedParameters).reduce(
         (acc, [name, value]) => {
-            console.log(name, value)
             acc += `${EOL}${name}: ${value}`
             return acc
         },
