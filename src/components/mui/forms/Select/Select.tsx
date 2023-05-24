@@ -145,56 +145,54 @@ const Select = (
         }
     }
 
-    const renderSelect = (field: ControllerRenderProps<FieldValues, any>) => {
-        return (
-            <Autocomplete
-                PaperComponent={Paper}
-                multiple={multiple}
-                limitTags={limitTags}
-                options={options}
-                {...props}
-                value={getValue(field.value ?? defaultValue)}
-                ref={ref}
-                onChange={(_, values) => onSelectChange(values, field)}
-                filterOptions={(options, params) =>
-                    filterOptions(options, params, field)
-                }
-                getOptionLabel={({ value }) => value}
-                renderInput={(params) => (
-                    <TextInput
-                        {...params}
-                        label={label}
-                        variant="filled"
-                        error={error}
-                        helperText={helperText}
-                        onChange={onInputChange}
-                    />
-                )}
-                renderOption={(props, { value }, { inputValue }) => {
-                    const matches = match(value, inputValue)
-                    const parts = parse(value, matches)
+    const renderSelect = (field: ControllerRenderProps<FieldValues, any>) => (
+        <Autocomplete
+            PaperComponent={Paper}
+            multiple={multiple}
+            limitTags={limitTags}
+            options={options}
+            {...props}
+            value={getValue(field.value ?? defaultValue)}
+            ref={ref}
+            onChange={(_, values) => onSelectChange(values, field)}
+            filterOptions={(options, params) =>
+                filterOptions(options, params, field)
+            }
+            getOptionLabel={({ value }) => value}
+            renderInput={(params) => (
+                <TextInput
+                    {...params}
+                    label={label}
+                    variant="filled"
+                    error={error}
+                    helperText={helperText}
+                    onChange={onInputChange}
+                />
+            )}
+            renderOption={(props, { value }, { inputValue }) => {
+                const matches = match(value, inputValue)
+                const parts = parse(value, matches)
 
-                    return (
-                        <Option {...props}>
-                            <div>
-                                {parts.map((part, index) => (
-                                    <span
-                                        key={`${part.text}_${index}`}
-                                        style={{
-                                            fontWeight: part.highlight
-                                                ? 'var(--fontWeights-bold)'
-                                                : 'var(--fontWeights-default)'
-                                        }}>
-                                        {part.text}
-                                    </span>
-                                ))}
-                            </div>
-                        </Option>
-                    )
-                }}
-            />
-        )
-    }
+                return (
+                    <Option {...props}>
+                        <div>
+                            {parts.map((part, index) => (
+                                <span
+                                    key={`${part.text}_${index}`}
+                                    style={{
+                                        fontWeight: part.highlight
+                                            ? 'var(--fontWeights-bold)'
+                                            : 'var(--fontWeights-default)'
+                                    }}>
+                                    {part.text}
+                                </span>
+                            ))}
+                        </div>
+                    </Option>
+                )
+            }}
+        />
+    )
 
     if (!control) {
         return renderSelect({

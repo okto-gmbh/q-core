@@ -261,8 +261,8 @@ const buildFontSizeClamp = ([min, max, value]: number[]) =>
 const buildLineHeightClamp = ([min, max, value, faktor = 1.1]: number[]) =>
     `clamp(calc(${min}rem * ${faktor}), calc(${value}vw * ${faktor}), calc(${max}rem) * ${faktor})`
 
-const generateSpacings = (spacings: TokenSpacings): Pixels<TokenSpacings> => {
-    return Object.fromEntries(
+const generateSpacings = (spacings: TokenSpacings): Pixels<TokenSpacings> =>
+    Object.fromEntries(
         Object.entries(spacings).map(([tokenName, tokenValue]) => [
             tokenName,
             `${
@@ -270,7 +270,6 @@ const generateSpacings = (spacings: TokenSpacings): Pixels<TokenSpacings> => {
             }px`
         ])
     ) as Pixels<TokenSpacings>
-}
 
 const generateFontSizes = (fontSizes: TokenFontSizes = {}): TokenFontSizes =>
     Object.fromEntries(

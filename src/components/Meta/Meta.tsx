@@ -36,7 +36,7 @@ const Meta: FC<MetaProps> = ({
                         hrefLang: locale
                     }))}
                 openGraph={{
-                    description: description,
+                    description,
                     images: [
                         {
                             url: image
