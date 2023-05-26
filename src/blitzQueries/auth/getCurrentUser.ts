@@ -8,11 +8,11 @@ const getCurrentUser = async <User extends BaseUser>(
     _: undefined,
     { session }: BlitzCtx
 ) => {
-    if (!session.$publicData.userId) {
+    if (!session.userId) {
         return null
     }
 
-    const user = await repo.find<User[]>('users', session.$publicData.userId)
+    const user = await repo.find<User[]>('users', session.userId)
     if (!user) {
         return null
     }
