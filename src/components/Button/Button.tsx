@@ -17,10 +17,10 @@ export interface ButtonProps
 }
 
 const Button: FC<ButtonProps> = ({
-    variant = 'primary',
+    children,
     endIcon,
     startIcon,
-    children,
+    variant = 'primary',
     ...props
 }) => {
     const withIcon = (

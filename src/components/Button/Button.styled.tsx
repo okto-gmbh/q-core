@@ -115,7 +115,7 @@ export const composeButtonVariants = ({
 }
 
 export const Button = styled(
-    ({ width: _width, height: _height, ...rest }: ButtonProps) => (
+    ({ height: _height, width: _width, ...rest }: ButtonProps) => (
         <button {...rest} />
     )
 )`

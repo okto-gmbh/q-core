@@ -5,16 +5,16 @@ import { BoxProps } from './Box'
 
 export const Element = styled(
     ({
+        alignItems: _alignItems,
         as: Component = 'div',
         centered: _centered,
         display: _display,
-        height: _height,
         flexDirection: _flexDirection,
-        alignItems: _alignItems,
+        height: _height,
         justifyContent: _justifyContent,
         padding: _padding,
-        textAlign: _textAlign,
         stretch: _stretch,
+        textAlign: _textAlign,
         ...rest
     }: BoxProps) => <Component {...rest} />
 )`

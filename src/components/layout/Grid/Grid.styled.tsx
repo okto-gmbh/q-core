@@ -11,12 +11,12 @@ export const GRID_ITEM_CLASS = 'pixls-grid-item'
 
 export const Grid = styled(
     ({
-        as: Component = 'div',
-        justifyContent: _justifyContent,
         alignItems: _alignItems,
+        as: Component = 'div',
         colHeight: _colHeight,
-        gap: _gap,
         cols: _cols,
+        gap: _gap,
+        justifyContent: _justifyContent,
         ...rest
     }: GridProps) => <Component {...rest} />
 )`
@@ -115,10 +115,10 @@ export const Grid = styled(
 export const Item = styled(
     ({
         as: Component = 'div',
-        span: _span,
+        breakpoints: _breakpoints,
         className = '',
         colHeight: _colHeight,
-        breakpoints: _breakpoints,
+        span: _span,
         ...rest
     }: GridItemProps) => (
         <Component className={(className += ` ${GRID_ITEM_CLASS}`)} {...rest} />

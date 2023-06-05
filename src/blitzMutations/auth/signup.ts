@@ -11,7 +11,7 @@ type Input = {
     password: string
 }
 
-const signup = async <User extends BaseUser>({ password, email }: Input) => {
+const signup = async <User extends BaseUser>({ email, password }: Input) => {
     const hashedPassword = await SecurePassword.hash(password)
     const user = {
         email,

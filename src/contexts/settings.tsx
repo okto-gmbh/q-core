@@ -14,8 +14,8 @@ type SettingsProviderProps = {
 const SettingsContext = createContext<SettingsProps>({})
 
 const SettingsProvider: FC<SettingsProviderProps> = ({
-    settings,
-    children
+    children,
+    settings
 }) => (
     <SettingsContext.Provider value={settings}>
         {children}

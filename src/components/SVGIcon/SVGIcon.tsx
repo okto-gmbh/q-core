@@ -19,8 +19,8 @@ export interface SVGIconProps extends Partial<HTMLAttributes<HTMLDivElement>> {
 }
 
 const SVGIcon: FC<SVGIconProps> = ({
-    size = 'default',
     children,
+    size = 'default',
     ...props
 }) => (
     <Styled.Container size={size} {...props}>

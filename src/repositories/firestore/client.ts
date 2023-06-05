@@ -113,7 +113,7 @@ const getRepository = (db: Firestore) => ({
 
     query: async <Collection extends DocumentData[]>(
         table: Table,
-        { where = [], orderBy = {}, limit }: Constraints<Collection>,
+        { limit, orderBy = {}, where = [] }: Constraints<Collection>,
         fields: (keyof (Collection[number] & DB_Meta))[]
     ) => {
         const { docs } = await getDocs(

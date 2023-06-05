@@ -26,7 +26,7 @@ export interface StackProps extends HTMLAttributes<HTMLDivElement> {
 }
 
 const Stack: ForwardRefRenderFunction<HTMLDivElement, StackProps> = (
-    { spacing = 'default', direction = 'vertical', ...props },
+    { direction = 'vertical', spacing = 'default', ...props },
     ref
 ) => (
     <Styled.Element

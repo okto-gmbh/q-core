@@ -10,7 +10,7 @@ type SearchInputProps = TextInputProps & {
     clear: () => void
 }
 
-const SearchInput: FC<SearchInputProps> = ({ value, clear, ...props }) => {
+const SearchInput: FC<SearchInputProps> = ({ clear, value, ...props }) => {
     const inputRef = createRef<HTMLInputElement>()
 
     const focus = () => {

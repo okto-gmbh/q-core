@@ -6,10 +6,10 @@ import { PaperProps } from '.'
 const StyledPaper = (
     {
         borderRadius: _borderRadius,
-        width: _width,
         height: _height,
         overflow: _overflow,
         scroll: _scroll,
+        width: _width,
         ...rest
     }: PaperProps,
     ref: ForwardedRef<HTMLDivElement>

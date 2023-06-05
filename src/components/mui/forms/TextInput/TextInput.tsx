@@ -18,14 +18,14 @@ export type TextInputProps = TextFieldProps & {
 
 const TextInput = (
     {
+        control,
+        defaultValue,
+        fieldName,
+        inputRef,
+        onChange,
         round,
         type,
-        inputRef,
-        control,
-        onChange,
-        defaultValue,
         value,
-        fieldName,
         ...props
     }: TextInputProps,
     ref: Ref<HTMLDivElement | null | undefined>

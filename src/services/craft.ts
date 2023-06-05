@@ -1,11 +1,11 @@
 import { GraphQLClient } from 'graphql-request'
 
 const init = ({
-    token = process.env.CRAFT_AUTH_TOKEN ??
-        process.env.NEXT_PUBLIC_CRAFT_GRAPHQL_TOKEN,
+    customHeaders = {},
     endpoint = (process.env.CRAFT_ENDPOINT ??
         process.env.NEXT_PUBLIC_CRAFT_GRAPHQL_ENDPOINT)!,
-    customHeaders = {}
+    token = process.env.CRAFT_AUTH_TOKEN ??
+        process.env.NEXT_PUBLIC_CRAFT_GRAPHQL_TOKEN
 }) =>
     new GraphQLClient(
         endpoint,

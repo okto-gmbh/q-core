@@ -30,13 +30,13 @@ type DateRangePickerProps = Omit<
 }
 
 const DateRangePicker: FC<DateRangePickerProps> = ({
-    label,
-    fieldName,
     control,
+    error,
+    fieldName,
+    helperText,
+    label,
     onChange,
     shortcuts,
-    error,
-    helperText,
     ...props
 }) => {
     let disabled = false

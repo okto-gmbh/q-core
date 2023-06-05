@@ -34,15 +34,15 @@ export const Switch = styled(
     }
 )(
     ({
-        leftIcon,
-        rightIcon,
-        leftIconActive,
-        rightIconActive,
         borderWidth,
         buttonSize,
+        leftIcon,
+        leftIconActive,
         offset,
         outerHeight,
-        outerWidth
+        outerWidth,
+        rightIcon,
+        rightIconActive
     }: SwitchProps) => ({
         '&&': {
             height: `${outerHeight}px`,

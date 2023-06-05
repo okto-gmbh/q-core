@@ -23,13 +23,13 @@ type RadioProps = MuiRadioGroupProps & {
 }
 
 const Radio: FC<RadioProps> = ({
-    error,
-    helperText,
     control,
-    onChange,
-    fieldName,
-    options,
     defaultValue,
+    error,
+    fieldName,
+    helperText,
+    onChange,
+    options,
     ...props
 }) => {
     const handleChange = (

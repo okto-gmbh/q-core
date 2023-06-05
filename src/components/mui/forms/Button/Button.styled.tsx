@@ -19,7 +19,7 @@ const muiVariants: {
 }
 
 export const Element = styled(
-    ({ variant, look: _look, ...rest }: ButtonProps) => (
+    ({ look: _look, variant, ...rest }: ButtonProps) => (
         <Button
             color={variant}
             variant={muiVariants[variant || '']}

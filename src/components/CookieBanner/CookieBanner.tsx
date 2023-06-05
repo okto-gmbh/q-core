@@ -7,7 +7,7 @@ export interface CookieBannerProps {
     text: React.ReactNode
 }
 
-const CookieBanner = ({ text, button }: CookieBannerProps) => {
+const CookieBanner = ({ button, text }: CookieBannerProps) => {
     const [accepted, setAccepted] = useState(true)
 
     useEffect(() => {

@@ -12,8 +12,8 @@ export interface GridAreaProps extends Partial<HTMLAttributes<HTMLDivElement>> {
 }
 
 const GridArea: FC<GridAreaProps> = ({
-    children,
     areas,
+    children,
     gap = 'default',
     ...props
 }) => (

@@ -37,10 +37,10 @@ interface AddressProps extends HTMLAttributes<HTMLDivElement> {
 }
 
 const Address: FC<AddressProps> = ({
-    label,
-    error,
     defaultValue = '',
+    error,
     helperText,
+    label,
     onAddress,
     placeTypes = ['address'],
     restrictions = { country: ['ch'] }
@@ -136,9 +136,9 @@ const Address: FC<AddressProps> = ({
                 }
 
                 const {
-                    name: company,
                     address_components: address,
-                    geometry
+                    geometry,
+                    name: company
                 } = result
 
                 const street = address!.find((comp) =>

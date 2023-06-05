@@ -22,10 +22,10 @@ const mapAreas = (areas: Array<number[]>): string =>
 
 export const Grid = styled(
     ({
-        as: Component = 'div',
         areas: _areas,
-        items: _items,
+        as: Component = 'div',
         gap: _gap,
+        items: _items,
         ...rest
     }: GridAreaProps) => <Component {...rest} />
 )`

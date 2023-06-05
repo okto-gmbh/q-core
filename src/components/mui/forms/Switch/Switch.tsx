@@ -21,12 +21,12 @@ type SwitchProps = MuiSwitchProps & {
 }
 
 const Switch: FC<SwitchProps> = ({
+    borderWidth = 2,
+    buttonSize = 48,
     leftIcon,
     leftIconActive,
     rightIcon,
     rightIconActive,
-    borderWidth = 2,
-    buttonSize = 48,
     ...props
 }) => {
     const offset = 4 * borderWidth

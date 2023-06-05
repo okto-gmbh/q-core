@@ -64,9 +64,9 @@ const renderComponentTokens = (tokens: TokenComponents = {}): string =>
         .join('\n')
 
 export const generateGlobalStyles = ({
-    designTokens,
+    customReset,
     customVariables,
-    customReset
+    designTokens
 }: {
     customReset: SerializedStyles
     customVariables: SerializedStyles

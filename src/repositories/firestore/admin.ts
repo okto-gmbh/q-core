@@ -117,7 +117,7 @@ const getRepository = (db: admin.firestore.Firestore) => ({
         constraints: Constraints<Collection> = {},
         fields?: (keyof (Collection[number] & DB_Meta))[]
     ) => {
-        const { where, orderBy, limit } = constraints
+        const { limit, orderBy, where } = constraints
         let query: admin.firestore.Query<Collection[number]> =
             db.collection(table)
 

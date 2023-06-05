@@ -12,15 +12,15 @@ type MetaProps = NextSeoProps & {
 }
 
 const Meta: FC<MetaProps> = ({
-    siteName,
     appBaseUrl,
-    title = 'q-core',
     description = 'q-core',
     image = '/android-chrome-512x512.png',
-    themeColor = '#111111',
     manifest = '/site.webmanifest',
+    nofollow = false,
     noindex = false,
-    nofollow = false
+    siteName,
+    themeColor = '#111111',
+    title = 'q-core'
 }) => {
     const { asPath, locale: currentLocale, locales } = useRouter()
 

@@ -23,12 +23,12 @@ type DatePickerProps = Omit<MuiDatePickerProps<Date>, 'renderInput'> & {
 }
 
 const DatePicker: FC<DatePickerProps> = ({
-    label,
-    fieldName,
     control,
-    onChange,
     error,
+    fieldName,
     helperText,
+    label,
+    onChange,
     value,
     ...props
 }) => {

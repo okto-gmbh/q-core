@@ -10,8 +10,8 @@ type GoogleAnalyticsProps = {
 
 const GoogleAnalytics: FC<GoogleAnalyticsProps> = ({
     id,
-    strategy = 'worker',
-    prodOnly = true
+    prodOnly = true,
+    strategy = 'worker'
 }) =>
     (id && (!prodOnly || process.env.NODE_ENV === 'production') && (
         <>

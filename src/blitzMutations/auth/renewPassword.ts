@@ -13,7 +13,7 @@ type Input = {
     userId: string
 }
 
-const renewPassword = async ({ password, userId, token }: Input) => {
+const renewPassword = async ({ password, token, userId }: Input) => {
     const [validToken] = await repo.query('tokens', {
         where: [
             ['user', OP_EQUALS, userId],

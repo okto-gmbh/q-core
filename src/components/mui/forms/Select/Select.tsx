@@ -33,19 +33,19 @@ type SelectProps = AutocompleteProps<any, any, any, any> & {
 
 const Select = (
     {
-        limitTags = 2,
-        error,
-        helperText,
-        fieldName,
-        multiple,
         control,
-        options,
+        createLabel,
+        defaultValue,
+        error,
+        fieldName,
+        helperText,
+        label,
+        limitTags = 2,
+        multiple,
         onChange,
         onCreate,
         onInputChange,
-        defaultValue,
-        label,
-        createLabel,
+        options,
         ...props
     }: SelectProps,
     ref: Ref<HTMLInputElement>

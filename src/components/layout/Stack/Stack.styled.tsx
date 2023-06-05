@@ -9,12 +9,12 @@ import { StackProps } from './Stack'
 
 const StyledStack: ForwardRefRenderFunction<HTMLDivElement, StackProps> = (
     {
-        as: Component = 'div',
-        spacing: _spacing,
-        direction: _direction,
         alignItems: _alignItems,
-        justifyContent: _justifyContent,
+        as: Component = 'div',
         children,
+        direction: _direction,
+        justifyContent: _justifyContent,
+        spacing: _spacing,
         ...rest
     },
     ref
@@ -25,7 +25,7 @@ export const Element = styled(
 )`
     width: 100%;
 
-    ${({ direction, justifyContent, alignItems }) =>
+    ${({ alignItems, direction, justifyContent }) =>
         (direction === 'horizontal' || justifyContent || alignItems) &&
         css`
             display: flex;
@@ -39,7 +39,7 @@ export const Element = styled(
         css`
             ${Object.entries(breakpoints)
                 .map(
-                    ([breakpoint, { direction, alignItems }]) => `
+                    ([breakpoint, { alignItems, direction }]) => `
                             @media ${from[breakpoint]} {
                                 ${
                                     (direction || alignItems) &&
@@ -59,7 +59,7 @@ export const Element = styled(
 
 
     > * + * {
-        ${({ breakpoints, spacing, direction }) =>
+        ${({ breakpoints, direction, spacing }) =>
             css`
                 ${getDirectionSpacing(direction)}: var(--spacings-${spacing});
 
@@ -69,8 +69,8 @@ export const Element = styled(
                         ([
                             breakpoint,
                             {
-                                spacing: breakpointSpacing,
-                                direction: breakpointDirection
+                                direction: breakpointDirection,
+                                spacing: breakpointSpacing
                             }
                         ]) => `
                             @media ${from[breakpoint]} {

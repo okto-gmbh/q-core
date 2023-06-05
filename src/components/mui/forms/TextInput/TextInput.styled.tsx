@@ -15,10 +15,10 @@ export const multilineLabelProps = {
 }
 
 export const Input = styled(
-    ({ round: _round, grow: _grow, ...props }: TextInputProps) => (
+    ({ grow: _grow, round: _round, ...props }: TextInputProps) => (
         <TextField {...props} variant="outlined" />
     )
-)(({ round, grow }: { grow?: 'auto'; round?: boolean }) => ({
+)(({ grow, round }: { grow?: 'auto'; round?: boolean }) => ({
     [`& .${formLabelClasses.root}`]: {
         textShadow: '0 0 3px var(--colors-white)',
         zIndex: 1

@@ -23,13 +23,13 @@ type CheckboxProps = SwitchProps & {
 }
 
 const Checkbox: FC<CheckboxProps> = ({
-    label,
-    error,
-    helperText,
     control,
-    onChange,
-    fieldName,
     defaultValue = false,
+    error,
+    fieldName,
+    helperText,
+    label,
+    onChange,
     ...props
 }) => {
     const handleChange = (
