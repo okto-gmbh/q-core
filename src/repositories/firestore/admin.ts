@@ -1,6 +1,6 @@
 /* eslint-disable no-redeclare */
 
-import * as admin from 'firebase-admin'
+import admin from 'firebase-admin'
 
 import { DB_Meta, ID, Table } from './common'
 
