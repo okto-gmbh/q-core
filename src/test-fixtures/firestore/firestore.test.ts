@@ -1,4 +1,3 @@
-// eslint-disable-next-line simple-import-sort/imports
 import {
     afterAll,
     afterEach,
@@ -9,8 +8,15 @@ import {
     vi
 } from 'vitest'
 
-import { getDB, mock, raw, reset, seed, verifyMock } from './firestore'
 import getRepository from '@core/repositories/firestore/admin'
+
+import {
+    getMockDB,
+    getRawData,
+    resetMockRepository,
+    seedMockRepository,
+    verifyMock
+} from './firestore'
 
 interface Member {
     name: string
@@ -21,11 +27,13 @@ type Members = Member[]
 
 describe('firestore', () => {
     beforeAll(() => {
-        mock()
+        vi.mock('@core/repositories/firestore/admin', async () =>
+            (await import('./firestore')).mockRepository()
+        )
     })
 
     afterEach(() => {
-        reset()
+        resetMockRepository()
     })
 
     afterAll(() => {
@@ -33,50 +41,48 @@ describe('firestore', () => {
     })
 
     it('should mock the database', async () => {
-        mock()
-
         const spy = vi.spyOn(verifyMock, 'verifyMock')
 
-        const db = getDB()
+        const db = getMockDB()
         getRepository(db)
 
         expect(spy).toHaveBeenCalled()
     })
 
     it('should seed the database', () => {
-        seed('members', [{ name: 'John' }, { name: 'Jane' }])
-        expect(raw().members['0']).toEqual({ name: 'John' })
-        expect(raw().members['1']).toEqual({ name: 'Jane' })
+        seedMockRepository('members', [{ name: 'John' }, { name: 'Jane' }])
+        expect(getRawData().members['0']).toEqual({ name: 'John' })
+        expect(getRawData().members['1']).toEqual({ name: 'Jane' })
     })
 
     it('should reset the database', () => {
-        seed('members', [{ name: 'John' }, { name: 'Jane' }])
-        reset()
-        expect(raw()).toEqual({})
+        seedMockRepository('members', [{ name: 'John' }, { name: 'Jane' }])
+        resetMockRepository()
+        expect(getRawData()).toEqual({})
     })
 
     it('should return the id when creating an entry', async () => {
-        const db = getDB()
+        const db = getMockDB()
         const repo = getRepository(db)
         const id = await repo.create('members', { name: 'John' })
         expect(id).toEqual('0')
     })
 
     it('should reflect the entry in the database after creation', async () => {
-        const db = getDB()
+        const db = getMockDB()
         const repo = getRepository(db)
         const id = await repo.create('members', { name: 'John' })
 
         expect(id).toEqual('0')
-        expect(Object.keys(raw().members).length).toEqual(1)
-        expect(raw().members['0']).toEqual({ name: 'John' })
+        expect(Object.keys(getRawData().members).length).toEqual(1)
+        expect(getRawData().members['0']).toEqual({ name: 'John' })
     })
 
     it('should find the correct entry by id', async () => {
-        const db = getDB()
+        const db = getMockDB()
         const repo = getRepository(db)
 
-        seed('members', [{ name: 'John' }, { name: 'Jane' }])
+        seedMockRepository('members', [{ name: 'John' }, { name: 'Jane' }])
 
         const member1 = await repo.find('members', '0')
         expect(member1).toEqual({ name: 'John' })
@@ -86,45 +92,53 @@ describe('firestore', () => {
     })
 
     it('should remove the correct entry by id', async () => {
-        const db = getDB()
+        const db = getMockDB()
         const repo = getRepository(db)
 
-        seed('members', [{ name: 'John' }, { name: 'Jane' }, { name: 'Jack' }])
+        seedMockRepository('members', [
+            { name: 'John' },
+            { name: 'Jane' },
+            { name: 'Jack' }
+        ])
 
         await repo.remove('members', '1')
 
-        expect(Object.keys(raw().members).length).toEqual(2)
-        expect(raw().members['0']).toEqual({ name: 'John' })
-        expect(raw().members['1']).toBeUndefined()
-        expect(raw().members['2']).toEqual({ name: 'Jack' })
+        expect(Object.keys(getRawData().members).length).toEqual(2)
+        expect(getRawData().members['0']).toEqual({ name: 'John' })
+        expect(getRawData().members['1']).toBeUndefined()
+        expect(getRawData().members['2']).toEqual({ name: 'Jack' })
     })
 
     it('should update the correct entry by id', async () => {
-        const db = getDB()
+        const db = getMockDB()
         const repo = getRepository(db)
 
-        seed('members', [{ name: 'John' }, { name: 'Jane' }, { name: 'Jack' }])
+        seedMockRepository('members', [
+            { name: 'John' },
+            { name: 'Jane' },
+            { name: 'Jack' }
+        ])
 
         await repo.update('members', '1', { name: 'Jill' })
 
-        expect(Object.keys(raw().members).length).toEqual(3)
-        expect(raw().members['0']).toEqual({ name: 'John' })
-        expect(raw().members['1']).toEqual({ name: 'Jill' })
-        expect(raw().members['2']).toEqual({ name: 'Jack' })
+        expect(Object.keys(getRawData().members).length).toEqual(3)
+        expect(getRawData().members['0']).toEqual({ name: 'John' })
+        expect(getRawData().members['1']).toEqual({ name: 'Jill' })
+        expect(getRawData().members['2']).toEqual({ name: 'Jack' })
 
         await repo.update('members', '1', { age: 20, name: 'Jill' })
 
-        expect(Object.keys(raw().members).length).toEqual(3)
-        expect(raw().members['0']).toEqual({ name: 'John' })
-        expect(raw().members['1']).toEqual({ age: 20, name: 'Jill' })
-        expect(raw().members['2']).toEqual({ name: 'Jack' })
+        expect(Object.keys(getRawData().members).length).toEqual(3)
+        expect(getRawData().members['0']).toEqual({ name: 'John' })
+        expect(getRawData().members['1']).toEqual({ age: 20, name: 'Jill' })
+        expect(getRawData().members['2']).toEqual({ name: 'Jack' })
     })
 
     it('should filter queries by constraints', async () => {
-        const db = getDB()
+        const db = getMockDB()
         const repo = getRepository(db)
 
-        seed('members', [
+        seedMockRepository('members', [
             { name: 'John' },
             { age: 20, name: 'Jane' },
             { name: 'Jack' },
@@ -142,10 +156,10 @@ describe('firestore', () => {
     })
 
     it('should AND multiple query constraints together', async () => {
-        const db = getDB()
+        const db = getMockDB()
         const repo = getRepository(db)
 
-        seed('members', [
+        seedMockRepository('members', [
             { name: 'John' },
             { age: 20, name: 'Jane' },
             { name: 'Jack' },
@@ -163,10 +177,10 @@ describe('firestore', () => {
     })
 
     it('should be possible to limit the amount of rows returned by query', async () => {
-        const db = getDB()
+        const db = getMockDB()
         const repo = getRepository(db)
 
-        seed('members', [
+        seedMockRepository('members', [
             { name: 'John' },
             { age: 20, name: 'Jane' },
             { name: 'Jack' },
@@ -181,10 +195,10 @@ describe('firestore', () => {
     })
 
     it('should return only requested query fields', async () => {
-        const db = getDB()
+        const db = getMockDB()
         const repo = getRepository(db)
 
-        seed('members', [
+        seedMockRepository('members', [
             { name: 'John' },
             { age: 20, name: 'Jane' },
             { name: 'Jack' },

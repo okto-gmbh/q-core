@@ -8,7 +8,6 @@ import {
     Firestore,
     WhereFilterOp as AdminWhereFilterOp
 } from 'firebase-admin/firestore'
-import { vi } from 'vitest'
 
 import { Constraints } from '@core/repositories/firestore/admin'
 import { DB_Meta, ID, Table } from '@core/repositories/firestore/common'
@@ -33,10 +32,8 @@ const DATABASE: Database = {
     }
 }
 
-export function mock() {
-    reset()
-
-    vi.mock('@core/repositories/firestore/admin', () => ({
+export function mockRepository() {
+    return {
         default: (db: AdminFirestore | ClientFirestore) => {
             void db
             verifyMock.verifyMock()
@@ -68,7 +65,6 @@ export function mock() {
 
                     if (where) {
                         for (const [field, operation, value] of where) {
-                            console.log(data)
                             data = data.filter((doc) =>
                                 checkWhereFilterOp(doc[field], operation, value)
                             )
@@ -119,10 +115,10 @@ export function mock() {
                 }
             }
         }
-    }))
+    }
 }
 
-export function seed<Collection extends DocumentData[]>(
+export function seedMockRepository<Collection extends DocumentData[]>(
     table: Table,
     data: Collection
 ) {
@@ -132,16 +128,16 @@ export function seed<Collection extends DocumentData[]>(
     }
 }
 
-export function raw() {
+export function getRawData() {
     return DATABASE.data
 }
 
-export function reset() {
+export function resetMockRepository() {
     DATABASE._currentId = 0
     DATABASE.data = {}
 }
 
-export function getDB() {
+export function getMockDB() {
     return {} as Firestore
 }
 
