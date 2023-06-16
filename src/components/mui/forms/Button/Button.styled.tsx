@@ -1,15 +1,14 @@
 import { css } from '@emotion/react'
 import styled from '@emotion/styled'
-import Button, {
-    buttonClasses,
-    ButtonProps as MuiButtonProps
-} from '@mui/material/Button'
-
-import { ButtonVariant } from '../../../Button/Button'
-
-import { ButtonProps } from './Button'
+import Button, { buttonClasses } from '@mui/material/Button'
 
 import { composeButtonVariants } from '../../../Button/Button.styled'
+
+import type { ButtonVariant } from '../../../Button/Button'
+
+import type { ButtonProps as MuiButtonProps } from '@mui/material/Button'
+
+import type { ButtonProps } from './Button'
 
 const muiVariants: {
     [key in ButtonVariant]: MuiButtonProps['variant']

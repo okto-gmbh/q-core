@@ -1,8 +1,7 @@
-import { ComponentType, FC, HTMLAttributes } from 'react'
-
-import { Breakpoints } from '../../../types'
-
 import * as Styled from './Grid.styled'
+
+import type { Breakpoints } from '../../../types'
+import type { ComponentType, FC, HTMLAttributes } from 'react'
 
 export interface GridItemProps extends Partial<HTMLAttributes<HTMLDivElement>> {
     span: number

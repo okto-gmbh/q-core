@@ -1,6 +1,6 @@
 import styled from '@emotion/styled'
 
-import { WrapperProps } from './Wrapper'
+import type { WrapperProps } from './Wrapper'
 
 export const Element = styled(({ fluid: _fluid, ...rest }: WrapperProps) => (
     <div {...rest} />

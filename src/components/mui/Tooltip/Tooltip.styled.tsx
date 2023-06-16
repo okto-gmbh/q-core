@@ -1,5 +1,7 @@
 import styled from '@emotion/styled'
-import Tooltip, { tooltipClasses, TooltipProps } from '@mui/material/Tooltip'
+import Tooltip, { tooltipClasses } from '@mui/material/Tooltip'
+
+import type { TooltipProps } from '@mui/material/Tooltip'
 
 export const Element = styled(({ className, ...props }: TooltipProps) => (
     <Tooltip arrow {...props} classes={{ popper: className }} />

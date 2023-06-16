@@ -1,7 +1,9 @@
 import Head from 'next/head'
 import { useRouter } from 'next/router'
-import { NextSeo, NextSeoProps } from 'next-seo'
-import { FC } from 'react'
+import { NextSeo } from 'next-seo'
+
+import type { NextSeoProps } from 'next-seo'
+import type { FC } from 'react'
 
 type MetaProps = NextSeoProps & {
     appBaseUrl: string

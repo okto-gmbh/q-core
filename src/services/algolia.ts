@@ -1,4 +1,6 @@
-import algoliasearch, { SearchClient } from 'algoliasearch'
+import algoliasearch from 'algoliasearch'
+
+import type { SearchClient } from 'algoliasearch'
 
 const getAlgoliaClient = (
     searchApiKey: string = process.env.ALGOLIA_SEARCH_API_KEY!

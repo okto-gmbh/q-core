@@ -1,18 +1,19 @@
-import { TextFieldProps } from '@mui/material'
-import {
-    DatePicker as MuiDatePicker,
-    DatePickerProps as MuiDatePickerProps
-} from '@mui/x-date-pickers-pro'
-import { FC, forwardRef, useRef } from 'react'
-import {
+import { DatePicker as MuiDatePicker } from '@mui/x-date-pickers-pro'
+import { forwardRef, useRef } from 'react'
+import { Controller } from 'react-hook-form'
+
+import Paper from '../../Paper'
+import TextInput from '../TextInput'
+
+import type { FC } from 'react'
+import type {
     Control,
-    Controller,
     ControllerRenderProps,
     FieldValues
 } from 'react-hook-form'
 
-import Paper from '../../Paper'
-import TextInput from '../TextInput'
+import type { TextFieldProps } from '@mui/material'
+import type { DatePickerProps as MuiDatePickerProps } from '@mui/x-date-pickers-pro'
 
 type DatePickerProps = Omit<MuiDatePickerProps<Date>, 'renderInput'> & {
     control?: Control<FieldValues>

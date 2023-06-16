@@ -2,7 +2,12 @@
 import Color from 'color'
 import merge from 'lodash.merge'
 
-import { Breakpoint, Color as ColorType, FontSize, Heading } from '../../types'
+import type {
+    Breakpoint,
+    Color as ColorType,
+    FontSize,
+    Heading
+} from '../../types'
 
 export type GoogleFont = {
     name: string

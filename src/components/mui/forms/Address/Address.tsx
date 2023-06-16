@@ -1,14 +1,17 @@
 import { Grid, Typography } from '@mui/material'
 import parse from 'autosuggest-highlight/parse'
-// @ts-ignore: Needs this import
-import type { google } from 'google-maps'
 import throttle from 'lodash.throttle'
 import Script from 'next/script'
-import { FC, HTMLAttributes, useEffect, useMemo, useRef, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 
 import Paper from '../../Paper'
 import Autocomplete, { Option } from '../Autocomplete'
-import TextInput, { TextInputProps } from '../TextInput'
+import TextInput from '../TextInput'
+
+import type { TextInputProps } from '../TextInput'
+// @ts-ignore: Needs this import
+import type { google } from 'google-maps'
+import type { FC, HTMLAttributes } from 'react'
 
 type AddressResult = {
     company: string | undefined

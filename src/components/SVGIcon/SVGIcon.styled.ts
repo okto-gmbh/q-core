@@ -3,7 +3,7 @@ import styled from '@emotion/styled'
 
 import { from } from '../../utils/breakpoints'
 
-import { SVGIconProps } from './SVGIcon'
+import type { SVGIconProps } from './SVGIcon'
 
 export const Container = styled.div<SVGIconProps>`
     --_width: var(

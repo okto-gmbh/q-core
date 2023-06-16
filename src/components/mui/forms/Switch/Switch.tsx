@@ -1,8 +1,10 @@
-import { SwitchProps as MuiSwitchProps } from '@mui/material'
-import { FC } from 'react'
 import ReactDOMServer from 'react-dom/server'
 
 import * as Styled from './Switch.styled'
+
+import type { FC } from 'react'
+
+import type { SwitchProps as MuiSwitchProps } from '@mui/material'
 
 type SwitchProps = MuiSwitchProps & {
     borderWidth: number

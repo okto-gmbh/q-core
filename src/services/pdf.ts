@@ -1,5 +1,6 @@
 import PdfPrinter from 'pdfmake'
-import { TFontDictionary } from 'pdfmake/interfaces'
+
+import type { TFontDictionary } from 'pdfmake/interfaces'
 
 const initPdf = (fonts: TFontDictionary) => new PdfPrinter(fonts)
 

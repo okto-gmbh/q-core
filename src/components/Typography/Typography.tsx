@@ -1,8 +1,7 @@
-import { ComponentType, FC, HTMLAttributes } from 'react'
-
-import { Display, FontSize, FontWeight } from '../../types'
-
 import * as Styled from './Typography.styled'
+
+import type { Display, FontSize, FontWeight } from '../../types'
+import type { ComponentType, FC, HTMLAttributes } from 'react'
 
 export interface TypographyProps
     extends Partial<HTMLAttributes<HTMLParagraphElement>> {

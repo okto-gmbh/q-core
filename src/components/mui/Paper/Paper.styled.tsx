@@ -1,7 +1,9 @@
 import styled from '@emotion/styled'
-import { ForwardedRef, forwardRef } from 'react'
+import { forwardRef } from 'react'
 
-import { PaperProps } from '.'
+import type { ForwardedRef } from 'react'
+
+import type { PaperProps } from '.'
 
 const StyledPaper = (
     {

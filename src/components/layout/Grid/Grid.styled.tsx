@@ -3,8 +3,8 @@ import styled from '@emotion/styled'
 
 import { from } from '../../../utils/breakpoints'
 
-import { GridProps } from './Grid'
-import { GridItemProps } from './GridItem'
+import type { GridProps } from './Grid'
+import type { GridItemProps } from './GridItem'
 
 const GRID_COLS = 12
 export const GRID_ITEM_CLASS = 'pixls-grid-item'

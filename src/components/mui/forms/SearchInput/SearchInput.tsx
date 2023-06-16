@@ -2,9 +2,12 @@ import Clear from '@mui/icons-material/Clear'
 import SearchIcon from '@mui/icons-material/Search'
 import IconButton from '@mui/material/IconButton'
 import InputAdornment from '@mui/material/InputAdornment'
-import { createRef, FC } from 'react'
+import { createRef } from 'react'
 
-import TextInput, { TextInputProps } from '../TextInput'
+import TextInput from '../TextInput'
+
+import type { TextInputProps } from '../TextInput'
+import type { FC } from 'react'
 
 type SearchInputProps = TextInputProps & {
     clear: () => void

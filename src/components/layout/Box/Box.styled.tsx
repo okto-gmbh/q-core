@@ -1,7 +1,7 @@
 import { css } from '@emotion/react'
 import styled from '@emotion/styled'
 
-import { BoxProps } from './Box'
+import type { BoxProps } from './Box'
 
 export const Element = styled(
     ({

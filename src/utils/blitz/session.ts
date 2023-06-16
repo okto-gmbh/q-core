@@ -1,6 +1,6 @@
-import { BlitzCtx } from '@blitzjs/auth'
+import type { BaseUser } from '../user'
 
-import { BaseUser } from '../user'
+import type { BlitzCtx } from '@blitzjs/auth'
 
 export const createSession = async <User extends BaseUser>(
     { session }: BlitzCtx,

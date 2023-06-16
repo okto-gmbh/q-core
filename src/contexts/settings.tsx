@@ -1,6 +1,7 @@
-import { createContext, FC, useContext } from 'react'
+import { createContext, useContext } from 'react'
 
-import { RawDesignTokens } from '../utils/styles/designTokens'
+import type { RawDesignTokens } from '../utils/styles/designTokens'
+import type { FC } from 'react'
 
 type SettingsProps = {
     designTokens?: RawDesignTokens

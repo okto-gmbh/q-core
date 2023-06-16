@@ -1,6 +1,8 @@
-import React, { useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
 
 import * as Styled from './CookieBanner.styled'
+
+import type React from 'react'
 
 export interface CookieBannerProps {
     button: React.ReactNode

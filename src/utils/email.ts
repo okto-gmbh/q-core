@@ -1,4 +1,6 @@
-import { createTransport, SendMailOptions, TransportOptions } from 'nodemailer'
+import { createTransport } from 'nodemailer'
+
+import type { SendMailOptions, TransportOptions } from 'nodemailer'
 
 const mailTransport = createTransport({
     // use TLS
