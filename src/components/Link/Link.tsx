@@ -1,5 +1,6 @@
 import NextLink from 'next/link'
-import { AnchorHTMLAttributes, FC } from 'react'
+
+import type { AnchorHTMLAttributes, FC } from 'react'
 
 export interface LinkProps
     extends Partial<AnchorHTMLAttributes<HTMLAnchorElement>> {
@@ -7,7 +8,7 @@ export interface LinkProps
     next13?: boolean
 }
 
-const Link: FC<LinkProps> = ({ children, href, next13 = false, ...props }) => {
+const Link: FC<LinkProps> = ({ children, href, ...props }) => {
     const external = /^(https?:\/\/|www\.)/.test(href)
 
     if (external) {
@@ -22,17 +23,9 @@ const Link: FC<LinkProps> = ({ children, href, next13 = false, ...props }) => {
         )
     }
 
-    if (next13) {
-        return (
-            <NextLink href={href} {...props}>
-                {children}
-            </NextLink>
-        )
-    }
-
     return (
-        <NextLink href={href} {...props} passHref>
-            <a className={props.className}>{children}</a>
+        <NextLink href={href} {...props}>
+            {children}
         </NextLink>
     )
 }
