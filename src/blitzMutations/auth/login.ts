@@ -1,13 +1,18 @@
-import { BlitzCtx } from '@blitzjs/auth'
 import { SecurePassword } from '@blitzjs/auth/secure-password'
 import { resolver } from '@blitzjs/rpc'
 import { AuthenticationError } from 'blitz'
 
+import repo from '@core/repositories/firestore'
+import { OP_EQUALS } from '@core/repositories/operators'
+
 import { createSession } from '../../utils/blitz/session'
-import repo, { OP_EQUALS } from '../../utils/db'
-import { BaseUser, getSafeUserFields } from '../../utils/user'
+import { getSafeUserFields } from '../../utils/user'
 
 import { Login } from './validations'
+
+import type { BaseUser } from '../../utils/user'
+
+import type { BlitzCtx } from '@blitzjs/auth'
 
 type Input = {
     email: string

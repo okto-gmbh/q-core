@@ -1,6 +1,7 @@
-import { NextApiHandler } from 'next'
+import repo from '@core/repositories/firestore'
+import { OP_LT } from '@core/repositories/operators'
 
-import repo, { OP_LT } from '../utils/db'
+import type { NextApiHandler } from 'next'
 
 type Token = {
     expiresAt: Date

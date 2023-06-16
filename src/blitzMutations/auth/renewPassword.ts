@@ -3,7 +3,8 @@ import { SecurePassword } from '@blitzjs/auth/secure-password'
 import { resolver } from '@blitzjs/rpc'
 import { AuthenticationError, AuthorizationError } from 'blitz'
 
-import repo, { deleteField, OP_EQUALS, OP_GT } from '../../utils/db'
+import repo, { deleteField } from '@core/repositories/firestore'
+import { OP_EQUALS, OP_GT } from '@core/repositories/operators'
 
 import { RenewPassword } from './validations'
 

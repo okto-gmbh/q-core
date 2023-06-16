@@ -1,10 +1,13 @@
 import { SecurePassword } from '@blitzjs/auth/secure-password'
 import { resolver } from '@blitzjs/rpc'
 
-import repo from '../../utils/db'
-import { BaseUser, getSafeUserFields, ROLE_USER } from '../../utils/user'
+import repo from '@core/repositories/firestore'
+
+import { getSafeUserFields, ROLE_USER } from '../../utils/user'
 
 import { Signup } from './validations'
+
+import type { BaseUser } from '../../utils/user'
 
 type Input = {
     email: string

@@ -1,4 +1,5 @@
-import repo, { OP_EQUALS } from '../db'
+import repo from '@core/repositories/firestore'
+import { OP_EQUALS } from '@core/repositories/operators'
 
 const getSessionByHandle = async (handle: string) => {
     const [session] = await repo.query('sessions', {

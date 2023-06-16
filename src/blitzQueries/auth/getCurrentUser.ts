@@ -1,8 +1,12 @@
-import { BlitzCtx } from '@blitzjs/auth'
 import { resolver } from '@blitzjs/rpc'
 
-import repo from '../../utils/db'
-import { BaseUser, getSafeUserFields } from '../../utils/user'
+import repo from '@core/repositories/firestore'
+
+import { getSafeUserFields } from '../../utils/user'
+
+import type { BaseUser } from '../../utils/user'
+
+import type { BlitzCtx } from '@blitzjs/auth'
 
 const getCurrentUser = async <User extends BaseUser>(
     _: undefined,
