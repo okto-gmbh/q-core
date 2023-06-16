@@ -5,30 +5,35 @@ import {
     collection,
     deleteDoc,
     doc,
-    DocumentData,
     DocumentReference,
-    DocumentSnapshot,
-    Firestore,
     GeoPoint,
     getDoc,
     getDocs,
     limit as queryLimit,
     orderBy as queryOrderBy,
-    OrderByDirection,
     query as queryQuery,
     Timestamp,
-    UpdateData,
     updateDoc,
-    where as queryWhere,
+    where as queryWhere
+} from 'firebase/firestore'
+
+import type {
+    DocumentData,
+    DocumentSnapshot,
+    Firestore,
+    OrderByDirection,
+    UpdateData,
     WhereFilterOp
 } from 'firebase/firestore'
 
-import { DB_Meta, ID, Table } from './common'
+import type { DB_Meta, ID, Table } from './common'
 
 interface Constraints<Collection extends DocumentData[]> {
     limit?: number
     orderBy?: {
-        [key in keyof Collection[number]]?: OrderByDirection
+        [key in keyof (Collection[number] & {
+            __name__: string
+        })]?: OrderByDirection
     }
     where?: [
         Extract<keyof (Collection[number] & DB_Meta), string>,

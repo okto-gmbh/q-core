@@ -2,14 +2,16 @@
 
 import admin from 'firebase-admin'
 
-import { DB_Meta, ID, Table } from './common'
+import type { DB_Meta, ID, Table } from './common'
 
 export interface Constraints<
     Collection extends admin.firestore.DocumentData[]
 > {
     limit?: number
     orderBy?: {
-        [key in keyof Collection[number]]?: admin.firestore.OrderByDirection
+        [key in keyof (Collection[number] & {
+            __name__: string
+        })]?: admin.firestore.OrderByDirection
     }
     where?: [
         keyof (Collection[number] & { __name__: string }),
