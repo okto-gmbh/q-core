@@ -72,6 +72,23 @@ const DatePicker: FC<DatePickerProps> = ({
                                 {...props}
                                 ref={ref}
                                 style={{ width: '100%' }}
+                                onBlur={(e) => {
+                                    const [day, month, year] =
+                                        e.target.value.split('.')
+
+                                    if (!day || !month || !year) {
+                                        return handleChange(null, field)
+                                    }
+
+                                    handleChange(
+                                        new Date(
+                                            parseInt(year),
+                                            parseInt(month) - 1,
+                                            parseInt(day)
+                                        ),
+                                        field
+                                    )
+                                }}
                                 error={error}
                                 helperText={helperText}
                             />
@@ -79,7 +96,7 @@ const DatePicker: FC<DatePickerProps> = ({
                     })
                 }}
                 {...props}
-                onChange={(date: Date | null) => handleChange(date, field)}
+                onAccept={(date) => handleChange(date, field)}
             />
         </div>
     )

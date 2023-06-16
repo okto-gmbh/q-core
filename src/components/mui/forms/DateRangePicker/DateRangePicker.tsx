@@ -51,13 +51,17 @@ const DateRangePicker: FC<DateRangePickerProps> = ({
         range: any[],
         field: ControllerRenderProps<FieldValues, string>
     ) => {
-        field.onChange(range)
+        try {
+            field.onChange(range)
 
-        if (control && onChange) {
-            ;(onChange as any)(field.name, range, {
-                shouldDirty: true,
-                shouldValidate: true
-            })
+            if (control && onChange) {
+                ;(onChange as any)(field.name, range, {
+                    shouldDirty: true,
+                    shouldValidate: true
+                })
+            }
+        } catch (e) {
+            // Ignore
         }
     }
 
