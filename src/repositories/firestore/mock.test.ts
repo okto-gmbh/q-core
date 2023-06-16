@@ -1,3 +1,4 @@
+import { FieldValue } from 'firebase-admin/firestore'
 import {
     afterAll,
     afterEach,
@@ -9,14 +10,13 @@ import {
 } from 'vitest'
 
 import getRepository from '@core/repositories/firestore/admin'
-
 import {
     getMockDB,
-    getRawData,
+    getRawMockData,
     resetMockRepository,
     seedMockRepository,
     verifyMock
-} from './firestore'
+} from '@core/repositories/firestore/mock'
 
 interface Member {
     name: string
@@ -28,7 +28,7 @@ type Members = Member[]
 describe('firestore', () => {
     beforeAll(() => {
         vi.mock('@core/repositories/firestore/admin', async () =>
-            (await import('./firestore')).mockRepository()
+            (await import('@core/repositories/firestore/mock')).mockRepository()
         )
     })
 
@@ -51,21 +51,29 @@ describe('firestore', () => {
 
     it('should seed the database', () => {
         seedMockRepository('members', [{ name: 'John' }, { name: 'Jane' }])
-        expect(getRawData().members['0']).toEqual({ name: 'John' })
-        expect(getRawData().members['1']).toEqual({ name: 'Jane' })
+        expect(getRawMockData().members['0']).toEqual({ name: 'John' })
+        expect(getRawMockData().members['1']).toEqual({ name: 'Jane' })
     })
 
     it('should reset the database', () => {
         seedMockRepository('members', [{ name: 'John' }, { name: 'Jane' }])
         resetMockRepository()
-        expect(getRawData()).toEqual({})
+        expect(getRawMockData()).toEqual({})
     })
 
     it('should return the id when creating an entry', async () => {
         const db = getMockDB()
         const repo = getRepository(db)
         const id = await repo.create('members', { name: 'John' })
-        expect(id).toEqual('0')
+        expect(id).toBe('0')
+    })
+
+    it('should use the createId when provided', async () => {
+        const db = getMockDB()
+        const repo = getRepository(db)
+        const id = await repo.create('members', { name: 'John' }, '2')
+        expect(id).toBe('2')
+        expect(Object.keys(getRawMockData().members)[0]).toBe('2')
     })
 
     it('should reflect the entry in the database after creation', async () => {
@@ -73,9 +81,29 @@ describe('firestore', () => {
         const repo = getRepository(db)
         const id = await repo.create('members', { name: 'John' })
 
-        expect(id).toEqual('0')
-        expect(Object.keys(getRawData().members).length).toEqual(1)
-        expect(getRawData().members['0']).toEqual({ name: 'John' })
+        expect(id).toBe('0')
+        expect(Object.keys(getRawMockData().members)).toHaveLength(1)
+        expect(getRawMockData().members['0']).toEqual({ name: 'John' })
+    })
+
+    it('should add the id as a property for entries returned with find', async () => {
+        const db = getMockDB()
+        const repo = getRepository(db)
+
+        seedMockRepository('members', [{ name: 'John' }, { name: 'Jane' }])
+
+        const member = await repo.find('members', '0')
+        expect(member).toEqual({ id: '0', name: 'John' })
+    })
+
+    it('should add the id as a property for entries returned with query', async () => {
+        const db = getMockDB()
+        const repo = getRepository(db)
+
+        seedMockRepository('members', [{ name: 'John' }])
+
+        const members = await repo.query('members')
+        expect(members).toEqual([{ id: '0', name: 'John' }])
     })
 
     it('should find the correct entry by id', async () => {
@@ -85,10 +113,10 @@ describe('firestore', () => {
         seedMockRepository('members', [{ name: 'John' }, { name: 'Jane' }])
 
         const member1 = await repo.find('members', '0')
-        expect(member1).toEqual({ name: 'John' })
+        expect(member1).toEqual({ id: '0', name: 'John' })
 
         const member2 = await repo.find('members', '1')
-        expect(member2).toEqual({ name: 'Jane' })
+        expect(member2).toEqual({ id: '1', name: 'Jane' })
     })
 
     it('should remove the correct entry by id', async () => {
@@ -103,10 +131,10 @@ describe('firestore', () => {
 
         await repo.remove('members', '1')
 
-        expect(Object.keys(getRawData().members).length).toEqual(2)
-        expect(getRawData().members['0']).toEqual({ name: 'John' })
-        expect(getRawData().members['1']).toBeUndefined()
-        expect(getRawData().members['2']).toEqual({ name: 'Jack' })
+        expect(Object.keys(getRawMockData().members)).toHaveLength(2)
+        expect(getRawMockData().members['0']).toEqual({ name: 'John' })
+        expect(getRawMockData().members['1']).toBeUndefined()
+        expect(getRawMockData().members['2']).toEqual({ name: 'Jack' })
     })
 
     it('should update the correct entry by id', async () => {
@@ -121,17 +149,35 @@ describe('firestore', () => {
 
         await repo.update('members', '1', { name: 'Jill' })
 
-        expect(Object.keys(getRawData().members).length).toEqual(3)
-        expect(getRawData().members['0']).toEqual({ name: 'John' })
-        expect(getRawData().members['1']).toEqual({ name: 'Jill' })
-        expect(getRawData().members['2']).toEqual({ name: 'Jack' })
+        expect(Object.keys(getRawMockData().members)).toHaveLength(3)
+        expect(getRawMockData().members['0']).toEqual({ name: 'John' })
+        expect(getRawMockData().members['1']).toEqual({ name: 'Jill' })
+        expect(getRawMockData().members['2']).toEqual({ name: 'Jack' })
 
         await repo.update('members', '1', { age: 20, name: 'Jill' })
 
-        expect(Object.keys(getRawData().members).length).toEqual(3)
-        expect(getRawData().members['0']).toEqual({ name: 'John' })
-        expect(getRawData().members['1']).toEqual({ age: 20, name: 'Jill' })
-        expect(getRawData().members['2']).toEqual({ name: 'Jack' })
+        expect(Object.keys(getRawMockData().members)).toHaveLength(3)
+        expect(getRawMockData().members['0']).toEqual({ name: 'John' })
+        expect(getRawMockData().members['1']).toEqual({ age: 20, name: 'Jill' })
+        expect(getRawMockData().members['2']).toEqual({ name: 'Jack' })
+    })
+
+    it('should remove entries with the deleteTransform value on update', async () => {
+        const db = getMockDB()
+        const repo = getRepository(db)
+
+        seedMockRepository('members', [
+            { name: 'John' },
+            { age: 20, name: 'Jane' },
+            { name: 'Jack' }
+        ])
+
+        await repo.update('members', '1', { age: FieldValue.delete() })
+
+        expect(Object.keys(getRawMockData().members)).toHaveLength(3)
+        expect(getRawMockData().members['0']).toEqual({ name: 'John' })
+        expect(getRawMockData().members['1']).toEqual({ name: 'Jane' })
+        expect(getRawMockData().members['2']).toEqual({ name: 'Jack' })
     })
 
     it('should filter queries by constraints', async () => {
@@ -150,8 +196,49 @@ describe('firestore', () => {
         })
 
         expect(members).toEqual([
+            { age: 20, id: '1', name: 'Jane' },
+            { age: 27, id: '3', name: 'Jane' }
+        ])
+    })
+
+    it('should support __name__ as a constraint', async () => {
+        const db = getMockDB()
+        const repo = getRepository(db)
+
+        seedMockRepository('members', [
+            { name: 'John' },
             { age: 20, name: 'Jane' },
+            { name: 'Jack' },
             { age: 27, name: 'Jane' }
+        ])
+
+        const members = await repo.query<Members>('members', {
+            where: [['__name__', '==', '1']]
+        })
+
+        expect(members).toEqual([{ age: 20, id: '1', name: 'Jane' }])
+    })
+
+    it('should support __name__ for ordering', async () => {
+        const db = getMockDB()
+        const repo = getRepository(db)
+
+        seedMockRepository('members', [
+            { name: 'John' },
+            { age: 20, name: 'Jane' },
+            { name: 'Jack' },
+            { age: 27, name: 'Jane' }
+        ])
+
+        const members = await repo.query<Members>('members', {
+            orderBy: { __name__: 'desc' }
+        })
+
+        expect(members).toEqual([
+            { age: 27, id: '3', name: 'Jane' },
+            { id: '2', name: 'Jack' },
+            { age: 20, id: '1', name: 'Jane' },
+            { id: '0', name: 'John' }
         ])
     })
 
@@ -173,7 +260,7 @@ describe('firestore', () => {
             ]
         })
 
-        expect(members).toEqual([{ age: 27, name: 'Jane' }])
+        expect(members).toEqual([{ age: 27, id: '3', name: 'Jane' }])
     })
 
     it('should be possible to limit the amount of rows returned by query', async () => {
@@ -191,7 +278,10 @@ describe('firestore', () => {
             limit: 2
         })
 
-        expect(members).toEqual([{ name: 'John' }, { age: 20, name: 'Jane' }])
+        expect(members).toEqual([
+            { id: '0', name: 'John' },
+            { age: 20, id: '1', name: 'Jane' }
+        ])
     })
 
     it('should return only requested query fields', async () => {

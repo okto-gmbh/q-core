@@ -1,18 +1,22 @@
 /* eslint-disable sonarjs/cognitive-complexity */
 import {
-    Firestore as ClientFirestore,
-    WhereFilterOp as ClientWhereFilterOp
+    deleteField,
+    type Firestore as ClientFirestore,
+    type WhereFilterOp as ClientWhereFilterOp
 } from 'firebase/firestore'
-import {
+import { FieldValue } from 'firebase-admin/firestore'
+
+import type { Constraints } from '@core/repositories/firestore/admin'
+import type { DB_Meta, ID, Table } from '@core/repositories/firestore/common'
+
+import type {
     Firestore as AdminFirestore,
-    Firestore,
     WhereFilterOp as AdminWhereFilterOp
 } from 'firebase-admin/firestore'
 
-import { Constraints } from '@core/repositories/firestore/admin'
-import { DB_Meta, ID, Table } from '@core/repositories/firestore/common'
-
-type DocumentData = any
+type DocumentData = {
+    [key: string]: any
+}
 
 interface Database {
     _currentId: number
@@ -53,7 +57,11 @@ export function mockRepository() {
                 find: async <Collection extends DocumentData[]>(
                     table: Table,
                     id: ID
-                ) => DATABASE.data[table]?.[id] as Collection[number],
+                ): Promise<Collection[number] & DB_Meta> =>
+                    DATABASE.data[table]?.[id] &&
+                    mapDocs({
+                        [id]: DATABASE.data[table]?.[id]
+                    })[0],
                 query: async <Collection extends DocumentData[]>(
                     table: Table,
                     constraints: Constraints<Collection> = {},
@@ -61,12 +69,21 @@ export function mockRepository() {
                 ) => {
                     const { limit, orderBy, where } = constraints
 
-                    let data = Object.values(DATABASE.data[table])
+                    let data = mapDocs(DATABASE.data[table] ?? {})
+
+                    const ops = await getOps()
 
                     if (where) {
                         for (const [field, operation, value] of where) {
+                            const resolvedField =
+                                field === '__name__' ? 'id' : field
                             data = data.filter((doc) =>
-                                checkWhereFilterOp(doc[field], operation, value)
+                                checkWhereFilterOp(
+                                    doc[resolvedField],
+                                    operation,
+                                    value,
+                                    ops
+                                )
                             )
                         }
                     }
@@ -74,11 +91,18 @@ export function mockRepository() {
                         for (const [field, direction = 'asc'] of Object.entries(
                             orderBy
                         )) {
+                            const resolvedField =
+                                field === '__name__' ? 'id' : field
+
                             data = data.sort((a: any, b: any) => {
                                 if (direction === 'asc') {
-                                    return a[field] > b[field] ? 1 : -1
+                                    return a[resolvedField] > b[resolvedField]
+                                        ? 1
+                                        : -1
                                 }
-                                return a[field] < b[field] ? 1 : -1
+                                return a[resolvedField] < b[resolvedField]
+                                    ? 1
+                                    : -1
                             })
                         }
                     }
@@ -112,6 +136,16 @@ export function mockRepository() {
                         ...DATABASE.data[table][id],
                         ...data
                     }
+                    Object.entries(DATABASE.data[table][id]).forEach(
+                        ([key, value]) => {
+                            if (
+                                value === deleteField() ||
+                                value === FieldValue.delete()
+                            ) {
+                                delete DATABASE.data[table][id][key]
+                            }
+                        }
+                    )
                 }
             }
         }
@@ -122,14 +156,10 @@ export function seedMockRepository<Collection extends DocumentData[]>(
     table: Table,
     data: Collection
 ) {
-    DATABASE.data[table] ??= {}
+    DATABASE.data[table] = {}
     for (const item of data) {
         DATABASE.data[table][item.id ?? DATABASE.id] = item
     }
-}
-
-export function getRawData() {
-    return DATABASE.data
 }
 
 export function resetMockRepository() {
@@ -137,8 +167,12 @@ export function resetMockRepository() {
     DATABASE.data = {}
 }
 
+export function getRawMockData() {
+    return DATABASE.data
+}
+
 export function getMockDB() {
-    return {} as Firestore
+    return {} as AdminFirestore & ClientFirestore
 }
 
 export const verifyMock = {
@@ -147,36 +181,45 @@ export const verifyMock = {
     }
 }
 
+function mapDocs(docs: Database['data']['table']) {
+    return Object.entries(docs).map(([id, doc]) => ({ ...doc, id }))
+}
+
+async function getOps() {
+    return await import('@core/repositories/operators')
+}
+
 function checkWhereFilterOp(
     expected: any,
     operator: AdminWhereFilterOp | ClientWhereFilterOp,
-    actual: any
+    actual: any,
+    ops: Awaited<ReturnType<typeof getOps>> // vi.mock gets hoisted, so we need to dynamically import the operators
 ) {
-    if (operator === '==') {
+    if (operator === ops.OP_EQUALS) {
         return expected === actual
     }
-    if (operator === '!=') {
+    if (operator === ops.OP_NOT_EQUALS) {
         return expected !== actual
     }
-    if (operator === '<') {
+    if (operator === ops.OP_LT) {
         return expected < actual
     }
-    if (operator === '<=') {
+    if (operator === ops.OP_LT_OR_EQUALS) {
         return expected <= actual
     }
-    if (operator === '>') {
+    if (operator === ops.OP_GT) {
         return expected > actual
     }
-    if (operator === '>=') {
+    if (operator === ops.OP_GT_OR_EQUALS) {
         return expected >= actual
     }
-    if (operator === 'array-contains') {
+    if (operator === ops.OP_CONTAINS) {
         return expected.includes(actual)
     }
-    if (operator === 'in') {
+    if (operator === ops.OP_IN) {
         return actual.includes(expected)
     }
-    if (operator === 'array-contains-any') {
+    if (operator === ops.OP_CONTAINS_ANY) {
         return expected.some((item: any) => actual.includes(item))
     }
     return false
