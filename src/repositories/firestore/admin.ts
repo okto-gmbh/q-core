@@ -53,32 +53,33 @@ async function mapDocs<Collection extends admin.firestore.DocumentData[]>(
         return
     }
 
-    return Object.entries(data).reduce((acc, [propName, prop]) => {
+    for (const propName in data) {
         // Exclude fields
         if (fields && !fields.includes(propName)) {
-            return acc
+            delete data[propName]
+            continue
         }
 
         // Map types
+        const prop = data[propName]
         if (prop instanceof admin.firestore.DocumentReference) {
-            prop = (
+            data[propName] = (
                 (origProp) => async () =>
                     await mapDocs(await origProp.get())
             )(prop)
         }
         if (prop instanceof admin.firestore.Timestamp) {
-            prop = prop.toDate()
+            data[propName] = prop.toDate()
         }
         if (prop instanceof admin.firestore.GeoPoint) {
-            prop = {
+            data[propName] = {
                 latitude: prop.latitude,
                 longitude: prop.longitude
             }
         }
+    }
 
-        acc[propName] = prop
-        return acc
-    }, <{ [key: string]: any }>{})
+    return data
 }
 
 const getRepository = (db: admin.firestore.Firestore) => ({
