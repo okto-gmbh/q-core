@@ -139,6 +139,24 @@ const getRepository = (db: admin.firestore.Firestore) => ({
         return (await mapDocs<Collection>(docs, fields)) || []
     },
 
+    queryCount: async <Collection extends admin.firestore.DocumentData[]>(
+        table: Table,
+        constraints: Constraints<Collection> = {}
+    ) => {
+        const { where } = constraints
+        let query: admin.firestore.Query<Collection[number]> =
+            db.collection(table)
+
+        if (where) {
+            for (const [field, operation, value] of where) {
+                query = query.where(field as string, operation, value)
+            }
+        }
+
+        const { size } = await query.get()
+        return size
+    },
+
     remove: async (table: Table, id: ID) =>
         await db.collection(table).doc(id).delete(),
 
