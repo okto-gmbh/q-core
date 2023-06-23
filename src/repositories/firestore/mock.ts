@@ -1,9 +1,5 @@
 /* eslint-disable sonarjs/cognitive-complexity */
-import {
-    deleteField,
-    type Firestore as ClientFirestore,
-    type WhereFilterOp as ClientWhereFilterOp
-} from 'firebase/firestore'
+
 import { FieldValue } from 'firebase-admin/firestore'
 
 import type { Constraints } from '@core/repositories/firestore/admin'
@@ -38,7 +34,7 @@ const DATABASE: Database = {
 
 export function mockRepository() {
     return {
-        default: (db: AdminFirestore | ClientFirestore) => {
+        default: (db: AdminFirestore) => {
             void db
             verifyMock.verifyMock()
 
@@ -138,10 +134,7 @@ export function mockRepository() {
                     }
                     Object.entries(DATABASE.data[table][id]).forEach(
                         ([key, value]) => {
-                            if (
-                                value === deleteField() ||
-                                value === FieldValue.delete()
-                            ) {
+                            if (value === FieldValue.delete()) {
                                 delete DATABASE.data[table][id][key]
                             }
                         }
@@ -172,7 +165,7 @@ export function getRawMockData() {
 }
 
 export function getMockDB() {
-    return {} as AdminFirestore & ClientFirestore
+    return {} as AdminFirestore
 }
 
 export const verifyMock = {
@@ -191,7 +184,7 @@ async function getOps() {
 
 function checkWhereFilterOp(
     expected: any,
-    operator: AdminWhereFilterOp | ClientWhereFilterOp,
+    operator: AdminWhereFilterOp,
     actual: any,
     ops: Awaited<ReturnType<typeof getOps>> // vi.mock gets hoisted, so we need to dynamically import the operators
 ) {
