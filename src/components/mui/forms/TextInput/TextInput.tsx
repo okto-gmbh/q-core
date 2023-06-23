@@ -1,13 +1,16 @@
-import { TextFieldProps } from '@mui/material'
-import { forwardRef, Ref } from 'react'
-import {
+import { forwardRef } from 'react'
+import { Controller } from 'react-hook-form'
+
+import * as Styled from './TextInput.styled'
+
+import type { Ref } from 'react'
+import type {
     Control,
-    Controller,
     ControllerRenderProps,
     FieldValues
 } from 'react-hook-form'
 
-import * as Styled from './TextInput.styled'
+import type { TextFieldProps } from '@mui/material'
 
 export type TextInputProps = TextFieldProps & {
     control?: Control<FieldValues>

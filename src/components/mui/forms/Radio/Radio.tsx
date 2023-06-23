@@ -1,15 +1,17 @@
-import { RadioGroupProps as MuiRadioGroupProps } from '@mui/material'
 import FormHelperText from '@mui/material/FormHelperText'
 import MuiRadio from '@mui/material/Radio'
-import { FC } from 'react'
-import {
+import { Controller } from 'react-hook-form'
+
+import * as Styled from './Radio.styled'
+
+import type { FC } from 'react'
+import type {
     Control,
-    Controller,
     ControllerRenderProps,
     FieldValues
 } from 'react-hook-form'
 
-import * as Styled from './Radio.styled'
+import type { RadioGroupProps as MuiRadioGroupProps } from '@mui/material'
 
 type RadioProps = MuiRadioGroupProps & {
     fieldName: string

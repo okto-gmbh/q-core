@@ -1,14 +1,14 @@
 import {
-    App,
     cert,
     getApp as adminGetApp,
     getApps,
-    initializeApp as adminInitializeApp,
-    ServiceAccount
+    initializeApp as adminInitializeApp
 } from 'firebase-admin/app'
 import { getAuth as adminGetAuth } from 'firebase-admin/auth'
 import { getFirestore as adminGetFirestore } from 'firebase-admin/firestore'
 import { getStorage as adminGetStorage } from 'firebase-admin/storage'
+
+import type { App, ServiceAccount } from 'firebase-admin/app'
 
 export const initializeApp = (config = process.env, appName = 'default') => {
     if (getApps().filter((app) => app.name === appName).length > 0) {

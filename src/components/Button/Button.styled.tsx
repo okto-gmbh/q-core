@@ -1,7 +1,7 @@
 import { css } from '@emotion/react'
 import styled from '@emotion/styled'
 
-import { ButtonProps, ButtonVariant } from './Button'
+import type { ButtonProps, ButtonVariant } from './Button'
 
 export const composeButtonVariants = ({
     variant = 'primary'

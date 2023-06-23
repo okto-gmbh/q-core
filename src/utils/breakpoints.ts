@@ -1,4 +1,4 @@
-import { TokenBreakpoints } from './styles/designTokens'
+import type { TokenBreakpoints } from './styles/designTokens'
 
 export const SIZES: TokenBreakpoints = {
     desktopL: '1600px',

@@ -1,19 +1,22 @@
-import { AutocompleteProps, FilterOptionsState } from '@mui/material'
 import { createFilterOptions } from '@mui/material/Autocomplete'
 import match from 'autosuggest-highlight/match'
 import parse from 'autosuggest-highlight/parse'
-import { forwardRef, Ref } from 'react'
-import {
-    Control,
-    Controller,
-    ControllerRenderProps,
-    FieldValues
-} from 'react-hook-form'
+import { forwardRef } from 'react'
+import { Controller } from 'react-hook-form'
 
 import { vars } from '../../../../utils/string'
 import Paper from '../../Paper'
 import Autocomplete, { Option } from '../Autocomplete'
 import TextInput from '../TextInput'
+
+import type { Ref } from 'react'
+import type {
+    Control,
+    ControllerRenderProps,
+    FieldValues
+} from 'react-hook-form'
+
+import type { AutocompleteProps, FilterOptionsState } from '@mui/material'
 
 const selectFilter = createFilterOptions()
 

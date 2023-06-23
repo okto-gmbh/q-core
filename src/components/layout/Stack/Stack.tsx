@@ -1,18 +1,18 @@
-import {
-    ComponentType,
-    forwardRef,
-    ForwardRefRenderFunction,
-    HTMLAttributes
-} from 'react'
+import { forwardRef } from 'react'
 
-import {
+import * as Styled from './Stack.styled'
+
+import type {
     AlignItems,
     Breakpoints,
     JustifyContent,
     Spacing
 } from '../../../types'
-
-import * as Styled from './Stack.styled'
+import type {
+    ComponentType,
+    ForwardRefRenderFunction,
+    HTMLAttributes
+} from 'react'
 
 type Direction = 'vertical' | 'horizontal'
 

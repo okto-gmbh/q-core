@@ -1,15 +1,17 @@
-import { SwitchProps } from '@mui/material'
 import FormHelperText from '@mui/material/FormHelperText'
 import Switch from '@mui/material/Switch'
-import { FC } from 'react'
-import {
+import { Controller } from 'react-hook-form'
+
+import * as Styled from './Checkbox.styled'
+
+import type { FC } from 'react'
+import type {
     Control,
-    Controller,
     ControllerRenderProps,
     FieldValues
 } from 'react-hook-form'
 
-import * as Styled from './Checkbox.styled'
+import type { SwitchProps } from '@mui/material'
 
 type CheckboxProps = SwitchProps & {
     fieldName: string

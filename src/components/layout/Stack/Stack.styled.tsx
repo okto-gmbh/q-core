@@ -1,11 +1,13 @@
 import { css } from '@emotion/react'
 import styled from '@emotion/styled'
-import React, { forwardRef, ForwardRefRenderFunction } from 'react'
+import React, { forwardRef } from 'react'
 
 import { from } from '../../../utils/breakpoints'
 import { getDirectionSpacing, getFlexDirection } from '../../../utils/styles'
 
-import { StackProps } from './Stack'
+import type { ForwardRefRenderFunction } from 'react'
+
+import type { StackProps } from './Stack'
 
 const StyledStack: ForwardRefRenderFunction<HTMLDivElement, StackProps> = (
     {

@@ -1,8 +1,10 @@
-import { css, SerializedStyles } from '@emotion/react'
+import { css } from '@emotion/react'
 
 import { from } from '../breakpoints'
 
-import {
+import type { SerializedStyles } from '@emotion/react'
+
+import type {
     RawDesignTokens,
     ResponsiveTokens,
     TokenComponents,

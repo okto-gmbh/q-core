@@ -1,6 +1,6 @@
 import styled from '@emotion/styled'
 
-import { TypographyProps } from './Typography'
+import type { TypographyProps } from './Typography'
 
 export const Element = styled(
     ({

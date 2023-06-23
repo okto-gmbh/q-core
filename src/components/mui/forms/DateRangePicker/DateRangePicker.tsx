@@ -1,20 +1,23 @@
-import { TextFieldProps } from '@mui/material'
-import {
-    DateRange,
-    DateRangePicker as DateRangePickerMui,
-    DateRangePickerProps as MuiDateRangePickerProps,
-    PickersShortcutsItem
-} from '@mui/x-date-pickers-pro'
-import { FC, forwardRef } from 'react'
-import {
+import { DateRangePicker as DateRangePickerMui } from '@mui/x-date-pickers-pro'
+import { forwardRef } from 'react'
+import { Controller } from 'react-hook-form'
+
+import Paper from '../../Paper'
+import TextInput from '../TextInput'
+
+import type { FC } from 'react'
+import type {
     Control,
-    Controller,
     ControllerRenderProps,
     FieldValues
 } from 'react-hook-form'
 
-import Paper from '../../Paper'
-import TextInput from '../TextInput'
+import type { TextFieldProps } from '@mui/material'
+import type {
+    DateRange,
+    DateRangePickerProps as MuiDateRangePickerProps,
+    PickersShortcutsItem
+} from '@mui/x-date-pickers-pro'
 
 type DateRangePickerProps = Omit<
     MuiDateRangePickerProps<Date>,

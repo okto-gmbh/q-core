@@ -1,7 +1,9 @@
-import Script, { ScriptProps } from 'next/script'
-import { FC } from 'react'
+import Script from 'next/script'
 
 import { getAnalyticsScript, getTagManagerUrl } from '../../utils/analytics'
+
+import type { ScriptProps } from 'next/script'
+import type { FC } from 'react'
 
 type GoogleAnalyticsProps = {
     prodOnly: boolean

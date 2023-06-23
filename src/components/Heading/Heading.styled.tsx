@@ -1,6 +1,6 @@
 import styled from '@emotion/styled'
 
-import { HeadingProps } from './Heading'
+import type { HeadingProps } from './Heading'
 
 export const Element = styled(
     ({

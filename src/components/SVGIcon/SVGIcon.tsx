@@ -1,8 +1,8 @@
-import React, { FC, HTMLAttributes } from 'react'
-
-import { Breakpoints } from '../../types'
-
 import * as Styled from './SVGIcon.styled'
+
+import type { Breakpoints } from '../../types'
+import type { FC, HTMLAttributes } from 'react'
+import type React from 'react'
 
 export type SVGIconSize =
     | 'tiny'

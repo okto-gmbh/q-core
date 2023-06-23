@@ -1,7 +1,7 @@
 import { css } from '@emotion/react'
 import styled from '@emotion/styled'
 
-import { GridAreaProps } from './GridArea'
+import type { GridAreaProps } from './GridArea'
 
 const mapChildren = (children: any[]) =>
     children.map(

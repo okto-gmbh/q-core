@@ -1,7 +1,8 @@
 import { generateToken, hash256 } from '@blitzjs/auth'
 import { resolver } from '@blitzjs/rpc'
 
-import repo, { OP_EQUALS } from '../../utils/db'
+import repo from '@core/repositories/firestore'
+import { OP_EQUALS } from '@core/repositories/operators'
 
 import { ForgotPassword } from './validations'
 

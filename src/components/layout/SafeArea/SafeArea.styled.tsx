@@ -1,6 +1,6 @@
 import styled from '@emotion/styled'
 
-import { SafeAreaProps } from './SafeArea'
+import type { SafeAreaProps } from './SafeArea'
 
 export const SafeArea = styled.div<SafeAreaProps>`
     position: relative;

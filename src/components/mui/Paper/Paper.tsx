@@ -1,6 +1,8 @@
-import { ForwardedRef, forwardRef, HTMLAttributes } from 'react'
+import { forwardRef } from 'react'
 
 import * as Styled from './Paper.styled'
+
+import type { ForwardedRef, HTMLAttributes } from 'react'
 
 export interface PaperProps extends HTMLAttributes<HTMLDivElement> {
     borderRadius?: string
