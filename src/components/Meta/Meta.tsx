@@ -52,11 +52,6 @@ const Meta: FC<MetaProps> = ({
                 nofollow={nofollow}
             />
             <Head>
-                <link
-                    rel="apple-touch-icon"
-                    sizes="180x180"
-                    href="/apple-touch-icon.png"
-                />
                 <link rel="manifest" href={manifest} />
                 <meta name="msapplication-TileColor" content={themeColor} />
                 <meta name="theme-color" content={themeColor} />
