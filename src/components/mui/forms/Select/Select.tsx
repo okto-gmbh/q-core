@@ -179,7 +179,7 @@ const Select = (
                 return (
                     <Option {...props}>
                         <div>
-                            {parts.map((part, index) => (
+                            {parts?.map((part, index) => (
                                 <span
                                     key={`${part.text}_${index}`}
                                     style={{
