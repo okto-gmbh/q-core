@@ -6,8 +6,8 @@ import type { ScriptProps } from 'next/script'
 import type { FC } from 'react'
 
 type GoogleAnalyticsProps = {
-    prodOnly: boolean
     id?: string
+    prodOnly?: boolean
 } & ScriptProps
 
 const GoogleAnalytics: FC<GoogleAnalyticsProps> = ({
