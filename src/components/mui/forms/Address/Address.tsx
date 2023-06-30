@@ -63,7 +63,7 @@ const Address: FC<AddressProps> = ({
         () =>
             throttle(
                 (request, callback) => {
-                    autocompleteService.current!.getPlacePredictions(
+                    void autocompleteService.current!.getPlacePredictions(
                         request,
                         callback
                     )
