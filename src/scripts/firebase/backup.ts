@@ -1,5 +1,6 @@
+/* eslint-disable security/detect-child-process */
 /* eslint-disable security/detect-non-literal-fs-filename */
-/* eslint-disable import/first */
+import { exec } from 'child_process'
 import { mkdir, writeFile } from 'fs/promises'
 import { dirname } from 'path'
 
@@ -7,7 +8,6 @@ import * as dotenv from 'dotenv'
 
 import type { Repository } from '@core/repositories/interface'
 import type { Env } from '@core/scripts/common'
-import { exec } from 'child_process'
 
 import type { Bucket } from '@google-cloud/storage'
 
@@ -68,9 +68,20 @@ const backupStorage = async (ctx: Context) => {
     }
 }
 
-const backupIndexes = async ({backupPath}: Context) => {
-    exec(`firebase firestore:indexes > ${backupPath}/firestore.indexes.json`)
-}
+const backupIndexes = async ({ backupPath }: Context) =>
+    new Promise((resolve, reject) => {
+        exec(
+            `firebase firestore:indexes > ${backupPath}/firestore.indexes.json`,
+            (err) => {
+                if (err) {
+                    reject(err)
+                    return
+                }
+
+                resolve(true)
+            }
+        )
+    })
 
 export interface BackupOptions {
     env: Env
@@ -83,9 +94,9 @@ export interface BackupOptions {
 export default async ({
     env = 'prod',
     firestore = true,
+    indexes = true,
     outputDir,
-    storage = true,
-    indexes = true
+    storage = true
 }: BackupOptions) => {
     const scope = env === 'dev' ? 'local' : env
     console.log(`Loading .env.${scope}`)
@@ -109,7 +120,7 @@ export default async ({
     if (storage) {
         await backupStorage(ctx)
     }
-    if(indexes) {
+    if (indexes) {
         await backupIndexes(ctx)
     }
 }
