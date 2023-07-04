@@ -35,6 +35,12 @@ const authenticate = async ({
                     return
                 }
 
+                const json = JSON.parse(body)
+                if (json.error) {
+                    reject(json.error)
+                    return
+                }
+
                 resolve(JSON.parse(body).access_token)
             }
         )
@@ -61,7 +67,7 @@ const createUploadSession = async ({
                     Authorization: `Bearer ${accessToken}`,
                     'Content-Type': 'application/json'
                 },
-                url: `https://graph.microsoft.com/v1.0/sites/${targetSite}/drive/${targetFolder}/${targetFileName}:/createUploadSession`
+                url: `https://graph.microsoft.com/v1.0/drives/${targetSite}/${targetFolder}/${targetFileName}:/createUploadSession`
             },
             (error, _, body) => {
                 if (error) {
@@ -69,7 +75,13 @@ const createUploadSession = async ({
                     return
                 }
 
-                resolve(JSON.parse(body).uploadUrl)
+                const json = JSON.parse(body)
+                if (json.error) {
+                    reject(json.error)
+                    return
+                }
+
+                resolve(json.uploadUrl)
             }
         )
     })
@@ -120,16 +132,16 @@ const getParams = (sourceFile: string) => {
 }
 
 export interface BackupOptions {
-    outputDir: string
     sourceFile: string
+    targetFileName: string
     redirectUri?: string
     targetFolder?: string
 }
 
 export default async ({
-    outputDir,
     redirectUri = 'http://localhost',
     sourceFile,
+    targetFileName,
     targetFolder = 'root:'
 }: BackupOptions) => {
     const accessToken = await authenticate({
@@ -145,7 +157,7 @@ export default async ({
 
     const uploadUrl = await createUploadSession({
         accessToken: String(accessToken),
-        targetFileName: outputDir,
+        targetFileName,
         targetFolder,
         targetSite: process.env.TARGET_SITE!
     })
