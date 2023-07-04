@@ -2,10 +2,7 @@
 import fs from 'fs'
 
 import async from 'async'
-import dotenv from 'dotenv'
 import request from 'request'
-
-import type { Env } from '@core/scripts/common'
 
 type AuthContext = {
     clientId: string
@@ -125,22 +122,16 @@ const getParams = (sourceFile: string) => {
 export interface BackupOptions {
     outputDir: string
     sourceFile: string
-    env?: Env
     redirectUri?: string
     targetFolder?: string
 }
 
 export default async ({
-    env = 'prod',
     outputDir,
     redirectUri = 'http://localhost',
     sourceFile,
     targetFolder = 'root:'
 }: BackupOptions) => {
-    const scope = env === 'dev' ? 'local' : env
-    console.log(`Loading .env.${scope}`)
-    dotenv.config({ path: `.env.${scope}` })
-
     const accessToken = await authenticate({
         clientId: process.env.CLIENT_ID!,
         clientSecret: process.env.CLIENT_SECRET!,
