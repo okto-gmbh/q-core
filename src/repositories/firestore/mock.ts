@@ -2,17 +2,10 @@
 
 import { FieldValue } from 'firebase-admin/firestore'
 
-import type { Constraints } from '@core/repositories/firestore/admin'
-import type { DB_Meta, ID, Table } from '@core/repositories/firestore/common'
+import type { FirebaseRepository } from '@core/repositories/firestore/admin'
+import type { Entity, Operators, Table } from '@core/repositories/interface'
 
-import type {
-    Firestore as AdminFirestore,
-    WhereFilterOp as AdminWhereFilterOp
-} from 'firebase-admin/firestore'
-
-type DocumentData = {
-    [key: string]: any
-}
+import type { Firestore as AdminFirestore } from 'firebase-admin/firestore'
 
 interface Database {
     _currentId: number
@@ -34,35 +27,24 @@ const DATABASE: Database = {
 
 export function mockRepository() {
     return {
-        default: (db: AdminFirestore) => {
+        default: (db: AdminFirestore): FirebaseRepository => {
             void db
             verifyMock.verifyMock()
 
             return {
-                create: async <Collection extends DocumentData[]>(
-                    table: Table,
-                    data: Collection[number],
-                    createId?: ID
-                ) => {
+                create: async (table, data, createId?) => {
                     DATABASE.data[table] ??= {}
                     const id = createId ?? DATABASE.id
                     DATABASE.data[table][id] = data
 
                     return id
                 },
-                find: async <Collection extends DocumentData[]>(
-                    table: Table,
-                    id: ID
-                ): Promise<Collection[number] & DB_Meta> =>
+                find: async (table, id) =>
                     DATABASE.data[table]?.[id] &&
                     mapDocs({
                         [id]: DATABASE.data[table]?.[id]
                     })[0],
-                query: async <Collection extends DocumentData[]>(
-                    table: Table,
-                    constraints: Constraints<Collection> = {},
-                    fields?: (keyof (Collection[number] & DB_Meta))[]
-                ) => {
+                query: async (table, constraints = {}, fields?) => {
                     const { limit, orderBy, where } = constraints
 
                     let data = mapDocs(DATABASE.data[table] ?? {})
@@ -120,14 +102,33 @@ export function mockRepository() {
                     }
                     return data
                 },
-                remove: async (table: Table, id: ID) => {
+                queryCount: async (table, constraints = {}) => {
+                    const { where } = constraints
+
+                    let data = mapDocs(DATABASE.data[table] ?? {})
+
+                    const ops = await getOps()
+
+                    if (where) {
+                        for (const [field, operation, value] of where) {
+                            const resolvedField =
+                                field === '__name__' ? 'id' : field
+                            data = data.filter((doc) =>
+                                checkWhereFilterOp(
+                                    doc[resolvedField],
+                                    operation,
+                                    value,
+                                    ops
+                                )
+                            )
+                        }
+                    }
+                    return data.length
+                },
+                remove: async (table, id) => {
                     delete DATABASE.data[table]?.[id]
                 },
-                update: async <Collection extends DocumentData[]>(
-                    table: Table,
-                    id: ID,
-                    data: Partial<Collection[number]>
-                ) => {
+                update: async (table, id, data) => {
                     DATABASE.data[table][id] = {
                         ...DATABASE.data[table][id],
                         ...data
@@ -145,9 +146,9 @@ export function mockRepository() {
     }
 }
 
-export function seedMockRepository<Collection extends DocumentData[]>(
+export function seedMockRepository<Rows extends Entity[]>(
     table: Table,
-    data: Collection
+    data: Rows
 ) {
     DATABASE.data[table] = {}
     for (const item of data) {
@@ -184,7 +185,7 @@ async function getOps() {
 
 function checkWhereFilterOp(
     expected: any,
-    operator: AdminWhereFilterOp,
+    operator: Operators,
     actual: any,
     ops: Awaited<ReturnType<typeof getOps>> // vi.mock gets hoisted, so we need to dynamically import the operators
 ) {

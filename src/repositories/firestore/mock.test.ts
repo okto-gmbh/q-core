@@ -23,8 +23,6 @@ interface Member {
     age?: number
 }
 
-type Members = Member[]
-
 describe('firestore', () => {
     beforeAll(() => {
         vi.mock('@core/repositories/firestore/admin', async () =>
@@ -191,7 +189,7 @@ describe('firestore', () => {
             { age: 27, name: 'Jane' }
         ])
 
-        const members = await repo.query<Members>('members', {
+        const members = await repo.query<Member>('members', {
             where: [['name', '==', 'Jane']]
         })
 
@@ -212,7 +210,7 @@ describe('firestore', () => {
             { age: 27, name: 'Jane' }
         ])
 
-        const members = await repo.query<Members>('members', {
+        const members = await repo.query<Member>('members', {
             where: [['__name__', '==', '1']]
         })
 
@@ -230,7 +228,7 @@ describe('firestore', () => {
             { age: 27, name: 'Jane' }
         ])
 
-        const members = await repo.query<Members>('members', {
+        const members = await repo.query<Member>('members', {
             orderBy: { __name__: 'desc' }
         })
 
@@ -253,7 +251,7 @@ describe('firestore', () => {
             { age: 27, name: 'Jane' }
         ])
 
-        const members = await repo.query<Members>('members', {
+        const members = await repo.query<Member>('members', {
             where: [
                 ['name', '==', 'Jane'],
                 ['age', '>=', 25]
@@ -274,7 +272,7 @@ describe('firestore', () => {
             { age: 27, name: 'Jane' }
         ])
 
-        const members = await repo.query<Members>('members', {
+        const members = await repo.query<Member>('members', {
             limit: 2
         })
 
@@ -295,9 +293,7 @@ describe('firestore', () => {
             { age: 27, name: 'Jane' }
         ])
 
-        const members = await repo.query<Members>('members', undefined, [
-            'name'
-        ])
+        const members = await repo.query<Member>('members', undefined, ['name'])
 
         expect(members).toEqual([
             { name: 'John' },
@@ -305,5 +301,22 @@ describe('firestore', () => {
             { name: 'Jack' },
             { name: 'Jane' }
         ])
+    })
+
+    it('should return correct count for queryCount', async () => {
+        const db = getMockDB()
+        const repo = getRepository(db)
+
+        const mockMembers = [
+            { name: 'John' },
+            { age: 20, name: 'Jane' },
+            { name: 'Jack' },
+            { age: 27, name: 'Jane' }
+        ]
+        seedMockRepository('members', mockMembers)
+
+        const members = await repo.queryCount<Member>('members')
+
+        expect(members).toEqual(mockMembers.length)
     })
 })

@@ -1,55 +1,44 @@
-/* eslint-disable no-redeclare */
-
 import admin from 'firebase-admin'
 
-import type { DB_Meta, ID, Table } from './common'
+import type {
+    Constraints,
+    DBMeta,
+    Entity,
+    ID,
+    Operators,
+    Repository,
+    Table
+} from '@core/repositories/interface'
 
-export interface Constraints<
-    Collection extends admin.firestore.DocumentData[]
-> {
-    limit?: number
-    orderBy?: {
-        [key in keyof (Collection[number] & {
-            __name__: string
-        })]?: admin.firestore.OrderByDirection
-    }
-    where?: [
-        keyof (Collection[number] & { __name__: string }),
-        admin.firestore.WhereFilterOp,
-        any
-    ][]
-}
-
-async function mapDocs<Collection extends admin.firestore.DocumentData[]>(
-    doc: admin.firestore.DocumentSnapshot<Collection[number]>,
-    fields?: (keyof (Collection[number] & DB_Meta))[]
-): Promise<(DB_Meta & Collection[number]) | undefined>
-async function mapDocs<Collection extends admin.firestore.DocumentData[]>(
-    doc: admin.firestore.DocumentSnapshot<Collection[number]>[],
-    fields?: (keyof (Collection[number] & DB_Meta))[]
-): Promise<(DB_Meta & Collection[number])[] | undefined>
-async function mapDocs<Collection extends admin.firestore.DocumentData[]>(
+/* eslint-disable no-redeclare */
+async function mapDocs<Doc extends Entity>(
+    doc: admin.firestore.DocumentSnapshot<admin.firestore.DocumentData>,
+    fields?: (keyof Doc)[]
+): Promise<(DBMeta & Doc) | undefined>
+async function mapDocs<Doc extends Entity>(
+    doc: admin.firestore.DocumentSnapshot<admin.firestore.DocumentData>[],
+    fields?: (keyof Doc)[]
+): Promise<(DBMeta & Doc)[] | undefined>
+async function mapDocs<Doc extends Entity>(
     doc:
-        | admin.firestore.DocumentSnapshot<Collection[number]>
-        | admin.firestore.DocumentSnapshot<Collection[number]>[],
-    fields?: (keyof (Collection[number] & DB_Meta))[]
-) {
+        | admin.firestore.DocumentSnapshot<admin.firestore.DocumentData>
+        | admin.firestore.DocumentSnapshot<admin.firestore.DocumentData>[],
+    fields?: (keyof Doc)[]
+): Promise<(DBMeta & Doc) | (DBMeta & Doc)[] | undefined> {
     if (Array.isArray(doc)) {
-        return await Promise.all(
-            doc.map(async (d) => await mapDocs<Collection>(d, fields))
-        )
+        return (await Promise.all(
+            doc.map(async (d) => await mapDocs(d, fields))
+        )) as (DBMeta & Doc)[]
     }
 
     if (fields && fields.length === 1 && fields.includes('id')) {
         return {
             id: doc.id
-        }
+        } as DBMeta & Doc
     }
 
-    const data: admin.firestore.DocumentData = {
-        ...doc.data(),
-        id: doc.id
-    }
+    const data = doc.data() || {}
+    data.id = doc.id
 
     if (Object.keys(data).length === 1) {
         return
@@ -81,15 +70,34 @@ async function mapDocs<Collection extends admin.firestore.DocumentData[]>(
         }
     }
 
-    return data
+    return data as DBMeta & Doc
 }
 
-const getRepository = (db: admin.firestore.Firestore) => ({
-    create: async <Collection extends admin.firestore.DocumentData[]>(
+export type FirebaseEntity = Entity
+
+export interface FirebaseConstraints<Row extends Entity>
+    extends Constraints<Row> {
+    orderBy?: {
+        [key in keyof (Row & { __name__: string })]?: 'asc' | 'desc'
+    }
+    where?: [keyof (Row & { __name__: string }), Operators, any][]
+}
+
+export interface FirebaseRepository extends Repository {
+    query: <Row extends Entity>(
         table: Table,
-        data: Collection[number],
-        createId?: string
-    ) => {
+        constraints?: FirebaseConstraints<Row>,
+        fields?: (keyof (DBMeta & Row))[]
+    ) => Promise<(DBMeta & Row)[]>
+
+    queryCount: <Row extends Entity>(
+        table: Table,
+        constraints?: FirebaseConstraints<Row>
+    ) => Promise<number>
+}
+
+const getRepository = (db: admin.firestore.Firestore): FirebaseRepository => ({
+    create: async (table, data, createId?) => {
         if (createId) {
             await db.collection(table).doc(createId).set(data)
             return createId
@@ -99,10 +107,7 @@ const getRepository = (db: admin.firestore.Firestore) => ({
         return id
     },
 
-    find: async <Collection extends admin.firestore.DocumentData[]>(
-        table: Table,
-        id: ID
-    ) => {
+    find: async (table: Table, id: ID) => {
         if (!id) {
             return
         }
@@ -112,17 +117,12 @@ const getRepository = (db: admin.firestore.Firestore) => ({
             return
         }
 
-        return await mapDocs<Collection>(doc)
+        return await mapDocs(doc)
     },
 
-    query: async <Collection extends admin.firestore.DocumentData[]>(
-        table: Table,
-        constraints: Constraints<Collection> = {},
-        fields?: (keyof (Collection[number] & DB_Meta))[]
-    ) => {
+    query: async (table, constraints = {}, fields?) => {
         const { limit, orderBy, where } = constraints
-        let query: admin.firestore.Query<Collection[number]> =
-            db.collection(table)
+        let query: admin.firestore.Query<Entity> = db.collection(table)
 
         if (where) {
             for (const [field, operation, value] of where) {
@@ -139,16 +139,12 @@ const getRepository = (db: admin.firestore.Firestore) => ({
         }
 
         const { docs } = await query.get()
-        return (await mapDocs<Collection>(docs, fields)) || []
+        return (await mapDocs(docs, fields)) || []
     },
 
-    queryCount: async <Collection extends admin.firestore.DocumentData[]>(
-        table: Table,
-        constraints: Constraints<Collection> = {}
-    ) => {
+    queryCount: async (table, constraints = {}) => {
         const { where } = constraints
-        let query: admin.firestore.Query<Collection[number]> =
-            db.collection(table)
+        let query: admin.firestore.Query<Entity> = db.collection(table)
 
         if (where) {
             for (const [field, operation, value] of where) {
@@ -160,14 +156,10 @@ const getRepository = (db: admin.firestore.Firestore) => ({
         return size
     },
 
-    remove: async (table: Table, id: ID) =>
-        await db.collection(table).doc(id).delete(),
+    remove: async (table, id) => void db.collection(table).doc(id).delete(),
 
-    update: async <Collection extends admin.firestore.DocumentData[]>(
-        table: Table,
-        id: ID,
-        data: Partial<Collection[number]>
-    ) => await db.collection(table).doc(id).update(data)
+    update: async (table, id, data) =>
+        void db.collection(table).doc(id).update(data)
 })
 
 export default getRepository
