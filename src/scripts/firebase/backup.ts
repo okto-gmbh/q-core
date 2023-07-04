@@ -7,6 +7,7 @@ import * as dotenv from 'dotenv'
 
 import type { Repository } from '@core/repositories/interface'
 import type { Env } from '@core/scripts/common'
+import { exec } from 'child_process'
 
 import type { Bucket } from '@google-cloud/storage'
 
@@ -67,10 +68,15 @@ const backupStorage = async (ctx: Context) => {
     }
 }
 
+const backupIndexes = async ({backupPath}: Context) => {
+    exec(`firebase firestore:indexes > ${backupPath}/firestore.indexes.json`)
+}
+
 export interface BackupOptions {
     env: Env
     outputDir: string
     firestore?: boolean
+    indexes?: boolean
     storage?: boolean
 }
 
@@ -78,7 +84,8 @@ export default async ({
     env = 'prod',
     firestore = true,
     outputDir,
-    storage = true
+    storage = true,
+    indexes = true
 }: BackupOptions) => {
     const scope = env === 'dev' ? 'local' : env
     console.log(`Loading .env.${scope}`)
@@ -101,5 +108,8 @@ export default async ({
     }
     if (storage) {
         await backupStorage(ctx)
+    }
+    if(indexes) {
+        await backupIndexes(ctx)
     }
 }
