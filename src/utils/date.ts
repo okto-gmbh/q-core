@@ -64,3 +64,8 @@ export const timestampToDate = (timestamp: number): Date | null => {
             .padStart(2, '0')}T00:00:00.000Z`
     )
 }
+
+export const getExportDate = (timeZone: string = 'Europe/Zurich'): string =>
+    new Date().toLocaleDateString('fr-CA', {
+        timeZone
+    })
