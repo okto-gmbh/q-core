@@ -1,6 +1,5 @@
 /* eslint-disable security/detect-child-process */
 /* eslint-disable security/detect-non-literal-fs-filename */
-import { exec } from 'child_process'
 import { mkdir, writeFile } from 'fs/promises'
 import { dirname } from 'path'
 
@@ -68,33 +67,16 @@ const backupStorage = async (ctx: Context) => {
     }
 }
 
-const backupIndexes = async ({ backupPath }: Context) =>
-    new Promise((resolve, reject) => {
-        exec(
-            `firebase firestore:indexes > ${backupPath}/firestore.indexes.json`,
-            (err) => {
-                if (err) {
-                    reject(err)
-                    return
-                }
-
-                resolve(true)
-            }
-        )
-    })
-
 export interface BackupOptions {
     env: Env
     outputDir: string
     firestore?: boolean
-    indexes?: boolean
     storage?: boolean
 }
 
 export default async ({
     env = 'prod',
     firestore = true,
-    indexes = true,
     outputDir,
     storage = true
 }: BackupOptions) => {
@@ -119,8 +101,5 @@ export default async ({
     }
     if (storage) {
         await backupStorage(ctx)
-    }
-    if (indexes) {
-        await backupIndexes(ctx)
     }
 }
