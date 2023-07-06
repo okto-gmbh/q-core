@@ -25,8 +25,9 @@ interface Member {
 
 describe('firestore', () => {
     beforeAll(() => {
-        vi.mock('@core/repositories/firestore/admin', async () =>
-            (await import('@core/repositories/firestore/mock')).mockRepository()
+        vi.mock(
+            '@core/repositories/firestore/admin',
+            () => import('@core/repositories/firestore/mock')
         )
     })
 

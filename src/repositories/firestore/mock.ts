@@ -25,126 +25,112 @@ const DATABASE: Database = {
     }
 }
 
-export function mockRepository() {
+const getRepository = (db: AdminFirestore): FirebaseRepository => {
+    void db
+    verifyMock.verifyMock()
+
     return {
-        default: (db: AdminFirestore): FirebaseRepository => {
-            void db
-            verifyMock.verifyMock()
+        create: async (table, data, createId?) => {
+            DATABASE.data[table] ??= {}
+            const id = createId ?? DATABASE.id
+            DATABASE.data[table][id] = data
 
-            return {
-                create: async (table, data, createId?) => {
-                    DATABASE.data[table] ??= {}
-                    const id = createId ?? DATABASE.id
-                    DATABASE.data[table][id] = data
+            return id
+        },
+        find: async (table, id) =>
+            DATABASE.data[table]?.[id] &&
+            mapDocs({
+                [id]: DATABASE.data[table]?.[id]
+            })[0],
+        query: async (table, constraints = {}, fields?) => {
+            const { limit, orderBy, where } = constraints
 
-                    return id
-                },
-                find: async (table, id) =>
-                    DATABASE.data[table]?.[id] &&
-                    mapDocs({
-                        [id]: DATABASE.data[table]?.[id]
-                    })[0],
-                query: async (table, constraints = {}, fields?) => {
-                    const { limit, orderBy, where } = constraints
+            let data = mapDocs(DATABASE.data[table] ?? {})
 
-                    let data = mapDocs(DATABASE.data[table] ?? {})
+            const ops = await getOps()
 
-                    const ops = await getOps()
-
-                    if (where) {
-                        for (const [field, operation, value] of where) {
-                            const resolvedField =
-                                field === '__name__' ? 'id' : field
-                            data = data.filter((doc) =>
-                                checkWhereFilterOp(
-                                    doc[resolvedField],
-                                    operation,
-                                    value,
-                                    ops
-                                )
-                            )
-                        }
-                    }
-                    if (orderBy) {
-                        for (const [field, direction = 'asc'] of Object.entries(
-                            orderBy
-                        )) {
-                            const resolvedField =
-                                field === '__name__' ? 'id' : field
-
-                            data = data.sort((a: any, b: any) => {
-                                if (direction === 'asc') {
-                                    return a[resolvedField] > b[resolvedField]
-                                        ? 1
-                                        : -1
-                                }
-                                return a[resolvedField] < b[resolvedField]
-                                    ? 1
-                                    : -1
-                            })
-                        }
-                    }
-                    if (limit) {
-                        data = data.slice(0, limit)
-                    }
-                    if (fields) {
-                        data = data.map((doc: any) =>
-                            Object.entries(doc).reduce(
-                                (acc: any, [key, value]) => {
-                                    if (fields.includes(key)) {
-                                        acc[key] = value
-                                    }
-                                    return acc
-                                },
-                                {}
-                            )
+            if (where) {
+                for (const [field, operation, value] of where) {
+                    const resolvedField = field === '__name__' ? 'id' : field
+                    data = data.filter((doc) =>
+                        checkWhereFilterOp(
+                            doc[resolvedField],
+                            operation,
+                            value,
+                            ops
                         )
-                    }
-                    return data
-                },
-                queryCount: async (table, constraints = {}) => {
-                    const { where } = constraints
-
-                    let data = mapDocs(DATABASE.data[table] ?? {})
-
-                    const ops = await getOps()
-
-                    if (where) {
-                        for (const [field, operation, value] of where) {
-                            const resolvedField =
-                                field === '__name__' ? 'id' : field
-                            data = data.filter((doc) =>
-                                checkWhereFilterOp(
-                                    doc[resolvedField],
-                                    operation,
-                                    value,
-                                    ops
-                                )
-                            )
-                        }
-                    }
-                    return data.length
-                },
-                remove: async (table, id) => {
-                    delete DATABASE.data[table]?.[id]
-                },
-                update: async (table, id, data) => {
-                    DATABASE.data[table][id] = {
-                        ...DATABASE.data[table][id],
-                        ...data
-                    }
-                    Object.entries(DATABASE.data[table][id]).forEach(
-                        ([key, value]) => {
-                            if (value === FieldValue.delete()) {
-                                delete DATABASE.data[table][id][key]
-                            }
-                        }
                     )
                 }
             }
+            if (orderBy) {
+                for (const [field, direction = 'asc'] of Object.entries(
+                    orderBy
+                )) {
+                    const resolvedField = field === '__name__' ? 'id' : field
+
+                    data = data.sort((a: any, b: any) => {
+                        if (direction === 'asc') {
+                            return a[resolvedField] > b[resolvedField] ? 1 : -1
+                        }
+                        return a[resolvedField] < b[resolvedField] ? 1 : -1
+                    })
+                }
+            }
+            if (limit) {
+                data = data.slice(0, limit)
+            }
+            if (fields) {
+                data = data.map((doc: any) =>
+                    Object.entries(doc).reduce((acc: any, [key, value]) => {
+                        if (fields.includes(key)) {
+                            acc[key] = value
+                        }
+                        return acc
+                    }, {})
+                )
+            }
+            return data
+        },
+        queryCount: async (table, constraints = {}) => {
+            const { where } = constraints
+
+            let data = mapDocs(DATABASE.data[table] ?? {})
+
+            const ops = await getOps()
+
+            if (where) {
+                for (const [field, operation, value] of where) {
+                    const resolvedField = field === '__name__' ? 'id' : field
+                    data = data.filter((doc) =>
+                        checkWhereFilterOp(
+                            doc[resolvedField],
+                            operation,
+                            value,
+                            ops
+                        )
+                    )
+                }
+            }
+            return data.length
+        },
+        remove: async (table, id) => {
+            delete DATABASE.data[table]?.[id]
+        },
+        update: async (table, id, data) => {
+            DATABASE.data[table][id] = {
+                ...DATABASE.data[table][id],
+                ...data
+            }
+            Object.entries(DATABASE.data[table][id]).forEach(([key, value]) => {
+                if (value === FieldValue.delete()) {
+                    delete DATABASE.data[table][id][key]
+                }
+            })
         }
     }
 }
+
+export default getRepository
 
 export function seedMockRepository<Rows extends Entity[]>(
     table: Table,
