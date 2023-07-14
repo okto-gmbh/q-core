@@ -38,6 +38,14 @@ export const formatDate = (
 export const isValidDate = (date: any): boolean =>
     Object.prototype.toString.call(date) === '[object Date]' && !isNaN(date)
 
+export const getTimestamp = (date?: Date | string | number) => {
+    if (!date) return
+
+    date = new Date(date)
+
+    return dateToTimestamp(date)
+}
+
 export const dateToTimestamp = (date: Date): number | undefined => {
     if (!date) return
 
