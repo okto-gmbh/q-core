@@ -26,8 +26,9 @@ const DATABASE: Database = {
 }
 
 const getRepository = (db: AdminFirestore): FirebaseRepository => {
-    void db
     verifyMock.verifyMock()
+
+    void db
 
     return {
         create: async (table, data, createId?) => {
@@ -194,13 +195,16 @@ function checkWhereFilterOp(
         return expected >= actual
     }
     if (operator === ops.OP_CONTAINS) {
-        return expected.includes(actual)
+        return Array.isArray(expected) && expected.includes(actual)
     }
     if (operator === ops.OP_IN) {
-        return actual.includes(expected)
+        return Array.isArray(actual) && actual.includes(expected)
     }
     if (operator === ops.OP_CONTAINS_ANY) {
-        return expected.some((item: any) => actual.includes(item))
+        return (
+            Array.isArray(expected) &&
+            expected.some((item: any) => actual.includes(item))
+        )
     }
     return false
 }
