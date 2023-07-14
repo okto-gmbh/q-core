@@ -1,13 +1,5 @@
 import { FieldValue } from 'firebase-admin/firestore'
-import {
-    afterAll,
-    afterEach,
-    beforeAll,
-    describe,
-    expect,
-    it,
-    vi
-} from 'vitest'
+import { afterEach, beforeAll, describe, expect, it, vi } from 'vitest'
 
 import getRepository from '@core/repositories/firestore/admin'
 import {
@@ -29,14 +21,19 @@ describe('firestore', () => {
             '@core/repositories/firestore/admin',
             () => import('@core/repositories/firestore/mock')
         )
+
+        const spy = vi.spyOn(verifyMock, 'verifyMock')
+        getRepository(getMockDB())
+        expect(spy).toHaveBeenCalled()
+        resetMockRepository()
+
+        return () => {
+            vi.restoreAllMocks()
+        }
     })
 
     afterEach(() => {
         resetMockRepository()
-    })
-
-    afterAll(() => {
-        vi.restoreAllMocks()
     })
 
     it('should mock the database', async () => {
