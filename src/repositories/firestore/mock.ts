@@ -5,7 +5,7 @@ import { FieldValue } from 'firebase-admin/firestore'
 import type { FirebaseRepository } from '@core/repositories/firestore/admin'
 import type { Entity, Operators, Table } from '@core/repositories/interface'
 
-import type { Firestore as AdminFirestore } from 'firebase-admin/firestore'
+import type { Firestore } from 'firebase-admin/firestore'
 
 interface Database {
     _currentId: number
@@ -25,7 +25,7 @@ const DATABASE: Database = {
     }
 }
 
-const getRepository = (db: AdminFirestore): FirebaseRepository => {
+const getRepository = (db: Firestore): FirebaseRepository => {
     verifyMock.verifyMock()
 
     void db
@@ -133,28 +133,24 @@ const getRepository = (db: AdminFirestore): FirebaseRepository => {
 
 export default getRepository
 
-export function seedMockRepository<Rows extends Entity[]>(
+export const seedMockRepository = <Rows extends Entity[]>(
     table: Table,
     data: Rows
-) {
+) => {
     DATABASE.data[table] = {}
     for (const item of data) {
         DATABASE.data[table][item.id ?? DATABASE.id] = item
     }
 }
 
-export function resetMockRepository() {
+export const resetMockRepository = () => {
     DATABASE._currentId = 0
     DATABASE.data = {}
 }
 
-export function getRawMockData() {
-    return DATABASE.data
-}
-
-export function getMockDB() {
-    return {} as AdminFirestore
-}
+export const getRawMockData = () => DATABASE.data
+export const getMockDB = () => ({} as Firestore)
+const getOps = async () => await import('@core/repositories/operators')
 
 export const verifyMock = {
     verifyMock() {
@@ -162,20 +158,15 @@ export const verifyMock = {
     }
 }
 
-function mapDocs(docs: Database['data']['table']) {
-    return Object.entries(docs).map(([id, doc]) => ({ ...doc, id }))
-}
+const mapDocs = (docs: Database['data']['table']) =>
+    Object.entries(docs).map(([id, doc]) => ({ ...doc, id }))
 
-async function getOps() {
-    return await import('@core/repositories/operators')
-}
-
-function checkWhereFilterOp(
+const checkWhereFilterOp = (
     expected: any,
     operator: Operators,
     actual: any,
     ops: Awaited<ReturnType<typeof getOps>> // vi.mock gets hoisted, so we need to dynamically import the operators
-) {
+) => {
     if (operator === ops.OP_EQUALS) {
         return expected === actual
     }
