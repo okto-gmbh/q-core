@@ -82,9 +82,6 @@ const getFile = (path: string): File => ({
         return data
     },
     exists: async () => !!LOCAL_STORAGE[path],
-    get metadata() {
-        return !!LOCAL_STORAGE[path]
-    },
     getMetadata: async () => LOCAL_STORAGE[path]?.metadata,
     get name() {
         return path
