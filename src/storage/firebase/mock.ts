@@ -44,10 +44,11 @@ const getStorage = (bucket?: Bucket): Storage => {
             const file = getFile(path)
             return file.exists()
         },
-        getFiles: async (path: string) => {
-            const files = Object.keys(LOCAL_STORAGE).filter((key) =>
-                key.startsWith(path)
-            )
+        getFiles: async (path?: string) => {
+            const allFiles = Object.keys(LOCAL_STORAGE)
+            const files = path
+                ? allFiles.filter((key) => key.startsWith(path))
+                : allFiles
             return files.map((file) => getFile(file))
         },
         getReadStream: (path: string) => {
