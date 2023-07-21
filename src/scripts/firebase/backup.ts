@@ -7,14 +7,13 @@ import * as dotenv from 'dotenv'
 
 import type { Repository } from '@core/repositories/interface'
 import type { Env } from '@core/scripts/common'
-
-import type { Bucket } from '@google-cloud/storage'
+import type { Storage } from '@core/storage/firebase/interface'
 
 type Context = {
     backupPath: string
-    bucket: Bucket
     db: FirebaseFirestore.Firestore
     repo: Repository
+    storage: Storage
 }
 
 const backup = async (
@@ -44,7 +43,7 @@ const backupTables = async (ctx: Context) => {
 }
 
 const backupStorage = async (ctx: Context) => {
-    const [files] = await ctx.bucket.getFiles()
+    const files = await ctx.storage.getFiles()
 
     for (const file of files) {
         if (file.name.endsWith('/')) continue // Ignore directories
@@ -78,28 +77,30 @@ export default async ({
     env = 'prod',
     firestore = true,
     outputDir,
-    storage = true
+    storage: includeStorage = true
 }: BackupOptions) => {
     const scope = env === 'dev' ? 'local' : env
     console.log(`Loading .env.${scope}`)
     dotenv.config({ path: `.env.${scope}` })
 
+    const { getStorage } = await import('@core/storage/firebase/admin')
     const { getBucket } = await import('@core/services/firebaseAdmin')
     const { db, default: repo } = await import('@core/repositories/firestore')
 
     const bucket = getBucket()
+    const storage = getStorage(bucket)
 
     const ctx: Context = {
         backupPath: outputDir,
-        bucket,
         db,
-        repo
+        repo,
+        storage
     }
 
     if (firestore) {
         await backupTables(ctx)
     }
-    if (storage) {
+    if (includeStorage) {
         await backupStorage(ctx)
     }
 }
