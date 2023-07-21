@@ -137,7 +137,7 @@ export const seedMockRepository = <Rows extends Entity[]>(
     table: Table,
     data: Rows
 ) => {
-    DATABASE.data[table] = {}
+    DATABASE.data[table] ??= {}
     for (const item of data) {
         DATABASE.data[table][item.id ?? DATABASE.id] = item
     }
