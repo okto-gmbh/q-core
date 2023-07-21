@@ -26,6 +26,15 @@ const getStorage = (bucket?: Bucket): Storage => {
             const file = getFile(path)
             return await file.delete()
         },
+        deleteFiles: async (path: string) => {
+            const files = Object.keys(LOCAL_STORAGE).filter((key) =>
+                key.startsWith(path)
+            )
+            for (const path of files) {
+                const file = getFile(path)
+                await file.delete()
+            }
+        },
         downloadFile: async (path: string) => {
             const file = getFile(path)
             return file.download()

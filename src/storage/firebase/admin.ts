@@ -9,6 +9,7 @@ const getStorage = (bucket: Bucket): Storage => ({
         const file = getFile(bucket, path)
         return await file.delete()
     },
+    deleteFiles: async (path: string) => bucket.deleteFiles({ prefix: path }),
     downloadFile: async (path: string) => {
         const file = getFile(bucket, path)
         return file.download()

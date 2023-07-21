@@ -1,5 +1,6 @@
 export interface Storage {
     deleteFile: (path: string) => Promise<void>
+    deleteFiles: (path: string) => Promise<void>
     downloadFile: (path: string) => Promise<Buffer>
     file: (path: string) => File
     fileExists: (path: string) => Promise<boolean>

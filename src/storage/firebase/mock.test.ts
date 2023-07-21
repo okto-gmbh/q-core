@@ -68,6 +68,20 @@ describe('firestore', () => {
         expect(Object.entries(getRawMockStorage())).toHaveLength(0)
     })
 
+    it('should delete multiple files', async () => {
+        const bucket = getMockBucket()
+        const storage = getStorage(bucket)
+        await storage.uploadFile('directory/test.txt', Buffer.from('test'))
+        await storage.uploadFile('directory/test2.txt', Buffer.from('test'))
+        await storage.uploadFile(
+            'other/directory/test3.txt',
+            Buffer.from('test')
+        )
+        expect(Object.entries(getRawMockStorage())).toHaveLength(3)
+        await storage.deleteFiles('directory')
+        expect(Object.entries(getRawMockStorage())).toHaveLength(1)
+    })
+
     it('should check if a file exists', async () => {
         const bucket = getMockBucket()
         const storage = getStorage(bucket)
