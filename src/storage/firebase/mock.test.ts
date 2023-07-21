@@ -7,6 +7,7 @@ import {
     getMockBucket,
     getRawMockStorage,
     resetMockStorage,
+    seedMockStorage,
     verifyMock
 } from '@core/storage/firebase/mock'
 
@@ -35,6 +36,47 @@ describe('firestore', () => {
         const spy = vi.spyOn(verifyMock, 'verifyMock')
         getStorage(getMockBucket())
         expect(spy).toHaveBeenCalled()
+    })
+
+    it('should seed the mock storage with multiple files as defined', () => {
+        const testData = {
+            'test.txt': {
+                data: Buffer.from('test'),
+                metadata: {
+                    contentType: 'text/plain',
+                    size: 4,
+                    updated: new Date().toISOString()
+                }
+            },
+            'test2.txt': {
+                data: Buffer.from('test'),
+                metadata: {
+                    contentType: 'text/plain',
+                    size: 4,
+                    updated: new Date().toISOString()
+                }
+            }
+        }
+
+        seedMockStorage(testData)
+        expect(getRawMockStorage()).toEqual(testData)
+    })
+
+    it('should seed the mock storage auto generated metadata', () => {
+        const testData = {
+            'test.txt': {
+                data: Buffer.from('test')
+            },
+            'test2.txt': {
+                data: Buffer.from('test')
+            }
+        }
+
+        seedMockStorage(testData)
+        const storageData = getRawMockStorage()
+
+        expect(storageData['test.txt'].metadata).toBeDefined()
+        expect(storageData['test2.txt'].metadata).toBeDefined()
     })
 
     it('should create a file handle, without uploading', async () => {

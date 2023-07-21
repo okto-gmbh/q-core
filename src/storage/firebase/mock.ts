@@ -109,6 +109,32 @@ const getFile = (path: string): File => ({
     }
 })
 
+export const seedMockStorage = (data: {
+    [path: string]: Omit<LocalFile, 'metadata'> &
+        Partial<Pick<LocalFile, 'metadata'>>
+}) => {
+    const completeObject = Object.fromEntries(
+        Object.entries(data).map(([filePath, fileContent]) => {
+            if (data[filePath].metadata === undefined) {
+                return [
+                    filePath,
+                    {
+                        ...fileContent,
+                        metadata: {
+                            contentType: '',
+                            size: data[filePath].data.length,
+                            updated: new Date().toISOString()
+                        }
+                    }
+                ]
+            } else {
+                return [filePath, fileContent]
+            }
+        })
+    )
+    Object.assign(LOCAL_STORAGE, completeObject)
+}
+
 export const resetMockStorage = () => {
     Object.keys(LOCAL_STORAGE).forEach((key) => {
         delete LOCAL_STORAGE[key]
