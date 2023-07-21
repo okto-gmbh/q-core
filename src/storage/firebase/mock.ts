@@ -39,25 +39,21 @@ const getStorage = (bucket?: Bucket): Storage => {
             const file = getFile(path)
             return file.download()
         },
-
         file: (path: string) => getFile(path),
         fileExists: async (path: string) => {
             const file = getFile(path)
             return file.exists()
         },
-
         getFiles: async (path: string) => {
             const files = Object.keys(LOCAL_STORAGE).filter((key) =>
                 key.startsWith(path)
             )
             return files.map((file) => getFile(file))
         },
-
         getReadStream: (path: string) => {
             const file = getFile(path)
             return file.createReadStream()
         },
-
         uploadFile: async (path: string, data: Buffer) => {
             const file = getFile(path)
             return file.save(data)
