@@ -4,7 +4,7 @@ export interface Storage {
     downloadFile: (path: string) => Promise<Buffer>
     file: (path: string) => File
     fileExists: (path: string) => Promise<boolean>
-    getFiles: (path: string) => Promise<File[]>
+    getFiles: (path?: string) => Promise<File[]>
     getReadStream: (path: string) => NodeJS.ReadableStream
     uploadFile: (path: string, file: Buffer) => Promise<void>
 }
@@ -14,7 +14,7 @@ export interface File {
     delete: () => Promise<void>
     download: () => Promise<Buffer>
     exists: () => Promise<boolean>
-    metadata: Metadata
+    getMetadata: () => Promise<Metadata>
     name: string
     save: (data: Buffer) => Promise<void>
     setMetadata: (metadata: Metadata) => Promise<void>
