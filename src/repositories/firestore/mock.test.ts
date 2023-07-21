@@ -197,6 +197,38 @@ describe('firestore', () => {
         ])
     })
 
+    it('should reduce query responses to the requested fields', async () => {
+        const db = getMockDB()
+        const repo = getRepository(db)
+
+        seedMockRepository('members', [
+            { name: 'John' },
+            { age: 20, name: 'Jane' },
+            { name: 'Jack' },
+            { age: 27, name: 'Jane' }
+        ])
+
+        const memberIds = await repo.query<Member>('members', undefined, ['id'])
+
+        expect(memberIds).toEqual([
+            { id: '0' },
+            { id: '1' },
+            { id: '2' },
+            { id: '3' }
+        ])
+
+        const memberNames = await repo.query<Member>('members', undefined, [
+            'name'
+        ])
+
+        expect(memberNames).toEqual([
+            { name: 'John' },
+            { name: 'Jane' },
+            { name: 'Jack' },
+            { name: 'Jane' }
+        ])
+    })
+
     it('should support __name__ as a constraint', async () => {
         const db = getMockDB()
         const repo = getRepository(db)
