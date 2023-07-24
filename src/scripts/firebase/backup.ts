@@ -6,7 +6,7 @@ import { dirname } from 'path'
 import * as dotenv from 'dotenv'
 
 import type { Repository } from '@core/repositories/interface'
-import type { Env } from '@core/scripts/common'
+import type { BaseOptions } from '@core/scripts/common'
 import type { Storage } from '@core/storage/firebase/interface'
 
 type Context = {
@@ -66,8 +66,7 @@ const backupStorage = async (ctx: Context) => {
     }
 }
 
-export interface BackupOptions {
-    env: Env
+export interface BackupOptions extends BaseOptions {
     outputDir: string
     firestore?: boolean
     storage?: boolean
