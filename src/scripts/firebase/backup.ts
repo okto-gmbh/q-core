@@ -7,7 +7,7 @@ import * as dotenv from 'dotenv'
 
 import type { Repository } from '@core/repositories/interface'
 import type { BaseOptions } from '@core/scripts/common'
-import type { Storage } from '@core/storage/firebase/interface'
+import type { Storage } from '@core/storage/interface'
 
 type Context = {
     backupPath: string

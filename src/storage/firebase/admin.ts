@@ -1,4 +1,4 @@
-import type { File, Storage } from '@core/storage/firebase/interface'
+import type { File, Storage } from '@core/storage/interface'
 
 import type { Storage as AdminStorage } from 'firebase-admin/storage'
 
