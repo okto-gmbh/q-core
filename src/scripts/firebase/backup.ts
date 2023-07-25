@@ -1,5 +1,7 @@
 /* eslint-disable security/detect-child-process */
 /* eslint-disable security/detect-non-literal-fs-filename */
+import { createWriteStream } from 'node:fs'
+import { Readable } from 'node:stream'
 import { mkdir, writeFile } from 'fs/promises'
 import { dirname } from 'path'
 
@@ -19,16 +21,31 @@ type Context = {
 const backup = async (
     type: string,
     name: string,
-    data: any,
-    basePath: string,
-    json: boolean = true
+    data:
+        | Record<string, unknown>
+        | Array<unknown>
+        | NodeJS.ReadableStream
+        | string,
+    basePath: string
 ) => {
+    const json = typeof data === 'object' && !(data instanceof Readable)
     const backupPath = `${basePath}/${type}/${name}${json ? '.json' : ''}`
 
     await mkdir(dirname(backupPath), { recursive: true })
-    await writeFile(backupPath, json ? JSON.stringify(data) : data, {
-        encoding: 'utf-8'
-    })
+
+    if (typeof data === 'object') {
+        if (data instanceof Readable) {
+            await new Promise((resolve, reject) => {
+                const writeStream = data.pipe(createWriteStream(backupPath))
+                writeStream.on('finish', resolve)
+                writeStream.on('error', reject)
+            })
+        } else {
+            await writeFile(backupPath, JSON.stringify(data))
+        }
+    } else if (typeof data === 'string') {
+        await writeFile(backupPath, data)
+    }
 }
 
 const backupTables = async (ctx: Context) => {
@@ -46,21 +63,20 @@ const backupStorage = async (ctx: Context) => {
     const files = await ctx.storage.getFiles()
 
     for (const file of files) {
-        if (file.name.endsWith('/')) continue // Ignore directories
+        if (file.endsWith('/')) continue // Ignore directories
 
-        console.log(`Backing up ${file.name}`)
+        console.log(`Backing up ${file}`)
 
         await backup(
             'storage/files',
-            file.name,
-            await file.download(),
-            ctx.backupPath,
-            false
+            file,
+            ctx.storage.download(file),
+            ctx.backupPath
         )
         await backup(
             'storage/metadata',
-            file.name,
-            await file.getMetadata(),
+            file,
+            await ctx.storage.getMetadata(file),
             ctx.backupPath
         )
     }
