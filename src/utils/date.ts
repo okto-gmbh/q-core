@@ -1,5 +1,5 @@
-const DEFAULT_TIMEZONE = 'Europe/Zurich'
-const DEFAULT_LOCALE = 'de-CH'
+export const DEFAULT_TIMEZONE = 'Europe/Zurich'
+export const DEFAULT_LOCALE = 'de-CH'
 
 export const format = (
     date: string | Date,
