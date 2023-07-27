@@ -1,6 +1,10 @@
 import type { BlitzCtx } from '@blitzjs/auth'
 
-export function mockBlitzContext(userId: string, tenantId?: string): BlitzCtx {
+export function mockBlitzContext(
+    userId: string,
+    role: string,
+    tenantId?: string
+): BlitzCtx {
     const ctx: BlitzCtx = {
         prefetchInfiniteQuery: async () => {},
         prefetchQuery: async () => {},
@@ -12,7 +16,7 @@ export function mockBlitzContext(userId: string, tenantId?: string): BlitzCtx {
             $getPrivateData: async () => ({}),
             $handle: null,
             $isAuthorized: () => true,
-            $publicData: {},
+            $publicData: { role, tenantId, userId },
             $revoke: async () => {
                 ctx.session.$publicData = {}
             },
@@ -24,6 +28,7 @@ export function mockBlitzContext(userId: string, tenantId?: string): BlitzCtx {
                 ctx.session.$publicData = publicData
             },
             $thisIsAuthorized: () => true,
+            role,
             tenantId,
             userId
         }
