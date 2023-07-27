@@ -197,5 +197,8 @@ const checkWhereFilterOp = (
             expected.some((item: any) => actual.includes(item))
         )
     }
+    if (operator === ops.OP_NOT_IN) {
+        return Array.isArray(actual) && !actual.includes(expected)
+    }
     return false
 }
