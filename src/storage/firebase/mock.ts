@@ -44,6 +44,17 @@ const getStorage = (bucket?: Bucket): Storage => {
                 delete LOCAL_STORAGE[path]
             }
         },
+        setMetadata: async (path: string, metadata: Partial<Metadata>) => {
+            const file = LOCAL_STORAGE[path]
+            if (!file) throw new Error(`File ${path} does not exist`)
+            LOCAL_STORAGE[path] = {
+                ...file,
+                metadata: {
+                    ...file.metadata,
+                    ...metadata
+                }
+            }
+        },
         stream: (path: string) => {
             const data = LOCAL_STORAGE[path]?.data
             if (!data) throw new Error(`File ${path} does not exist`)

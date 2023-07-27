@@ -1,4 +1,4 @@
-import type { Storage } from '@core/storage/interface'
+import type { Metadata, Storage } from '@core/storage/interface'
 
 import type { Storage as AdminStorage } from 'firebase-admin/storage'
 
@@ -21,15 +21,21 @@ export const getStorage = (bucket: Bucket): Storage => ({
     },
     getMetadata: async (path: string) => {
         const file = bucket.file(path)
-        const [{ contentType, size, updated }] = await file.getMetadata()
+        const [{ contentType, size, updated, ...rest }] =
+            await file.getMetadata()
         return {
             contentType,
             size,
-            updated
+            updated,
+            ...rest
         }
     },
     remove: async (path: string) => {
         await bucket.deleteFiles({ prefix: path })
+    },
+    setMetadata: async (path: string, metadata: Partial<Metadata>) => {
+        const file = bucket.file(path)
+        await file.setMetadata(metadata)
     },
     stream: (path: string) => {
         const file = bucket.file(path)

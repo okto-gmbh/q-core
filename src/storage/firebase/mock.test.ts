@@ -169,4 +169,23 @@ describe('firestore', () => {
         expect(await storage.exists('test.txt')).toBe(true)
         expect(await storage.exists('test2.txt')).toBe(false)
     })
+
+    it("shoud get the file's metadata", async () => {
+        const bucket = getMockBucket()
+        const storage = getStorage(bucket)
+        await storage.upload('test.txt', Buffer.from('test'))
+        const metadata = await storage.getMetadata('test.txt')
+        expect(metadata?.size).toBe(4)
+    })
+
+    it("should be possible to set the file's metadata", async () => {
+        const bucket = getMockBucket()
+        const storage = getStorage(bucket)
+        await storage.upload('test.txt', Buffer.from('test'))
+        await storage.setMetadata('test.txt', {
+            contentType: 'text/modified'
+        })
+        const metadata = await storage.getMetadata('test.txt')
+        expect(metadata?.contentType).toBe('text/modified')
+    })
 })
