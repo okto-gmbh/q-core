@@ -2,10 +2,9 @@ import * as dotenv from 'dotenv'
 
 import type { Repository } from '@core/repositories/interface'
 import type { BaseOptions } from '@core/scripts/common'
+import type { Storage } from '@core/storage/interface'
 
 import type { SearchClient } from 'algoliasearch'
-
-import type { Bucket } from '@google-cloud/storage'
 
 export const ALL_TENANTS = 'all'
 
@@ -20,11 +19,11 @@ export interface MigrationOptions extends BaseOptions {
 
 export type MigrationContext = {
     algolia: SearchClient
-    bucket: Bucket
     db: FirebaseFirestore.Firestore
     deleteField: () => FirebaseFirestore.FieldValue
     onUpdate: (tableName: any, id: any, data: any) => Promise<void>
     repo: Repository
+    storage: Storage
     tenantId: string
 }
 
@@ -76,6 +75,10 @@ export default async ({
     const { default: getAlgoliaClient } = await import('@core/services/algolia')
     const { onUpdate } = await import('~core/utils/algolia')
     const { getBucket } = await import('@core/services/firebaseAdmin')
+    const { getStorage } = await import('@core/storage/firebase/admin')
+
+    const storage = getStorage(getBucket())
+
     const {
         db,
         default: repo,
@@ -83,15 +86,14 @@ export default async ({
     } = await import('@core/repositories/firestore')
 
     const algolia = getAlgoliaClient(process.env.ALGOLIA_ADMIN_API_KEY)
-    const bucket = getBucket()
 
     const ctx: MigrationContext = {
         algolia,
-        bucket,
         db,
         deleteField,
         onUpdate,
         repo,
+        storage,
         tenantId: tenant
     }
 
