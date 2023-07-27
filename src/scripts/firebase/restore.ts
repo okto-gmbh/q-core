@@ -10,8 +10,7 @@ import * as dotenv from 'dotenv'
 
 import type { Repository } from '@core/repositories/interface'
 import type { BaseOptions } from '@core/scripts/common'
-
-import type { Bucket } from '@google-cloud/storage'
+import type { Metadata, Storage } from '@core/storage/interface'
 
 const loadBackup = async (fileName: string, backupPath: string) =>
     JSON.parse(
@@ -65,33 +64,20 @@ const getFiles = async (
 const wait = (timeout = 100) =>
     new Promise((resolve) => setTimeout(resolve, timeout))
 
-const restoreStorage = async ({ backupPath, bucket }: Context) => {
+const restoreStorage = async ({ backupPath, storage }: Context) => {
     const basePath = `${backupPath}/firebase/storage/files`
     const files = await getFiles(basePath)
     console.log(`Restoring ${files.length} files...`)
 
     for (const file of files) {
         const fileName = file.path.substring(basePath.length + 1)
-        const [
-            {
-                contentType,
-                metadata: {
-                    firebaseStorageDownloadTokens: _,
-                    ...metadata
-                } = {} as any
-            } = {} as { contentType: string; metadata: any }[]
-        ] = JSON.parse(
-            (await readFile(file.meta, {
-                encoding: 'utf8'
-            })) || '[]'
+        const metadata: Metadata = JSON.parse(
+            (await readFile(file.meta, 'utf8')) ?? '{}'
         )
-        await bucket.upload(file.path, {
-            contentType,
-            destination: fileName
-        })
-        await bucket.file(fileName).setMetadata({
-            metadata
-        })
+
+        const content = await readFile(file.path)
+
+        await storage.upload(fileName, content, metadata)
 
         // Throttle uploads to avoid hitting rate limit
         await wait()
@@ -108,9 +94,9 @@ export interface RestoreOptions extends BaseOptions {
 
 type Context = {
     backupPath: string
-    bucket: Bucket
     repo: Repository
     schemas: Record<string, any>
+    storage: Storage
     tables: string[]
 }
 
@@ -119,7 +105,7 @@ export default async ({
     env = 'dev',
     firestore = true,
     schemas = [],
-    storage = true,
+    storage: includeStorage = true,
     tables = []
 }: RestoreOptions) => {
     const scope = env === 'dev' ? 'local' : env
@@ -128,14 +114,15 @@ export default async ({
 
     const { default: repo } = await import('@core/repositories/firestore')
     const { getBucket } = await import('@core/services/firebaseAdmin')
+    const { getStorage } = await import('@core/storage/firebase/admin')
 
-    const bucket = getBucket()
+    const storage = getStorage(getBucket())
 
     const ctx: Context = {
         backupPath,
-        bucket,
         repo,
         schemas,
+        storage,
         tables
     }
 
@@ -143,7 +130,7 @@ export default async ({
         await restoreTables(ctx)
     }
 
-    if (storage) {
+    if (includeStorage) {
         await restoreStorage(ctx)
     }
 }
