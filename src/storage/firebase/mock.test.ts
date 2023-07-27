@@ -11,7 +11,7 @@ import {
     verifyMock
 } from '@core/storage/firebase/mock'
 
-describe('firestore', () => {
+describe('firebase storage', () => {
     beforeAll(() => {
         vi.mock(
             '@core/storage/firebase/admin',
