@@ -31,7 +31,7 @@ export const getStorage = (bucket: Bucket): Storage => ({
         }
     },
     remove: async (path: string) => {
-        await bucket.deleteFiles({ prefix: path })
+        await bucket.deleteFiles({ prefix: path === '*' ? '' : path })
     },
     setMetadata: async (path: string, metadata: Partial<Metadata>) => {
         const file = bucket.file(path)
