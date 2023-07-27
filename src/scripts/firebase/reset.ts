@@ -27,15 +27,16 @@ export default async ({
     env = 'dev',
     firestore = true,
     project,
-    storage = true
+    storage: includeStorage = true
 }: ResetOptions) => {
     const scope = env === 'dev' ? 'local' : env
     console.log(`Loading .env.${scope}`)
     dotenv.config({ path: `.env.${scope}` })
 
     const { getBucket } = await import('@core/services/firebaseAdmin')
+    const { getStorage } = await import('@core/storage/firebase/admin')
 
-    const bucket = getBucket()
+    const storage = getStorage(getBucket())
 
     if (firestore) {
         // Clear firestore
@@ -44,12 +45,12 @@ export default async ({
         await startCommand(`firebase firestore:delete -f --all-collections`)
     }
 
-    if (storage) {
+    if (includeStorage) {
         // Clear storage
-        const [files] = await bucket.getFiles()
+        const files = await storage.getFiles()
 
         for (const file of files) {
-            await file.delete()
+            await storage.remove(file)
         }
     }
 }
