@@ -6,7 +6,11 @@ export interface Storage {
     remove: (path: string) => Promise<void>
     setMetadata: (path: string, metadata: Partial<Metadata>) => Promise<void>
     stream: (path: string) => NodeJS.ReadableStream
-    upload: (path: string, file: Buffer) => Promise<void>
+    upload: (
+        path: string,
+        file: Buffer,
+        metadata?: Partial<Metadata>
+    ) => Promise<void>
 }
 
 export interface Metadata {

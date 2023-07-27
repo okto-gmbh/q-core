@@ -170,7 +170,17 @@ describe('firestore', () => {
         expect(await storage.exists('test2.txt')).toBe(false)
     })
 
-    it("shoud get the file's metadata", async () => {
+    it('should be possible to upload a file with metadata', async () => {
+        const bucket = getMockBucket()
+        const storage = getStorage(bucket)
+        await storage.upload('test.json', Buffer.from('{}'), {
+            contentType: 'text/json'
+        })
+        const metadata = await storage.getMetadata('test.json')
+        expect(metadata?.contentType).toBe('text/json')
+    })
+
+    it("should get the file's metadata", async () => {
         const bucket = getMockBucket()
         const storage = getStorage(bucket)
         await storage.upload('test.txt', Buffer.from('test'))

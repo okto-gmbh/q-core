@@ -64,13 +64,18 @@ const getStorage = (bucket?: Bucket): Storage => {
             stream.push(null)
             return stream
         },
-        upload: async (path: string, data: Buffer) => {
+        upload: async (
+            path: string,
+            data: Buffer,
+            metadata?: Partial<Metadata>
+        ) => {
             LOCAL_STORAGE[path] = {
                 data,
                 metadata: {
                     contentType: '',
                     size: data.length,
-                    updated: new Date().toISOString()
+                    updated: new Date().toISOString(),
+                    ...metadata
                 }
             }
         }

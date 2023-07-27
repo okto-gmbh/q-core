@@ -41,9 +41,13 @@ export const getStorage = (bucket: Bucket): Storage => ({
         const file = bucket.file(path)
         return file.createReadStream()
     },
-    upload: async (path: string, data: Buffer) => {
+    upload: async (
+        path: string,
+        data: Buffer,
+        metadata?: Partial<Metadata>
+    ) => {
         const file = bucket.file(path)
-        return file.save(data)
+        await file.save(data, metadata ? { metadata } : undefined)
     }
 })
 
