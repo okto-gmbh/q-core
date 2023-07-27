@@ -30,13 +30,7 @@ export const getStorage = (bucket: Bucket): Storage => ({
         }
     },
     remove: async (path: string) => {
-        const file = bucket.file(path)
-        const [exists] = await file.exists()
-        if (exists) {
-            await file.delete()
-        } else {
-            await bucket.deleteFiles({ prefix: path })
-        }
+        await bucket.deleteFiles({ prefix: path })
     },
     stream: (path: string) => {
         const file = bucket.file(path)
