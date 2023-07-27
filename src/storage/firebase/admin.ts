@@ -5,17 +5,18 @@ import type { Storage as AdminStorage } from 'firebase-admin/storage'
 type Bucket = ReturnType<AdminStorage['bucket']>
 
 export const getStorage = (bucket: Bucket): Storage => ({
-    download: (path: string) => {
+    download: async (path: string) => {
         const file = bucket.file(path)
-        return file.createReadStream()
+        const [data] = await file.download()
+        return data
     },
     exists: async (path: string) => {
         const file = bucket.file(path)
         const [exists] = await file.exists()
         return exists
     },
-    getFiles: async () => {
-        const [files] = await bucket.getFiles()
+    getFiles: async (path?: string) => {
+        const [files] = await bucket.getFiles({ prefix: path })
         return files.map((file) => file.name)
     },
     getMetadata: async (path: string) => {
@@ -31,6 +32,10 @@ export const getStorage = (bucket: Bucket): Storage => ({
         } else {
             await bucket.deleteFiles({ prefix: path })
         }
+    },
+    stream: (path: string) => {
+        const file = bucket.file(path)
+        return file.createReadStream()
     },
     upload: async (path: string, data: Buffer) => {
         const file = bucket.file(path)

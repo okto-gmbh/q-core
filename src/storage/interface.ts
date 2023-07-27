@@ -1,9 +1,10 @@
 export interface Storage {
-    download: (path: string) => NodeJS.ReadableStream
+    download: (path: string) => Promise<Buffer>
     exists: (path: string) => Promise<boolean>
-    getFiles: () => Promise<string[]>
+    getFiles: (path?: string) => Promise<string[]>
     getMetadata: (path: string) => Promise<Metadata>
     remove: (path: string) => Promise<void>
+    stream: (path: string) => NodeJS.ReadableStream
     upload: (path: string, file: Buffer) => Promise<void>
 }
 

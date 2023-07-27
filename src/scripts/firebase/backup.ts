@@ -1,7 +1,5 @@
 /* eslint-disable security/detect-child-process */
 /* eslint-disable security/detect-non-literal-fs-filename */
-import { createWriteStream } from 'node:fs'
-import { Readable } from 'node:stream'
 import { mkdir, writeFile } from 'fs/promises'
 import { dirname } from 'path'
 
@@ -21,31 +19,14 @@ type Context = {
 const backup = async (
     type: string,
     name: string,
-    data:
-        | Record<string, unknown>
-        | Array<unknown>
-        | NodeJS.ReadableStream
-        | string,
+    data: Record<string, unknown> | Array<unknown> | Buffer | string,
     basePath: string
 ) => {
-    const json = typeof data === 'object' && !(data instanceof Readable)
+    const json = typeof data === 'object' && !Buffer.isBuffer(data)
     const backupPath = `${basePath}/${type}/${name}${json ? '.json' : ''}`
 
     await mkdir(dirname(backupPath), { recursive: true })
-
-    if (typeof data === 'object') {
-        if (data instanceof Readable) {
-            await new Promise((resolve, reject) => {
-                const writeStream = data.pipe(createWriteStream(backupPath))
-                writeStream.on('finish', resolve)
-                writeStream.on('error', reject)
-            })
-        } else {
-            await writeFile(backupPath, JSON.stringify(data))
-        }
-    } else if (typeof data === 'string') {
-        await writeFile(backupPath, data)
-    }
+    await writeFile(backupPath, json ? JSON.stringify(data) : data)
 }
 
 const backupTables = async (ctx: Context) => {
@@ -70,7 +51,7 @@ const backupStorage = async (ctx: Context) => {
         await backup(
             'storage/files',
             file,
-            ctx.storage.download(file),
+            await ctx.storage.download(file),
             ctx.backupPath
         )
         await backup(

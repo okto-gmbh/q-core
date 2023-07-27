@@ -81,6 +81,44 @@ describe('firestore', () => {
         expect(storageData['test2.txt'].metadata).toBeDefined()
     })
 
+    it('should get all files', async () => {
+        const testData = {
+            'directory/test.txt': {
+                data: Buffer.from('test')
+            },
+            'directory/test2.txt': {
+                data: Buffer.from('test')
+            },
+            'directory2/test.txt': {
+                data: Buffer.from('test')
+            }
+        }
+
+        seedMockStorage(testData)
+        const storage = getStorage(getMockBucket())
+        const files = await storage.getFiles()
+        expect(files).toHaveLength(3)
+    })
+
+    it('should get all matching files', async () => {
+        const testData = {
+            'directory/test.txt': {
+                data: Buffer.from('test')
+            },
+            'directory/test2.txt': {
+                data: Buffer.from('test')
+            },
+            'directory2/test.txt': {
+                data: Buffer.from('test')
+            }
+        }
+
+        seedMockStorage(testData)
+        const storage = getStorage(getMockBucket())
+        const files = await storage.getFiles('directory/')
+        expect(files).toHaveLength(2)
+    })
+
     it('should upload a file', async () => {
         const bucket = getMockBucket()
         const storage = getStorage(bucket)
@@ -88,12 +126,20 @@ describe('firestore', () => {
         expect(Object.entries(getRawMockStorage())).toHaveLength(1)
     })
 
+    it('should stream a file', async () => {
+        const bucket = getMockBucket()
+        const storage = getStorage(bucket)
+        await storage.upload('test.txt', Buffer.from('test'))
+        const stream = storage.stream('test.txt')
+        expect(stream).toBeInstanceOf(Readable)
+    })
+
     it('should download a file', async () => {
         const bucket = getMockBucket()
         const storage = getStorage(bucket)
         await storage.upload('test.txt', Buffer.from('test'))
-        const stream = await storage.download('test.txt')
-        expect(stream).toBeInstanceOf(Readable)
+        const buffer = await storage.download('test.txt')
+        expect(buffer.toString()).toBe('test')
     })
 
     it('should remove a file', async () => {

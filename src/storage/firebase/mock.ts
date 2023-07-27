@@ -22,17 +22,18 @@ const getStorage = (bucket?: Bucket): Storage => {
     void bucket
 
     return {
-        download: (path: string) => {
+        download: async (path: string) => {
             const data = LOCAL_STORAGE[path]?.data
             if (!data) throw new Error(`File ${path} does not exist`)
-
-            const stream = new Readable()
-            stream.push(data)
-            stream.push(null)
-            return stream
+            return data
         },
         exists: async (path: string) => !!LOCAL_STORAGE[path],
-        getFiles: async () => Object.keys(LOCAL_STORAGE),
+        getFiles: async (path?: string) =>
+            path === undefined
+                ? Object.keys(LOCAL_STORAGE)
+                : Object.keys(LOCAL_STORAGE).filter((key) =>
+                      key.startsWith(path)
+                  ),
         getMetadata: async (path: string): Promise<Metadata> =>
             LOCAL_STORAGE[path]?.metadata,
         remove: async (path: string) => {
@@ -42,6 +43,15 @@ const getStorage = (bucket?: Bucket): Storage => {
             for (const path of files) {
                 delete LOCAL_STORAGE[path]
             }
+        },
+        stream: (path: string) => {
+            const data = LOCAL_STORAGE[path]?.data
+            if (!data) throw new Error(`File ${path} does not exist`)
+
+            const stream = new Readable()
+            stream.push(data)
+            stream.push(null)
+            return stream
         },
         upload: async (path: string, data: Buffer) => {
             LOCAL_STORAGE[path] = {
