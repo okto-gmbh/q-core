@@ -23,6 +23,7 @@ export type MigrationContext = {
     bucket: Bucket
     db: FirebaseFirestore.Firestore
     deleteField: () => FirebaseFirestore.FieldValue
+    onUpdate: (tableName: any, id: any, data: any) => Promise<void>
     repo: Repository
     tenantId: string
 }
@@ -34,17 +35,16 @@ const migrate = async (migrations: Migrations = {}, ctx: MigrationContext) => {
         console.log('processing ' + tableName)
         console.time(tableName)
 
-        // Get raw docs from firestore
-        const { docs } = await ctx.db.collection(tableName).get()
+        const docs = await ctx.repo.query(tableName)
         for (const doc of docs) {
             try {
                 if (
                     ctx.tenantId !== ALL_TENANTS &&
-                    doc.data().tenantId !== ctx.tenantId
+                    doc.tenantId !== ctx.tenantId
                 )
                     continue
 
-                const data = await execMigrate(doc.id, doc.data(), ctx)
+                const data = await execMigrate(doc.id, doc, ctx)
                 if (!data) {
                     // Remove
                     await ctx.db.collection(tableName).doc(doc.id).delete()
@@ -74,6 +74,7 @@ export default async ({
     dotenv.config({ path: `.env.${scope}` })
 
     const { default: getAlgoliaClient } = await import('@core/services/algolia')
+    const { onUpdate } = await import('~core/utils/algolia')
     const { getBucket } = await import('@core/services/firebaseAdmin')
     const {
         db,
@@ -89,6 +90,7 @@ export default async ({
         bucket,
         db,
         deleteField,
+        onUpdate,
         repo,
         tenantId: tenant
     }
