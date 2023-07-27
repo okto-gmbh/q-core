@@ -21,10 +21,9 @@ export const getStorage = (bucket: Bucket): Storage => ({
     },
     getMetadata: async (path: string) => {
         const file = bucket.file(path)
-        const [{ contentType, name, size, updated }] = await file.getMetadata()
+        const [{ contentType, size, updated }] = await file.getMetadata()
         return {
             contentType,
-            name,
             size,
             updated
         }

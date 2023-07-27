@@ -58,7 +58,6 @@ const getStorage = (bucket?: Bucket): Storage => {
                 data,
                 metadata: {
                     contentType: '',
-                    name: path,
                     size: data.length,
                     updated: new Date().toISOString()
                 }
@@ -80,7 +79,6 @@ export const seedMockStorage = (data: {
                         ...fileContent,
                         metadata: {
                             contentType: '',
-                            name: filePath,
                             size: data[filePath].data.length,
                             updated: new Date().toISOString()
                         }

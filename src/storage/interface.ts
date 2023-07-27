@@ -11,7 +11,6 @@ export interface Storage {
 export interface Metadata {
     [key: string]: unknown
     contentType: string
-    name: string
     size: number
     updated: string
 }
