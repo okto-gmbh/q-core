@@ -3,8 +3,6 @@ import { afterEach, beforeAll, describe, expect, it, vi } from 'vitest'
 import getAlgoliaClient from '@core/services/algolia'
 import { resetMockAlgolia, verifyMock } from '@core/services/algolia/mock'
 
-import { getAlgoliaIndex } from '~core/utils/algolia'
-
 describe('algolia', () => {
     beforeAll(async () => {
         vi.mock(
@@ -13,7 +11,8 @@ describe('algolia', () => {
         )
 
         const spy = vi.spyOn(verifyMock, 'verifyMock')
-        getAlgoliaIndex('test')
+        const algolia = getAlgoliaClient(process.env.ALGOLIA_ADMIN_API_KEY)
+        algolia.initIndex('test')
         expect(spy).toHaveBeenCalled()
         resetMockAlgolia()
 
