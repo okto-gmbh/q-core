@@ -21,12 +21,12 @@ export const getStorage = (bucket: Bucket): Storage => ({
     },
     getMetadata: async (path: string) => {
         const file = bucket.file(path)
-        const [{ contentType, size, updated, ...rest }] =
+        const [{ md5Hash, timeCreated, updated, ...rest }] =
             await file.getMetadata()
         return {
-            contentType,
-            size,
-            updated,
+            created: new Date(timeCreated),
+            hash: md5Hash,
+            updated: new Date(updated),
             ...rest
         }
     },
