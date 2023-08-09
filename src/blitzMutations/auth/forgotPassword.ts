@@ -24,6 +24,7 @@ const forgotPassword = async ({ email }: Input) => {
     )
 
     if (!user) {
+        console.warn('Loign: User not found')
         // If no user found wait the same time so attackers can't tell the difference
         await new Promise((resolve) => setTimeout(resolve, 750))
         // Return the same result whether a password reset email was sent or not
