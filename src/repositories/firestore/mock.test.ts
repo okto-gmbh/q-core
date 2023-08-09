@@ -1,13 +1,5 @@
 import { FieldValue } from 'firebase-admin/firestore'
-import {
-    afterAll,
-    afterEach,
-    beforeAll,
-    describe,
-    expect,
-    it,
-    vi
-} from 'vitest'
+import { afterEach, beforeAll, describe, expect, it, vi } from 'vitest'
 
 import getRepository from '@core/repositories/firestore/admin'
 import {
@@ -25,17 +17,23 @@ interface Member {
 
 describe('firestore', () => {
     beforeAll(() => {
-        vi.mock('@core/repositories/firestore/admin', async () =>
-            (await import('@core/repositories/firestore/mock')).mockRepository()
+        vi.mock(
+            '@core/repositories/firestore/admin',
+            () => import('@core/repositories/firestore/mock')
         )
+
+        const spy = vi.spyOn(verifyMock, 'verifyMock')
+        getRepository(getMockDB())
+        expect(spy).toHaveBeenCalled()
+        resetMockRepository()
+
+        return () => {
+            vi.restoreAllMocks()
+        }
     })
 
     afterEach(() => {
         resetMockRepository()
-    })
-
-    afterAll(() => {
-        vi.restoreAllMocks()
     })
 
     it('should mock the database', async () => {
@@ -196,6 +194,38 @@ describe('firestore', () => {
         expect(members).toEqual([
             { age: 20, id: '1', name: 'Jane' },
             { age: 27, id: '3', name: 'Jane' }
+        ])
+    })
+
+    it('should reduce query responses to the requested fields', async () => {
+        const db = getMockDB()
+        const repo = getRepository(db)
+
+        seedMockRepository('members', [
+            { name: 'John' },
+            { age: 20, name: 'Jane' },
+            { name: 'Jack' },
+            { age: 27, name: 'Jane' }
+        ])
+
+        const memberIds = await repo.query<Member>('members', undefined, ['id'])
+
+        expect(memberIds).toEqual([
+            { id: '0' },
+            { id: '1' },
+            { id: '2' },
+            { id: '3' }
+        ])
+
+        const memberNames = await repo.query<Member>('members', undefined, [
+            'name'
+        ])
+
+        expect(memberNames).toEqual([
+            { name: 'John' },
+            { name: 'Jane' },
+            { name: 'Jack' },
+            { name: 'Jane' }
         ])
     })
 

@@ -1,5 +1,5 @@
-const DEFAULT_TIMEZONE = 'Europe/Zurich'
-const DEFAULT_LOCALE = 'de-CH'
+export const DEFAULT_TIMEZONE = 'Europe/Zurich'
+export const DEFAULT_LOCALE = 'de-CH'
 
 export const format = (
     date: string | Date,
@@ -37,6 +37,14 @@ export const formatDate = (
 // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types, @typescript-eslint/no-explicit-any
 export const isValidDate = (date: any): boolean =>
     Object.prototype.toString.call(date) === '[object Date]' && !isNaN(date)
+
+export const getTimestamp = (date?: Date | string | number) => {
+    if (!date) return
+
+    date = new Date(date)
+
+    return dateToTimestamp(date)
+}
 
 export const dateToTimestamp = (date: Date): number | undefined => {
     if (!date) return

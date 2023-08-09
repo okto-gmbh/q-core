@@ -74,9 +74,13 @@ const DatePicker: FC<DatePickerProps> = ({
                                 ref={ref}
                                 style={{ width: '100%' }}
                                 onBlur={(e) => {
-                                    const [day, month, year] =
-                                        e.target.value.split('.')
+                                    const value = e.target.value
 
+                                    if (value === 'DD.MM.YYYY') {
+                                        return handleChange(null, field)
+                                    }
+
+                                    const [day, month, year] = value.split('.')
                                     if (!day || !month || !year) {
                                         return handleChange(null, field)
                                     }

@@ -172,12 +172,12 @@ const Select = (
                     onChange={onInputChange}
                 />
             )}
-            renderOption={(props, { value }, { inputValue }) => {
+            renderOption={(props, { key, value }, { inputValue }) => {
                 const matches = match(value, inputValue)
                 const parts = parse(value, matches)
 
                 return (
-                    <Option {...props}>
+                    <Option {...props} key={key || value}>
                         <div>
                             {parts?.map((part, index) => (
                                 <span
