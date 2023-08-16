@@ -33,6 +33,7 @@ const authenticateUser = async <User extends BaseUser>(
     })
 
     if (!user) {
+        console.warn('Loign: User not found')
         throw new AuthenticationError()
     }
 
