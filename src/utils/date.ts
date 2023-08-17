@@ -42,7 +42,7 @@ export const formatDayAndMonth = (
     format(date, {
         day: '2-digit',
         locale,
-        month: 'long',
+        month: '2-digit',
         timeZone
     })
 
