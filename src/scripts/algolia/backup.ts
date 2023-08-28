@@ -3,7 +3,7 @@ import { access, mkdir, writeFile } from 'fs/promises'
 
 import dotenv from 'dotenv'
 
-import type { Env } from '@core/scripts/common'
+import type { BaseOptions } from '@core/scripts/common'
 
 import type { SearchClient } from 'algoliasearch'
 
@@ -39,9 +39,8 @@ const backupIndexes = async ({ backupPath, client }: Context) => {
     }
 }
 
-export interface BackupOptions {
+export interface BackupOptions extends BaseOptions {
     outputDir: string
-    env?: Env
 }
 
 export default async ({ env = 'prod', outputDir }: BackupOptions) => {

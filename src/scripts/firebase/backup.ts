@@ -6,30 +6,27 @@ import { dirname } from 'path'
 import * as dotenv from 'dotenv'
 
 import type { Repository } from '@core/repositories/interface'
-import type { Env } from '@core/scripts/common'
-
-import type { Bucket } from '@google-cloud/storage'
+import type { BaseOptions } from '@core/scripts/common'
+import type { Storage } from '@core/storage/interface'
 
 type Context = {
     backupPath: string
-    bucket: Bucket
     db: FirebaseFirestore.Firestore
     repo: Repository
+    storage: Storage
 }
 
 const backup = async (
     type: string,
     name: string,
-    data: any,
-    basePath: string,
-    json: boolean = true
+    data: Record<string, unknown> | Array<unknown> | Buffer | string,
+    basePath: string
 ) => {
+    const json = typeof data === 'object' && !Buffer.isBuffer(data)
     const backupPath = `${basePath}/${type}/${name}${json ? '.json' : ''}`
 
     await mkdir(dirname(backupPath), { recursive: true })
-    await writeFile(backupPath, json ? JSON.stringify(data) : data, {
-        encoding: 'utf-8'
-    })
+    await writeFile(backupPath, json ? JSON.stringify(data) : data)
 }
 
 const backupTables = async (ctx: Context) => {
@@ -44,31 +41,29 @@ const backupTables = async (ctx: Context) => {
 }
 
 const backupStorage = async (ctx: Context) => {
-    const [files] = await ctx.bucket.getFiles()
+    const files = await ctx.storage.getFiles()
 
     for (const file of files) {
-        if (file.name.endsWith('/')) continue // Ignore directories
+        if (file.endsWith('/')) continue // Ignore directories
 
-        console.log(`Backing up ${file.name}`)
+        console.log(`Backing up ${file}`)
 
         await backup(
             'storage/files',
-            file.name,
-            await file.download(),
-            ctx.backupPath,
-            false
+            file,
+            await ctx.storage.download(file),
+            ctx.backupPath
         )
         await backup(
             'storage/metadata',
-            file.name,
-            await file.getMetadata(),
+            file,
+            await ctx.storage.getMetadata(file),
             ctx.backupPath
         )
     }
 }
 
-export interface BackupOptions {
-    env: Env
+export interface BackupOptions extends BaseOptions {
     outputDir: string
     firestore?: boolean
     storage?: boolean
@@ -78,28 +73,30 @@ export default async ({
     env = 'prod',
     firestore = true,
     outputDir,
-    storage = true
+    storage: includeStorage = true
 }: BackupOptions) => {
     const scope = env === 'dev' ? 'local' : env
     console.log(`Loading .env.${scope}`)
     dotenv.config({ path: `.env.${scope}` })
 
+    const { getStorage } = await import('@core/storage/firebase/admin')
     const { getBucket } = await import('@core/services/firebaseAdmin')
     const { db, default: repo } = await import('@core/repositories/firestore')
 
     const bucket = getBucket()
+    const storage = getStorage(bucket)
 
     const ctx: Context = {
         backupPath: outputDir,
-        bucket,
         db,
-        repo
+        repo,
+        storage
     }
 
     if (firestore) {
         await backupTables(ctx)
     }
-    if (storage) {
+    if (includeStorage) {
         await backupStorage(ctx)
     }
 }

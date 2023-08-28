@@ -8,7 +8,7 @@ export const composeButtonVariants = ({
 }: {
     variant: ButtonVariant
 }) => {
-    const namespace = `--button`
+    const namespace = '--button'
     const namespaceWithVariant = `${namespace}-${variant}`
     const isPrimary = variant === 'primary'
     const color = isPrimary ? 'white' : 'black'
