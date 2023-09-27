@@ -65,31 +65,44 @@ const DatePicker: FC<DatePickerProps> = ({
                 slots={{
                     desktopPaper: Paper,
                     textField: forwardRef(function TextField(
-                        props: TextFieldProps,
+                        inputProps: TextFieldProps,
                         ref: any
                     ) {
                         return (
                             <TextInput
-                                {...props}
+                                {...inputProps}
                                 ref={ref}
                                 style={{ width: '100%' }}
                                 onBlur={(e) => {
                                     const value = e.target.value
+                                    const format = (
+                                        props.format || 'DD.MM.YYYY'
+                                    ).toUpperCase()
 
-                                    if (value === 'DD.MM.YYYY') {
+                                    if (value === format) {
                                         return handleChange(null, field)
                                     }
 
-                                    const [day, month, year] = value.split('.')
-                                    if (!day || !month || !year) {
+                                    const parts = value.split('.')
+                                    if (parts.length !== 3) {
                                         return handleChange(null, field)
                                     }
 
+                                    const [day, month, year] = parts
+                                    const date = new Date()
                                     handleChange(
                                         new Date(
-                                            parseInt(year),
-                                            parseInt(month) - 1,
-                                            parseInt(day)
+                                            parseInt(
+                                                year ||
+                                                    String(date.getFullYear())
+                                            ),
+                                            parseInt(
+                                                month ||
+                                                    String(date.getMonth() + 1)
+                                            ) - 1,
+                                            parseInt(
+                                                day || String(date.getDate())
+                                            )
                                         ),
                                         field
                                     )

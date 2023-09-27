@@ -34,6 +34,18 @@ export const formatDate = (
         year: 'numeric'
     })
 
+export const formatDayAndMonth = (
+    date: string | Date,
+    locale = DEFAULT_LOCALE,
+    timeZone = DEFAULT_TIMEZONE
+): string =>
+    format(date, {
+        day: '2-digit',
+        locale,
+        month: '2-digit',
+        timeZone
+    })
+
 // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types, @typescript-eslint/no-explicit-any
 export const isValidDate = (date: any): boolean =>
     Object.prototype.toString.call(date) === '[object Date]' && !isNaN(date)
