@@ -4,10 +4,11 @@ import type { NextApiRequest, NextApiResponse } from 'next'
 
 export interface ImageOptimizerOptions {
     baseUrl: string
+    maxAge?: number
 }
 
 export const imageOptimizer =
-    ({ baseUrl }: ImageOptimizerOptions) =>
+    ({ baseUrl, maxAge = 31536000 }: ImageOptimizerOptions) =>
     async (req: NextApiRequest, res: NextApiResponse) => {
         if (req.method !== 'GET') {
             res.status(405).send('Method not allowed')
@@ -48,15 +49,18 @@ export const imageOptimizer =
                         width,
                         withoutEnlargement: true
                     })
-                    .avif({ quality })
+                    .webp({ quality })
                     .toBuffer()
             }
 
             res.setHeader(
                 'Cache-Control',
-                'public, max-age=31536000, must-revalidate'
+                `public, max-age=${maxAge}, must-revalidate`
             )
-            res.setHeader('content-type', isSvg ? 'image/svg' : 'image/avif')
+            res.setHeader(
+                'content-type',
+                isSvg ? 'image/svg+xml' : 'image/webp'
+            )
             res.status(200).send(optimizedImage)
         } catch (e) {
             console.warn(e)
