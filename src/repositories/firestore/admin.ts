@@ -152,8 +152,8 @@ const getRepository = (db: admin.firestore.Firestore): FirebaseRepository => ({
             }
         }
 
-        const { size } = await query.get()
-        return size
+        const snapshot = await query.count().get()
+        return snapshot.data().count
     },
 
     remove: async (table, id) => void db.collection(table).doc(id).delete(),

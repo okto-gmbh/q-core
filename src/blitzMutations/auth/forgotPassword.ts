@@ -6,8 +6,6 @@ import { OP_EQUALS } from '@core/repositories/operators'
 
 import { ForgotPassword } from './validations'
 
-const RESET_TOKEN_EXPIRATION = 1 // in hours
-
 type Input = {
     email: string
 }
@@ -20,9 +18,13 @@ const forgotPassword = async ({ email }: Input) => {
     const token = generateToken()
     const hashedToken = hash256(token)
     const expiresAt = new Date()
-    expiresAt.setHours(expiresAt.getHours() + RESET_TOKEN_EXPIRATION)
+    expiresAt.setHours(
+        expiresAt.getHours() +
+            parseInt(process.env.RESET_TOKEN_EXPIRATION || '1', 10)
+    )
 
     if (!user) {
+        console.warn('Loign: User not found')
         // If no user found wait the same time so attackers can't tell the difference
         await new Promise((resolve) => setTimeout(resolve, 750))
         // Return the same result whether a password reset email was sent or not

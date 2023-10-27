@@ -24,12 +24,14 @@ const renewPassword = async ({ password, token, userId }: Input) => {
     })
 
     if (validToken?.hashedToken !== hash256(token)) {
+        console.warn('RenewPassword: Invalid token')
         throw new AuthorizationError()
     }
 
     const user = await repo.find('users', userId)
 
     if (!user) {
+        console.warn('RenewPassword: User not found')
         throw new AuthenticationError()
     }
 
