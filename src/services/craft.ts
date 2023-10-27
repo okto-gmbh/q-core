@@ -13,7 +13,8 @@ const init = ({
             ? {
                   headers: {
                       ...customHeaders,
-                      Authorization: `Bearer ${token}`
+                      Authorization: `Bearer ${token}`,
+                      cache: 'no-cache'
                   }
               }
             : undefined
