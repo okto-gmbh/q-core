@@ -16,15 +16,24 @@ export const imageOptimizer =
         }
 
         try {
-            const src = req.query.src as string
-            const width = parseInt(req.query.w as string, 10)
-            const quality = parseInt(req.query.q as string, 10)
-            const isSvg = src.endsWith('.svg')
-
-            if (!src || !width || !quality) {
+            if (
+                typeof req.query.src !== 'string' ||
+                typeof req.query.w !== 'string' ||
+                typeof req.query.q !== 'string'
+            ) {
                 res.status(400).send(
                     '400 Bad request: Required parameters missing'
                 )
+                return
+            }
+
+            const src = req.query.src
+            const width = parseInt(req.query.w, 10)
+            const quality = parseInt(req.query.q, 10)
+            const isSvg = src.endsWith('.svg')
+
+            if (isNaN(width) || isNaN(quality)) {
+                res.status(400).send('400 Bad request: Invalid parameters')
                 return
             }
 
