@@ -115,6 +115,28 @@ const getRepository = (db: admin.firestore.Firestore): FirebaseRepository => ({
         return createdRows
     },
 
+    bulkRemove: async (table, ids) => {
+        const batch = db.batch()
+
+        for (const id of ids) {
+            const doc = db.collection(table).doc(id)
+            batch.delete(doc)
+        }
+
+        await batch.commit()
+    },
+
+    bulkUpdate: async (table, rows) => {
+        const batch = db.batch()
+
+        for (const { id, ...data } of rows) {
+            const doc = db.collection(table).doc(id)
+            batch.set(doc, data)
+        }
+
+        await batch.commit()
+    },
+
     create: async (table, data, createId?) => {
         if (createId) {
             await db.collection(table).doc(createId).set(data)

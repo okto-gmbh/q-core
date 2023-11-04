@@ -147,6 +147,24 @@ describe('firestore', () => {
         expect(getRawMockData().members['2']).toEqual({ name: 'Jack' })
     })
 
+    it('should bulk remove the correct entries', async () => {
+        const db = getMockDB()
+        const repo = getRepository(db)
+
+        seedMockRepository('members', [
+            { name: 'John' },
+            { name: 'Jane' },
+            { name: 'Jack' }
+        ])
+
+        await repo.bulkRemove('members', ['1', '2'])
+
+        expect(Object.keys(getRawMockData().members)).toHaveLength(1)
+        expect(getRawMockData().members['0']).toEqual({ name: 'John' })
+        expect(getRawMockData().members['1']).toBeUndefined()
+        expect(getRawMockData().members['2']).toBeUndefined()
+    })
+
     it('should update the correct entry by id', async () => {
         const db = getMockDB()
         const repo = getRepository(db)

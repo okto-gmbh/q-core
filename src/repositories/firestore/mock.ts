@@ -47,6 +47,20 @@ const getRepository = (db: Firestore): FirebaseRepository => {
 
             return createdRows
         },
+        bulkRemove: async (table, ids) => {
+            DATABASE.data[table] ??= {}
+
+            for (const id of ids) {
+                delete DATABASE.data[table][id]
+            }
+        },
+        bulkUpdate: async (table, rows) => {
+            DATABASE.data[table] ??= {}
+
+            for (const { id, ...data } of rows) {
+                DATABASE.data[table][id] = data
+            }
+        },
         create: async (table, data, createId?) => {
             DATABASE.data[table] ??= {}
             const id = createId ?? DATABASE.id
