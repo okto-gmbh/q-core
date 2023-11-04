@@ -31,6 +31,22 @@ const getRepository = (db: Firestore): FirebaseRepository => {
     void db
 
     return {
+        bulkCreate: async (table, rows) => {
+            DATABASE.data[table] ??= {}
+
+            const createdRows = []
+            for (const row of rows) {
+                const id = DATABASE.id
+                DATABASE.data[table][id] = row
+
+                createdRows.push({
+                    id,
+                    ...row
+                })
+            }
+
+            return createdRows
+        },
         create: async (table, data, createId?) => {
             DATABASE.data[table] ??= {}
             const id = createId ?? DATABASE.id
@@ -39,9 +55,9 @@ const getRepository = (db: Firestore): FirebaseRepository => {
             return id
         },
         find: async (table, id) =>
-            DATABASE.data[table]?.[id] &&
+            DATABASE.data[table][id] &&
             mapDocs({
-                [id]: DATABASE.data[table]?.[id]
+                [id]: DATABASE.data[table][id]
             })[0],
         query: async (table, constraints = {}, fields?) => {
             const { limit, orderBy, where } = constraints
@@ -115,7 +131,7 @@ const getRepository = (db: Firestore): FirebaseRepository => {
             return data.length
         },
         remove: async (table, id) => {
-            delete DATABASE.data[table]?.[id]
+            delete DATABASE.data[table][id]
         },
         update: async (table, id, data) => {
             DATABASE.data[table][id] = {
@@ -149,7 +165,7 @@ export const resetMockRepository = () => {
 }
 
 export const getRawMockData = () => DATABASE.data
-export const getMockDB = () => ({} as Firestore)
+export const getMockDB = () => ({}) as Firestore
 const getOps = async () => await import('@core/repositories/operators')
 
 export const verifyMock = {

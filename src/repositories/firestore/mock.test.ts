@@ -82,6 +82,20 @@ describe('firestore', () => {
         expect(getRawMockData().members['0']).toEqual({ name: 'John' })
     })
 
+    it('should bulk add entries into the database', async () => {
+        const db = getMockDB()
+        const repo = getRepository(db)
+        const members = await repo.bulkCreate('members', [
+            { name: 'John' },
+            { name: 'Jane' }
+        ])
+
+        expect(members).toHaveLength(2)
+        expect(Object.keys(getRawMockData().members)).toHaveLength(2)
+        expect(getRawMockData().members['0']).toEqual({ name: 'John' })
+        expect(getRawMockData().members['1']).toEqual({ name: 'Jane' })
+    })
+
     it('should add the id as a property for entries returned with find', async () => {
         const db = getMockDB()
         const repo = getRepository(db)

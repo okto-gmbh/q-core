@@ -15,6 +15,11 @@ export interface Constraints<Row extends Entity> {
 }
 
 export interface Repository {
+    bulkCreate: <Row extends Entity>(
+        table: Table,
+        rows: Row[]
+    ) => Promise<(DBMeta & Row)[]>
+
     create: <Row extends Entity>(
         table: Table,
         data: Row,
