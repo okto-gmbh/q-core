@@ -52,7 +52,11 @@ const Meta: FC<MetaProps> = ({
                 nofollow={nofollow}
             />
             <Head>
-                <link rel="manifest" href={manifest} />
+                <link
+                    rel="manifest"
+                    href={manifest}
+                    crossOrigin="use-credentials"
+                />
                 <meta name="msapplication-TileColor" content={themeColor} />
                 <meta name="theme-color" content={themeColor} />
                 <meta

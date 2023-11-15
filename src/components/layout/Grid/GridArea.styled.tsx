@@ -24,15 +24,19 @@ export const Grid = styled(
     ({
         areas: _areas,
         as: Component = 'div',
-        gap: _gap,
+        gapX: _gapX,
+        gapY: _gapY,
         items: _items,
         ...rest
     }: GridAreaProps) => <Component {...rest} />
 )`
     display: grid;
-    grid-gap: ${({ gap }) => `var(--spacings-${gap}) `};
+    column-gap: ${({ gapX }) => `var(--spacings-${gapX})`};
+    row-gap: ${({ gapY }) => `var(--spacings-${gapY})`};
     grid-template-areas: ${({ areas }) => mapAreas(areas)};
     grid-template-columns: repeat(auto-fit, minmax(0, 1fr));
+
+    align-items: start;
 
     ${({ items }) =>
         items &&
