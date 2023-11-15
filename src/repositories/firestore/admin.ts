@@ -97,6 +97,46 @@ export interface FirebaseRepository extends Repository {
 }
 
 const getRepository = (db: admin.firestore.Firestore): FirebaseRepository => ({
+    bulkCreate: async (table, rows) => {
+        const batch = db.batch()
+
+        const createdRows = []
+        for (const row of rows) {
+            const doc = db.collection(table).doc()
+            createdRows.push({
+                id: doc.id,
+                ...row
+            })
+            batch.set(doc, row)
+        }
+
+        await batch.commit()
+
+        return createdRows
+    },
+
+    bulkRemove: async (table, ids) => {
+        const batch = db.batch()
+
+        for (const id of ids) {
+            const doc = db.collection(table).doc(id)
+            batch.delete(doc)
+        }
+
+        await batch.commit()
+    },
+
+    bulkUpdate: async (table, rows) => {
+        const batch = db.batch()
+
+        for (const { id, ...data } of rows) {
+            const doc = db.collection(table).doc(id)
+            batch.set(doc, data)
+        }
+
+        await batch.commit()
+    },
+
     create: async (table, data, createId?) => {
         if (createId) {
             await db.collection(table).doc(createId).set(data)
