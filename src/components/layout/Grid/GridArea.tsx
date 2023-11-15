@@ -19,18 +19,15 @@ const GridArea: FC<GridAreaProps> = ({
     gapX = gap,
     gapY = gap,
     ...props
-}) => {
-    console.log('GridArea', { areas, gap, gapX, gapY })
-    return (
-        <Styled.Grid
-            {...props}
-            areas={areas}
-            gapX={gapX}
-            gapY={gapY}
-            items={[...new Array((children as any[]).length)]}>
-            {children}
-        </Styled.Grid>
-    )
-}
+}) => (
+    <Styled.Grid
+        {...props}
+        areas={areas}
+        gapX={gapX}
+        gapY={gapY}
+        items={[...new Array((children as any[]).length)]}>
+        {children}
+    </Styled.Grid>
+)
 
 export default GridArea
