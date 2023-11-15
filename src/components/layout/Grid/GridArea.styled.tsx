@@ -34,6 +34,8 @@ export const Grid = styled(
     grid-template-areas: ${({ areas }) => mapAreas(areas)};
     grid-template-columns: repeat(auto-fit, minmax(0, 1fr));
 
+    align-items: start;
+
     ${({ items }) =>
         items &&
         css`
