@@ -129,9 +129,9 @@ const getRepository = (db: admin.firestore.Firestore): FirebaseRepository => ({
     bulkUpdate: async (table, rows) => {
         const batch = db.batch()
 
-        for (const { id, ...data } of rows) {
-            const doc = db.collection(table).doc(id)
-            batch.set(doc, data)
+        for (const row of rows) {
+            const doc = db.collection(table).doc(row.id)
+            batch.set(doc, row)
         }
 
         await batch.commit()
