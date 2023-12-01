@@ -3,7 +3,12 @@
 import { FieldValue } from 'firebase-admin/firestore'
 
 import type { FirebaseRepository } from '@core/repositories/firestore/admin'
-import type { Entity, Operators, Table } from '@core/repositories/interface'
+import type {
+    DBMeta,
+    Entity,
+    Operators,
+    Table
+} from '@core/repositories/interface'
 
 import type { Firestore } from 'firebase-admin/firestore'
 
@@ -34,14 +39,16 @@ const getRepository = (db: Firestore): FirebaseRepository => {
         bulkCreate: async (table, rows) => {
             DATABASE.data[table] ??= {}
 
-            const createdRows = []
+            type Row = (typeof rows)[number] & DBMeta
+
+            const createdRows: Row[] = []
             for (const row of rows) {
                 const id = DATABASE.id
-                DATABASE.data[table][id] = row
+                DATABASE.data[table][id] = transformFieldValue(row)
 
-                createdRows.push({
+                createdRows.push(<Row>{
                     id,
-                    ...row
+                    ...transformFieldValue(row)
                 })
             }
 
@@ -58,13 +65,16 @@ const getRepository = (db: Firestore): FirebaseRepository => {
             DATABASE.data[table] ??= {}
 
             for (const { id, ...data } of rows) {
-                DATABASE.data[table][id] = data
+                DATABASE.data[table][id] = transformFieldValue({
+                    ...DATABASE.data[table][id],
+                    ...data
+                })
             }
         },
         create: async (table, data, createId?) => {
             DATABASE.data[table] ??= {}
             const id = createId ?? DATABASE.id
-            DATABASE.data[table][id] = data
+            DATABASE.data[table][id] = transformFieldValue(data)
 
             return id
         },
@@ -148,14 +158,9 @@ const getRepository = (db: Firestore): FirebaseRepository => {
             delete DATABASE.data[table][id]
         },
         update: async (table, id, data) => {
-            DATABASE.data[table][id] = {
+            DATABASE.data[table][id] = transformFieldValue({
                 ...DATABASE.data[table][id],
                 ...data
-            }
-            Object.entries(DATABASE.data[table][id]).forEach(([key, value]) => {
-                if (value === FieldValue.delete()) {
-                    delete DATABASE.data[table][id][key]
-                }
             })
         }
     }
@@ -187,6 +192,14 @@ export const verifyMock = {
         return true
     }
 }
+
+const transformFieldValue = (data: Entity) =>
+    Object.fromEntries(
+        Object.entries(data).filter(
+            ([, value]) =>
+                JSON.stringify(value) !== JSON.stringify(FieldValue.delete())
+        )
+    )
 
 const mapDocs = (docs: Database['data']['table']) =>
     Object.entries(docs).map(([id, doc]) => ({ ...doc, id }))
