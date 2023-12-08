@@ -69,7 +69,7 @@ const getRepository = (db: Firestore): FirebaseRepository => {
             return id
         },
         find: async (table, id) =>
-            DATABASE.data[table][id] &&
+            DATABASE.data[table]?.[id] &&
             mapDocs({
                 [id]: DATABASE.data[table][id]
             })[0],
