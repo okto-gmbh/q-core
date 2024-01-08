@@ -173,6 +173,8 @@ const Select = (
                 />
             )}
             renderOption={(props, { key, value }, { inputValue }) => {
+                if (!value) return null
+
                 const matches = match(value, inputValue)
                 const parts = parse(value, matches)
 
