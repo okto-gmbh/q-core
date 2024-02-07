@@ -204,8 +204,6 @@ export const generateGlobalStyles = ({
     html {
         accent-color: var(--colors-primary);
         color: var(--colors-black);
-        scrollbar-color: var(--_scrollbar-thumb-background)
-            var(--_scrollbar-track-background);
     }
 
     body {
