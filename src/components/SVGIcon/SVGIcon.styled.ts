@@ -15,22 +15,21 @@ export const Container = styled.div<SVGIconProps>`
         var(--icon-default-height, 24px)
     );
 
-    ${({ breakpoints }) =>
-        css`
-            ${breakpoints &&
-            Object.entries(breakpoints)
-                .map(
-                    ([breakpoint, { size }]) =>
-                        size &&
-                        `
+    ${({ breakpoints }) => css`
+        ${breakpoints &&
+        Object.entries(breakpoints)
+            .map(
+                ([breakpoint, { size }]) =>
+                    size &&
+                    `
                     @media ${from[breakpoint]} {
                         --_width: var(--icon-${size}-width);
                         --_height: var(--icon-${size}-height);
                     }
                 `
-                )
-                .join('\n')}
-        `}
+            )
+            .join('\n')}
+    `}
 
     display: inline-flex;
     width: var(--_width);

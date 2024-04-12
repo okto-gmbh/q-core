@@ -126,23 +126,22 @@ export const Item = styled(
 )`
     width: 100%;
 
-    ${({ breakpoints, span = 12 }) =>
-        css`
-            grid-column-end: span ${span};
+    ${({ breakpoints, span = 12 }) => css`
+        grid-column-end: span ${span};
 
-            ${breakpoints &&
-            Object.entries(breakpoints)
-                .map(
-                    ([breakpoint, { span }]) =>
-                        span &&
-                        `
+        ${breakpoints &&
+        Object.entries(breakpoints)
+            .map(
+                ([breakpoint, { span }]) =>
+                    span &&
+                    `
                         @media ${from[breakpoint]} {
                             grid-column-end: span ${span};
                         }
                     `
-                )
-                .join('\n')}
-        `}
+            )
+            .join('\n')}
+    `}
 
     ${({ colHeight }) =>
         colHeight === 'equal'

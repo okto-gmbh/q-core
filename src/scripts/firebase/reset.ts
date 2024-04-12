@@ -42,7 +42,7 @@ export default async ({
         // Clear firestore
         console.log(`Resetting ${project}...`)
         await startCommand(`firebase use ${project}`)
-        await startCommand(`firebase firestore:delete -f --all-collections`)
+        await startCommand('firebase firestore:delete -f --all-collections')
     }
 
     if (includeStorage) {

@@ -116,7 +116,7 @@ export const resetMockStorage = () => {
 
 export const getRawMockStorage = () => LOCAL_STORAGE
 
-export const getMockBucket = () => ({} as Bucket)
+export const getMockBucket = () => ({}) as Bucket
 
 export const verifyMock = {
     verifyMock() {

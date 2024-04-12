@@ -61,20 +61,19 @@ export const Element = styled(
 
 
     > * + * {
-        ${({ breakpoints, direction, spacing }) =>
-            css`
-                ${getDirectionSpacing(direction)}: var(--spacings-${spacing});
+        ${({ breakpoints, direction, spacing }) => css`
+            ${getDirectionSpacing(direction)}: var(--spacings-${spacing});
 
-                ${breakpoints &&
-                Object.entries(breakpoints)
-                    .map(
-                        ([
-                            breakpoint,
-                            {
-                                direction: breakpointDirection,
-                                spacing: breakpointSpacing
-                            }
-                        ]) => `
+            ${breakpoints &&
+            Object.entries(breakpoints)
+                .map(
+                    ([
+                        breakpoint,
+                        {
+                            direction: breakpointDirection,
+                            spacing: breakpointSpacing
+                        }
+                    ]) => `
                             @media ${from[breakpoint]} {
                                 margin-left: initial;
                                 margin-top: initial;
@@ -84,12 +83,14 @@ export const Element = styled(
                                         ? breakpointDirection
                                         : direction
                                 )}: var(--spacings-${
-                            breakpointSpacing ? breakpointSpacing : spacing
-                        });
+                                    breakpointSpacing
+                                        ? breakpointSpacing
+                                        : spacing
+                                });
                             }
                         `
-                    )
-                    .join('\n')}
-            `}
+                )
+                .join('\n')}
+        `}
     }
 `
