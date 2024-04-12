@@ -158,11 +158,8 @@ export default async function uploadFile({
         if (json.error) {
             throw new Error(json.errors)
         }
-
-        console.log("chunk uploaded")
         
         if (chunk.chunkEnd === size - 1) {
-            console.log(JSON.stringify(json, null, 2))
             return
         }
     }
