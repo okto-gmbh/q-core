@@ -235,14 +235,14 @@ export const generateGlobalStyles = ({
     li {
         padding: 0;
         margin: 0;
+    }
+
+    :not([data-keep]) > li {
         list-style: none;
     }
 
-    ol[data-keep],
-    ul[data-keep],
     [data-keep] > li {
-        padding: initial;
-        margin: initial;
+        margin-left: var(--spacings-medium);
     }
 
     ${customReset}
