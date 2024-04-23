@@ -230,12 +230,17 @@ export const generateGlobalStyles = ({
         height: 100%;
     }
 
-    ol,
-    ul,
-    li {
+    ol:not([data-keep]),
+    ul:not([data-keep]) {
         padding: 0;
         margin: 0;
         list-style: none;
+
+        li {
+            padding: 0;
+            margin: 0;
+            list-style: none;
+        }
     }
 
     ${customReset}
