@@ -231,16 +231,11 @@ export const generateGlobalStyles = ({
     }
 
     ol:not([data-keep]),
-    ul:not([data-keep]) {
+    ul:not([data-keep]),
+    :not([data-keep]) > li {
         padding: 0;
         margin: 0;
         list-style: none;
-
-        li {
-            padding: 0;
-            margin: 0;
-            list-style: none;
-        }
     }
 
     ${customReset}
