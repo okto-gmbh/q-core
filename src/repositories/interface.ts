@@ -17,8 +17,8 @@ export interface Constraints<Row extends Entity> {
 export interface Repository {
     bulkCreate: <Row extends Entity>(
         table: Table,
-        rows: Row[]
-    ) => Promise<(DBMeta & Row)[]>
+        rows: (Row & { $createId?: string })[]
+    ) => Promise<(DBMeta & Omit<Row, '$createId'>)[]>
 
     bulkRemove: (table: Table, ids: ID[]) => Promise<void>
 
