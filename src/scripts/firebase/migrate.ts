@@ -21,6 +21,7 @@ export type MigrationContext = {
     algolia: SearchClient
     db: FirebaseFirestore.Firestore
     deleteField: () => FirebaseFirestore.FieldValue
+    onDelete: (tableName: any, id: any) => Promise<void>
     onUpdate: (tableName: any, id: any, data: any) => Promise<void>
     repo: Repository
     storage: Storage
@@ -72,9 +73,9 @@ export default async ({
     console.log(`Loading .env.${scope}`)
     dotenv.config({ path: `.env.${scope}` })
 
-    // FIXME: Make this work without doku dependency `onUpdate`
+    // FIXME: Make this work without doku dependency `onUpdate` and `onDelete`
     const { default: getAlgoliaClient } = await import('@core/services/algolia')
-    const { onUpdate } = await import('~core/utils/algolia')
+    const { onDelete, onUpdate } = await import('~core/utils/algolia')
     const { getBucket } = await import('@core/services/firebaseAdmin')
     const { getStorage } = await import('@core/storage/firebase/admin')
 
@@ -92,6 +93,7 @@ export default async ({
         algolia,
         db,
         deleteField,
+        onDelete,
         onUpdate,
         repo,
         storage,
