@@ -17,9 +17,11 @@ type Context = {
     algolia: SearchClient
     backupPath: string
     indexes: string[]
-    onCreate: (tableName: any, id: any, data: any) => Promise<void>
+    onBulkCreate: (tableName: any, rows: any[]) => Promise<void>
     repo: Repository
     restoreData: boolean
+    restoreSettings: boolean
+    tenants?: string[]
 }
 
 const loadBackup = async (indexName: string, backupPath: string) =>
@@ -31,17 +33,33 @@ const loadBackup = async (indexName: string, backupPath: string) =>
 
 const restore = async (
     indexName: string,
-    { algolia, backupPath, onCreate, repo, restoreData }: Context
+    {
+        algolia,
+        backupPath,
+        onBulkCreate,
+        repo,
+        restoreData,
+        restoreSettings,
+        tenants
+    }: Context
 ) => {
     console.log(`Restoring ${indexName}...`)
-    await algolia
-        .initIndex(indexName)
-        .setSettings(await loadBackup(indexName, backupPath))
-        .wait()
+    if (restoreSettings) {
+        await algolia
+            .initIndex(indexName)
+            .setSettings(await loadBackup(indexName, backupPath))
+            .wait()
+    }
 
     if (restoreData) {
-        for (const { id, ...data } of await repo.query(indexName)) {
-            await onCreate(indexName, id, data)
+        const rows = (await repo.query(indexName)).filter(
+            ({ tenantId }) => !tenants || tenants.includes(tenantId)
+        )
+
+        // Split into 500 chunks
+        const chunkSize = 500
+        for (let i = 0; i < rows.length; i += chunkSize) {
+            await onBulkCreate(indexName, rows.slice(i, i + chunkSize))
         }
     }
 }
@@ -56,13 +74,17 @@ export interface RestoreOptions extends BaseOptions {
     backupPath?: string
     indexes?: string[]
     restoreData?: boolean
+    restoreSettings?: boolean
+    tenants?: string[]
 }
 
 export default async ({
     backupPath = '.',
     env = 'dev',
     indexes = [],
-    restoreData = false
+    restoreData = false,
+    restoreSettings = true,
+    tenants
 }: RestoreOptions) => {
     const scope = env === 'dev' ? 'local' : env
     console.log(`Loading .env.${scope}`)
@@ -72,16 +94,18 @@ export default async ({
 
     const algolia = getAlgoliaClient(process.env.ALGOLIA_ADMIN_API_KEY)
 
-    const { onCreate } = await import('~core/utils/algolia')
+    const { onBulkCreate } = await import('~core/utils/algolia')
     const { default: repo } = await import('@core/repositories/firestore')
 
     const ctx: Context = {
         algolia,
         backupPath,
         indexes,
-        onCreate,
+        onBulkCreate,
         repo,
-        restoreData
+        restoreData,
+        restoreSettings,
+        tenants
     }
 
     await restoreIndexes(ctx)

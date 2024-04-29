@@ -23,21 +23,18 @@ const restoreTables = async ({
     backupPath,
     repo,
     schemas,
-    tables
+    tables,
+    tenants
 }: Context) => {
     for (const table of tables) {
         console.log(`Restoring ${table}...`)
-        for (const { id, ...row } of await loadBackup(
-            `tables/${table}`,
-            backupPath
-        )) {
-            try {
-                await repo.create(table, schemas[table].cast(row), id)
-            } catch (e) {
-                console.error(table, id, e)
-                throw e
-            }
-        }
+        const rows = (await loadBackup(`tables/${table}`, backupPath))
+            .filter(
+                ({ tenantId }: any) => !tenants || tenants.includes(tenantId)
+            )
+            .map((row: any) => schemas[table].cast(row))
+
+        await repo.bulkCreate(table, rows)
     }
 }
 
@@ -90,6 +87,7 @@ export interface RestoreOptions extends BaseOptions {
     tables: string[]
     firestore?: boolean
     storage?: boolean
+    tenants?: string[]
 }
 
 type Context = {
@@ -98,6 +96,7 @@ type Context = {
     schemas: Record<string, any>
     storage: Storage
     tables: string[]
+    tenants?: string[]
 }
 
 export default async ({
@@ -106,7 +105,8 @@ export default async ({
     firestore = true,
     schemas = [],
     storage: includeStorage = true,
-    tables = []
+    tables = [],
+    tenants
 }: RestoreOptions) => {
     const scope = env === 'dev' ? 'local' : env
     console.log(`Loading .env.${scope}`)
@@ -123,7 +123,8 @@ export default async ({
         repo,
         schemas,
         storage,
-        tables
+        tables,
+        tenants
     }
 
     if (firestore) {
