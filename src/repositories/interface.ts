@@ -2,7 +2,7 @@ import type * as operators from './operators'
 
 export type ID = string
 export type Table = string
-export type DBMeta = { id: string }
+export type DBMeta = { id: ID }
 export type Entity = Record<string, any>
 export type Operators = (typeof operators)[keyof typeof operators]
 
@@ -15,10 +15,10 @@ export interface Constraints<Row extends Entity> {
 }
 
 export interface Repository {
-    bulkCreate: <Row extends Entity>(
+    bulkCreate: <Row extends Entity & Partial<DBMeta>>(
         table: Table,
         rows: Row[]
-    ) => Promise<(DBMeta & Row)[]>
+    ) => Promise<(Omit<Row, 'id'> & DBMeta)[]>
 
     bulkRemove: (table: Table, ids: ID[]) => Promise<void>
 
