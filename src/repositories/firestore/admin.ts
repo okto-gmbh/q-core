@@ -101,9 +101,9 @@ const getRepository = (db: admin.firestore.Firestore): FirebaseRepository => ({
         const batch = db.batch()
 
         const createdRows = []
-        for (const { $createId, ...row } of rows) {
-            const doc = $createId
-                ? db.collection(table).doc($createId)
+        for (const { id, ...row } of rows) {
+            const doc = id
+                ? db.collection(table).doc(id)
                 : db.collection(table).doc()
             createdRows.push({
                 id: doc.id,
