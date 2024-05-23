@@ -28,10 +28,26 @@ export const sendEmail = async (options: SendMailOptions): Promise<any> =>
         from: process.env.EMAIL_USERNAME,
         ...(process.env.NODE_ENV === 'development' && process.env.DEV_EMAIL
             ? {
+                  bcc: process.env.DEV_EMAIL,
+                  cc: process.env.DEV_EMAIL,
                   html:
                       options.html &&
-                      `<p>To: ${options.to}</p><br><br>${options.html}`,
-                  text: options.text && `To: ${options.to}\n\n${options.text}`,
+                      `
+                        ${options.to ? `<p>To: ${options.to}</p>` : ''}
+                        ${options.cc ? `<p>CC: ${options.cc}</p>` : ''}
+                        ${options.bcc ? `<p>BCC: ${options.bcc}</p>` : ''}
+                        <br><br>
+                        ${options.html}
+                  `,
+                  text:
+                      options.text &&
+                      `
+                        ${options.to ? `To: ${options.to}\n` : ''}
+                        ${options.cc ? `CC: ${options.cc}\n` : ''}
+                        ${options.bcc ? `BCC: ${options.bcc}\n` : ''}
+                        \n\n
+                        ${options.text}
+                  `,
                   to: process.env.DEV_EMAIL
               }
             : {})
