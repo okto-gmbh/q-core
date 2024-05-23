@@ -25,7 +25,16 @@ const mailTransport = createTransport({
 export const sendEmail = async (options: SendMailOptions): Promise<any> =>
     await mailTransport.sendMail({
         ...options,
-        from: process.env.EMAIL_USERNAME
+        from: process.env.EMAIL_USERNAME,
+        ...(process.env.NODE_ENV === 'development' && process.env.DEV_EMAIL
+            ? {
+                  html:
+                      options.html &&
+                      `<p>To: ${options.to}</p><br><br>${options.html}`,
+                  text: options.text && `To: ${options.to}\n\n${options.text}`,
+                  to: process.env.DEV_EMAIL
+              }
+            : {})
     })
 
 export const template = `<html>
