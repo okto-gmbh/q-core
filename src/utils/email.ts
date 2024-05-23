@@ -28,8 +28,8 @@ export const sendEmail = async (options: SendMailOptions): Promise<any> =>
         from: process.env.EMAIL_USERNAME,
         ...(process.env.NODE_ENV === 'development' && process.env.DEV_EMAIL
             ? {
-                  bcc: process.env.DEV_EMAIL,
-                  cc: process.env.DEV_EMAIL,
+                  bcc: options.bcc ? process.env.DEV_EMAIL : undefined,
+                  cc: options.cc ? process.env.DEV_EMAIL : undefined,
                   html:
                       options.html &&
                       `
@@ -48,7 +48,7 @@ export const sendEmail = async (options: SendMailOptions): Promise<any> =>
                         \n\n
                         ${options.text}
                   `,
-                  to: process.env.DEV_EMAIL
+                  to: options.to ? process.env.DEV_EMAIL : undefined
               }
             : {})
     })
