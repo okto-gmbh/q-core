@@ -2,11 +2,16 @@
 
 import { FieldValue } from 'firebase-admin/firestore'
 
-import type { FirebaseRepository } from '@core/repositories/firestore/admin'
+import type {
+    FirebaseEvents,
+    FirebaseListeners,
+    FirebaseRepository
+} from '@core/repositories/firestore/admin'
 import type {
     DBMeta,
     Entity,
     Operators,
+    RepositoryEventListener,
     Table
 } from '@core/repositories/interface'
 
@@ -35,6 +40,23 @@ const getRepository = (db: Firestore): FirebaseRepository => {
 
     void db
 
+    const listeners: FirebaseListeners = {}
+
+    const triggerEvent = async (
+        event: FirebaseEvents,
+        table: Table,
+        data: Entity
+    ) => {
+        const eventListeners = listeners[event]?.[table]
+        if (!eventListeners) {
+            return
+        }
+
+        for (const listener of eventListeners) {
+            await listener(data)
+        }
+    }
+
     return {
         bulkCreate: async (table, rows) => {
             DATABASE.data[table] ??= {}
@@ -52,6 +74,8 @@ const getRepository = (db: Firestore): FirebaseRepository => {
                 })
             }
 
+            await triggerEvent('create', table, createdRows)
+
             return createdRows
         },
         bulkRemove: async (table, ids) => {
@@ -60,6 +84,8 @@ const getRepository = (db: Firestore): FirebaseRepository => {
             for (const id of ids) {
                 delete DATABASE.data[table][id]
             }
+
+            await triggerEvent('remove', table, { id: ids })
         },
         bulkUpdate: async (table, rows) => {
             DATABASE.data[table] ??= {}
@@ -70,11 +96,15 @@ const getRepository = (db: Firestore): FirebaseRepository => {
                     ...data
                 })
             }
+
+            await triggerEvent('update', table, rows)
         },
         create: async (table, data, createId?) => {
             DATABASE.data[table] ??= {}
             const id = createId ?? DATABASE.id
             DATABASE.data[table][id] = transformFieldValue(data)
+
+            await triggerEvent('create', table, { id, ...data })
 
             return id
         },
@@ -83,6 +113,32 @@ const getRepository = (db: Firestore): FirebaseRepository => {
             mapDocs({
                 [id]: DATABASE.data[table][id]
             })[0],
+        off<Row extends Entity>(
+            event: string,
+            table: Table,
+            callback?: RepositoryEventListener<Row>
+        ) {
+            if (!listeners[event]?.[table]) {
+                return
+            }
+
+            if (callback) {
+                listeners[event][table] = listeners[event][table].filter(
+                    (cb) => cb !== callback
+                )
+            } else {
+                listeners[event][table] = []
+            }
+        },
+        on<Row extends Entity>(
+            event: string,
+            table: Table,
+            callback: RepositoryEventListener<Row>
+        ) {
+            listeners[event] ??= {}
+            listeners[event]![table] ??= []
+            listeners[event]![table]!.push(callback)
+        },
         query: async (table, constraints = {}, fields?) => {
             const { limit, orderBy, where } = constraints
 
@@ -156,12 +212,14 @@ const getRepository = (db: Firestore): FirebaseRepository => {
         },
         remove: async (table, id) => {
             delete DATABASE.data[table][id]
+            await triggerEvent('remove', table, { id })
         },
         update: async (table, id, data) => {
             DATABASE.data[table][id] = transformFieldValue({
                 ...DATABASE.data[table][id],
                 ...data
             })
+            await triggerEvent('update', table, { id, ...data })
         }
     }
 }

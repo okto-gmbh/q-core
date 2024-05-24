@@ -14,6 +14,9 @@ export interface Constraints<Row extends Entity> {
     where?: [keyof Row, Operators, any][]
 }
 
+export type RepositoryEventListener<Row extends Entity> = (
+    data: Row | Row[]
+) => Promise<void>
 export interface Repository {
     bulkCreate: <Row extends Entity & Partial<DBMeta>>(
         table: Table,
@@ -34,6 +37,18 @@ export interface Repository {
         table: Table,
         id: ID
     ) => Promise<(DBMeta & Row) | undefined>
+
+    off: <Row extends Entity>(
+        event: string,
+        table: Table,
+        callback?: RepositoryEventListener<Row>
+    ) => void
+
+    on: <Row extends Entity>(
+        event: string,
+        table: Table,
+        callback: RepositoryEventListener<Row>
+    ) => void
 
     query: <Row extends Entity>(
         table: Table,
