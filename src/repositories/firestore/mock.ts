@@ -3,7 +3,6 @@
 import { FieldValue } from 'firebase-admin/firestore'
 
 import type {
-    FirebaseEvents,
     FirebaseListeners,
     FirebaseRepository
 } from '@core/repositories/firestore/admin'
@@ -11,6 +10,7 @@ import type {
     DBMeta,
     Entity,
     Operators,
+    RepositoryEvent,
     RepositoryEventListener,
     Table
 } from '@core/repositories/interface'
@@ -43,7 +43,7 @@ const getRepository = (db: Firestore): FirebaseRepository => {
     const listeners: FirebaseListeners = {}
 
     const triggerEvent = async (
-        event: FirebaseEvents,
+        event: RepositoryEvent,
         table: Table,
         data: Entity
     ) => {
@@ -114,7 +114,7 @@ const getRepository = (db: Firestore): FirebaseRepository => {
                 [id]: DATABASE.data[table][id]
             })[0],
         off<Row extends Entity>(
-            event: string,
+            event: RepositoryEvent,
             table: Table,
             callback?: RepositoryEventListener<Row>
         ) {
@@ -131,7 +131,7 @@ const getRepository = (db: Firestore): FirebaseRepository => {
             }
         },
         on<Row extends Entity>(
-            event: string,
+            event: RepositoryEvent,
             table: Table,
             callback: RepositoryEventListener<Row>
         ) {

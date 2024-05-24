@@ -7,6 +7,7 @@ import type {
     ID,
     Operators,
     Repository,
+    RepositoryEvent,
     RepositoryEventListener,
     Table
 } from '@core/repositories/interface'
@@ -84,7 +85,6 @@ export interface FirebaseConstraints<Row extends Entity>
     where?: [keyof (Row & { __name__: string }), Operators, any][]
 }
 
-export type FirebaseEvents = 'create' | 'update' | 'remove'
 export interface FirebaseListeners {
     [event: string]: {
         [table: string]: RepositoryEventListener<any>[]
@@ -107,7 +107,7 @@ const getRepository = (db: admin.firestore.Firestore): FirebaseRepository => {
     const listeners: FirebaseListeners = {}
 
     const triggerEvent = async (
-        event: FirebaseEvents,
+        event: RepositoryEvent,
         table: Table,
         data: Entity
     ) => {
@@ -197,7 +197,7 @@ const getRepository = (db: admin.firestore.Firestore): FirebaseRepository => {
         },
 
         off: <Row extends Entity>(
-            event: string,
+            event: RepositoryEvent,
             table: Table,
             callback?: RepositoryEventListener<Row>
         ) => {
@@ -215,7 +215,7 @@ const getRepository = (db: admin.firestore.Firestore): FirebaseRepository => {
         },
 
         on: <Row extends Entity>(
-            event: string,
+            event: RepositoryEvent,
             table: Table,
             callback: RepositoryEventListener<Row>
         ) => {
