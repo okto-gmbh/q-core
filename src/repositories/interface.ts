@@ -14,6 +14,12 @@ export interface Constraints<Row extends Entity> {
     where?: [keyof Row, Operators, any][]
 }
 
+export interface RepositoryEventListeners {
+    [event: string]: {
+        [table: string]: RepositoryEventListener<any>[]
+    }
+}
+
 export type RepositoryEvent = 'create' | 'update' | 'remove'
 export type RepositoryEventListener<Row extends Entity> = (
     data: Row | Row[]
@@ -38,18 +44,6 @@ export interface Repository {
         table: Table,
         id: ID
     ) => Promise<(DBMeta & Row) | undefined>
-
-    off: <Row extends Entity>(
-        event: RepositoryEvent,
-        table: Table,
-        callback?: RepositoryEventListener<Row>
-    ) => void
-
-    on: <Row extends Entity>(
-        event: RepositoryEvent,
-        table: Table,
-        callback: RepositoryEventListener<Row>
-    ) => void
 
     query: <Row extends Entity>(
         table: Table,

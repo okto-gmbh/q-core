@@ -57,666 +57,331 @@ describe('firestore', () => {
         expect(getRawMockData()).toEqual({})
     })
 
-    describe('crud operations', () => {
-        it('should return the id when creating an entry', async () => {
-            const db = getMockDB()
-            const repo = getRepository(db)
-            const id = await repo.create('members', { name: 'John' })
-            expect(id).toBe('0')
-        })
-
-        it('should use the createId when provided', async () => {
-            const db = getMockDB()
-            const repo = getRepository(db)
-            const id = await repo.create('members', { name: 'John' }, '2')
-            expect(id).toBe('2')
-            expect(Object.keys(getRawMockData().members)[0]).toBe('2')
-        })
-
-        it('should reflect the entry in the database after creation', async () => {
-            const db = getMockDB()
-            const repo = getRepository(db)
-            const id = await repo.create('members', { name: 'John' })
-
-            expect(id).toBe('0')
-            expect(Object.keys(getRawMockData().members)).toHaveLength(1)
-            expect(getRawMockData().members['0']).toEqual({ name: 'John' })
-        })
-
-        it('should bulk add entries into the database', async () => {
-            const db = getMockDB()
-            const repo = getRepository(db)
-            const members = await repo.bulkCreate('members', [
-                { name: 'John' },
-                { name: 'Jane' }
-            ])
-
-            expect(members).toHaveLength(2)
-            expect(Object.keys(getRawMockData().members)).toHaveLength(2)
-            expect(getRawMockData().members['0']).toEqual({ name: 'John' })
-            expect(getRawMockData().members['1']).toEqual({ name: 'Jane' })
-        })
-
-        it('should add the id as a property for entries returned with find', async () => {
-            const db = getMockDB()
-            const repo = getRepository(db)
-
-            seedMockRepository('members', [{ name: 'John' }, { name: 'Jane' }])
-
-            const member = await repo.find('members', '0')
-            expect(member).toEqual({ id: '0', name: 'John' })
-        })
-
-        it('should add the id as a property for entries returned with query', async () => {
-            const db = getMockDB()
-            const repo = getRepository(db)
-
-            seedMockRepository('members', [{ name: 'John' }])
-
-            const members = await repo.query('members')
-            expect(members).toEqual([{ id: '0', name: 'John' }])
-        })
-
-        it('should find the correct entry by id', async () => {
-            const db = getMockDB()
-            const repo = getRepository(db)
-
-            seedMockRepository('members', [{ name: 'John' }, { name: 'Jane' }])
-
-            const member1 = await repo.find('members', '0')
-            expect(member1).toEqual({ id: '0', name: 'John' })
-
-            const member2 = await repo.find('members', '1')
-            expect(member2).toEqual({ id: '1', name: 'Jane' })
-        })
-
-        it('should remove the correct entry by id', async () => {
-            const db = getMockDB()
-            const repo = getRepository(db)
-
-            seedMockRepository('members', [
-                { name: 'John' },
-                { name: 'Jane' },
-                { name: 'Jack' }
-            ])
-
-            await repo.remove('members', '1')
-
-            expect(Object.keys(getRawMockData().members)).toHaveLength(2)
-            expect(getRawMockData().members['0']).toEqual({ name: 'John' })
-            expect(getRawMockData().members['1']).toBeUndefined()
-            expect(getRawMockData().members['2']).toEqual({ name: 'Jack' })
-        })
-
-        it('should bulk remove the correct entries', async () => {
-            const db = getMockDB()
-            const repo = getRepository(db)
-
-            seedMockRepository('members', [
-                { name: 'John' },
-                { name: 'Jane' },
-                { name: 'Jack' }
-            ])
-
-            await repo.bulkRemove('members', ['1', '2'])
-
-            expect(Object.keys(getRawMockData().members)).toHaveLength(1)
-            expect(getRawMockData().members['0']).toEqual({ name: 'John' })
-            expect(getRawMockData().members['1']).toBeUndefined()
-            expect(getRawMockData().members['2']).toBeUndefined()
-        })
-
-        it('should update the correct entry by id', async () => {
-            const db = getMockDB()
-            const repo = getRepository(db)
-
-            seedMockRepository('members', [
-                { name: 'John' },
-                { name: 'Jane' },
-                { name: 'Jack' }
-            ])
-
-            await repo.update('members', '1', { name: 'Jill' })
-
-            expect(Object.keys(getRawMockData().members)).toHaveLength(3)
-            expect(getRawMockData().members['0']).toEqual({ name: 'John' })
-            expect(getRawMockData().members['1']).toEqual({ name: 'Jill' })
-            expect(getRawMockData().members['2']).toEqual({ name: 'Jack' })
-
-            await repo.update('members', '1', { age: 20, name: 'Jill' })
-
-            expect(Object.keys(getRawMockData().members)).toHaveLength(3)
-            expect(getRawMockData().members['0']).toEqual({ name: 'John' })
-            expect(getRawMockData().members['1']).toEqual({
-                age: 20,
-                name: 'Jill'
-            })
-            expect(getRawMockData().members['2']).toEqual({ name: 'Jack' })
-        })
-
-        it('should remove entries with the deleteTransform value on update', async () => {
-            const db = getMockDB()
-            const repo = getRepository(db)
-
-            seedMockRepository('members', [
-                { name: 'John' },
-                { age: 20, name: 'Jane' },
-                { name: 'Jack' }
-            ])
-
-            await repo.update('members', '1', { age: FieldValue.delete() })
-
-            expect(Object.keys(getRawMockData().members)).toHaveLength(3)
-            expect(getRawMockData().members['0']).toEqual({ name: 'John' })
-            expect(getRawMockData().members['1']).toEqual({ name: 'Jane' })
-            expect(getRawMockData().members['2']).toEqual({ name: 'Jack' })
-        })
-
-        it('should filter queries by constraints', async () => {
-            const db = getMockDB()
-            const repo = getRepository(db)
-
-            seedMockRepository('members', [
-                { name: 'John' },
-                { age: 20, name: 'Jane' },
-                { name: 'Jack' },
-                { age: 27, name: 'Jane' }
-            ])
-
-            const members = await repo.query<Member>('members', {
-                where: [['name', '==', 'Jane']]
-            })
-
-            expect(members).toEqual([
-                { age: 20, id: '1', name: 'Jane' },
-                { age: 27, id: '3', name: 'Jane' }
-            ])
-        })
-
-        it('should reduce query responses to the requested fields', async () => {
-            const db = getMockDB()
-            const repo = getRepository(db)
-
-            seedMockRepository('members', [
-                { name: 'John' },
-                { age: 20, name: 'Jane' },
-                { name: 'Jack' },
-                { age: 27, name: 'Jane' }
-            ])
-
-            const memberIds = await repo.query<Member>('members', undefined, [
-                'id'
-            ])
-
-            expect(memberIds).toEqual([
-                { id: '0' },
-                { id: '1' },
-                { id: '2' },
-                { id: '3' }
-            ])
-
-            const memberNames = await repo.query<Member>('members', undefined, [
-                'name'
-            ])
-
-            expect(memberNames).toEqual([
-                { name: 'John' },
-                { name: 'Jane' },
-                { name: 'Jack' },
-                { name: 'Jane' }
-            ])
-        })
-
-        it('should support __name__ as a constraint', async () => {
-            const db = getMockDB()
-            const repo = getRepository(db)
-
-            seedMockRepository('members', [
-                { name: 'John' },
-                { age: 20, name: 'Jane' },
-                { name: 'Jack' },
-                { age: 27, name: 'Jane' }
-            ])
-
-            const members = await repo.query<Member>('members', {
-                where: [['__name__', '==', '1']]
-            })
-
-            expect(members).toEqual([{ age: 20, id: '1', name: 'Jane' }])
-        })
-
-        it('should support __name__ for ordering', async () => {
-            const db = getMockDB()
-            const repo = getRepository(db)
-
-            seedMockRepository('members', [
-                { name: 'John' },
-                { age: 20, name: 'Jane' },
-                { name: 'Jack' },
-                { age: 27, name: 'Jane' }
-            ])
-
-            const members = await repo.query<Member>('members', {
-                orderBy: { __name__: 'desc' }
-            })
-
-            expect(members).toEqual([
-                { age: 27, id: '3', name: 'Jane' },
-                { id: '2', name: 'Jack' },
-                { age: 20, id: '1', name: 'Jane' },
-                { id: '0', name: 'John' }
-            ])
-        })
-
-        it('should AND multiple query constraints together', async () => {
-            const db = getMockDB()
-            const repo = getRepository(db)
-
-            seedMockRepository('members', [
-                { name: 'John' },
-                { age: 20, name: 'Jane' },
-                { name: 'Jack' },
-                { age: 27, name: 'Jane' }
-            ])
-
-            const members = await repo.query<Member>('members', {
-                where: [
-                    ['name', '==', 'Jane'],
-                    ['age', '>=', 25]
-                ]
-            })
-
-            expect(members).toEqual([{ age: 27, id: '3', name: 'Jane' }])
-        })
-
-        it('should be possible to limit the amount of rows returned by query', async () => {
-            const db = getMockDB()
-            const repo = getRepository(db)
-
-            seedMockRepository('members', [
-                { name: 'John' },
-                { age: 20, name: 'Jane' },
-                { name: 'Jack' },
-                { age: 27, name: 'Jane' }
-            ])
-
-            const members = await repo.query<Member>('members', {
-                limit: 2
-            })
-
-            expect(members).toEqual([
-                { id: '0', name: 'John' },
-                { age: 20, id: '1', name: 'Jane' }
-            ])
-        })
-
-        it('should return only requested query fields', async () => {
-            const db = getMockDB()
-            const repo = getRepository(db)
-
-            seedMockRepository('members', [
-                { name: 'John' },
-                { age: 20, name: 'Jane' },
-                { name: 'Jack' },
-                { age: 27, name: 'Jane' }
-            ])
-
-            const members = await repo.query<Member>('members', undefined, [
-                'name'
-            ])
-
-            expect(members).toEqual([
-                { name: 'John' },
-                { name: 'Jane' },
-                { name: 'Jack' },
-                { name: 'Jane' }
-            ])
-        })
-
-        it('should return correct count for queryCount', async () => {
-            const db = getMockDB()
-            const repo = getRepository(db)
-
-            const mockMembers = [
-                { name: 'John' },
-                { age: 20, name: 'Jane' },
-                { name: 'Jack' },
-                { age: 27, name: 'Jane' }
-            ]
-            seedMockRepository('members', mockMembers)
-
-            const members = await repo.queryCount<Member>('members')
-
-            expect(members).toEqual(mockMembers.length)
-        })
+    it('should return the id when creating an entry', async () => {
+        const db = getMockDB()
+        const repo = getRepository(db)
+        const id = await repo.create('members', { name: 'John' })
+        expect(id).toBe('0')
     })
 
-    describe('events', () => {
-        it('should trigger the "create" event when creating an entry', async () => {
-            const db = getMockDB()
-            const repo = getRepository(db)
-            const memberListener = {
-                callback: async () => {}
-            }
+    it('should use the createId when provided', async () => {
+        const db = getMockDB()
+        const repo = getRepository(db)
+        const id = await repo.create('members', { name: 'John' }, '2')
+        expect(id).toBe('2')
+        expect(Object.keys(getRawMockData().members)[0]).toBe('2')
+    })
 
-            const memberSpy = vi.spyOn(memberListener, 'callback')
+    it('should reflect the entry in the database after creation', async () => {
+        const db = getMockDB()
+        const repo = getRepository(db)
+        const id = await repo.create('members', { name: 'John' })
 
-            repo.on('create', 'members', memberListener.callback)
+        expect(id).toBe('0')
+        expect(Object.keys(getRawMockData().members)).toHaveLength(1)
+        expect(getRawMockData().members['0']).toEqual({ name: 'John' })
+    })
 
-            await repo.create('members', { name: 'John' })
+    it('should bulk add entries into the database', async () => {
+        const db = getMockDB()
+        const repo = getRepository(db)
+        const members = await repo.bulkCreate('members', [
+            { name: 'John' },
+            { name: 'Jane' }
+        ])
 
-            expect(memberSpy).toHaveBeenCalledTimes(1)
-            expect(memberSpy).toHaveBeenCalledWith({
-                id: '0',
-                name: 'John'
-            })
+        expect(members).toHaveLength(2)
+        expect(Object.keys(getRawMockData().members)).toHaveLength(2)
+        expect(getRawMockData().members['0']).toEqual({ name: 'John' })
+        expect(getRawMockData().members['1']).toEqual({ name: 'Jane' })
+    })
 
-            await repo.create('members', { age: 20, name: 'Jane' })
+    it('should add the id as a property for entries returned with find', async () => {
+        const db = getMockDB()
+        const repo = getRepository(db)
 
-            expect(memberSpy).toHaveBeenCalledTimes(2)
-            expect(memberSpy).toHaveBeenCalledWith({
-                age: 20,
-                id: '1',
-                name: 'Jane'
-            })
+        seedMockRepository('members', [{ name: 'John' }, { name: 'Jane' }])
+
+        const member = await repo.find('members', '0')
+        expect(member).toEqual({ id: '0', name: 'John' })
+    })
+
+    it('should add the id as a property for entries returned with query', async () => {
+        const db = getMockDB()
+        const repo = getRepository(db)
+
+        seedMockRepository('members', [{ name: 'John' }])
+
+        const members = await repo.query('members')
+        expect(members).toEqual([{ id: '0', name: 'John' }])
+    })
+
+    it('should find the correct entry by id', async () => {
+        const db = getMockDB()
+        const repo = getRepository(db)
+
+        seedMockRepository('members', [{ name: 'John' }, { name: 'Jane' }])
+
+        const member1 = await repo.find('members', '0')
+        expect(member1).toEqual({ id: '0', name: 'John' })
+
+        const member2 = await repo.find('members', '1')
+        expect(member2).toEqual({ id: '1', name: 'Jane' })
+    })
+
+    it('should remove the correct entry by id', async () => {
+        const db = getMockDB()
+        const repo = getRepository(db)
+
+        seedMockRepository('members', [
+            { name: 'John' },
+            { name: 'Jane' },
+            { name: 'Jack' }
+        ])
+
+        await repo.remove('members', '1')
+
+        expect(Object.keys(getRawMockData().members)).toHaveLength(2)
+        expect(getRawMockData().members['0']).toEqual({ name: 'John' })
+        expect(getRawMockData().members['1']).toBeUndefined()
+        expect(getRawMockData().members['2']).toEqual({ name: 'Jack' })
+    })
+
+    it('should bulk remove the correct entries', async () => {
+        const db = getMockDB()
+        const repo = getRepository(db)
+
+        seedMockRepository('members', [
+            { name: 'John' },
+            { name: 'Jane' },
+            { name: 'Jack' }
+        ])
+
+        await repo.bulkRemove('members', ['1', '2'])
+
+        expect(Object.keys(getRawMockData().members)).toHaveLength(1)
+        expect(getRawMockData().members['0']).toEqual({ name: 'John' })
+        expect(getRawMockData().members['1']).toBeUndefined()
+        expect(getRawMockData().members['2']).toBeUndefined()
+    })
+
+    it('should update the correct entry by id', async () => {
+        const db = getMockDB()
+        const repo = getRepository(db)
+
+        seedMockRepository('members', [
+            { name: 'John' },
+            { name: 'Jane' },
+            { name: 'Jack' }
+        ])
+
+        await repo.update('members', '1', { name: 'Jill' })
+
+        expect(Object.keys(getRawMockData().members)).toHaveLength(3)
+        expect(getRawMockData().members['0']).toEqual({ name: 'John' })
+        expect(getRawMockData().members['1']).toEqual({ name: 'Jill' })
+        expect(getRawMockData().members['2']).toEqual({ name: 'Jack' })
+
+        await repo.update('members', '1', { age: 20, name: 'Jill' })
+
+        expect(Object.keys(getRawMockData().members)).toHaveLength(3)
+        expect(getRawMockData().members['0']).toEqual({ name: 'John' })
+        expect(getRawMockData().members['1']).toEqual({
+            age: 20,
+            name: 'Jill'
+        })
+        expect(getRawMockData().members['2']).toEqual({ name: 'Jack' })
+    })
+
+    it('should remove entries with the deleteTransform value on update', async () => {
+        const db = getMockDB()
+        const repo = getRepository(db)
+
+        seedMockRepository('members', [
+            { name: 'John' },
+            { age: 20, name: 'Jane' },
+            { name: 'Jack' }
+        ])
+
+        await repo.update('members', '1', { age: FieldValue.delete() })
+
+        expect(Object.keys(getRawMockData().members)).toHaveLength(3)
+        expect(getRawMockData().members['0']).toEqual({ name: 'John' })
+        expect(getRawMockData().members['1']).toEqual({ name: 'Jane' })
+        expect(getRawMockData().members['2']).toEqual({ name: 'Jack' })
+    })
+
+    it('should filter queries by constraints', async () => {
+        const db = getMockDB()
+        const repo = getRepository(db)
+
+        seedMockRepository('members', [
+            { name: 'John' },
+            { age: 20, name: 'Jane' },
+            { name: 'Jack' },
+            { age: 27, name: 'Jane' }
+        ])
+
+        const members = await repo.query<Member>('members', {
+            where: [['name', '==', 'Jane']]
         })
 
-        it('should trigger the "update" event when updating an entry', async () => {
-            const db = getMockDB()
-            const repo = getRepository(db)
+        expect(members).toEqual([
+            { age: 20, id: '1', name: 'Jane' },
+            { age: 27, id: '3', name: 'Jane' }
+        ])
+    })
 
-            seedMockRepository('members', [
-                { name: 'John' },
-                { name: 'Jane' },
-                { name: 'Jack' }
-            ])
-            const memberListener = {
-                callback: async () => {}
-            }
+    it('should reduce query responses to the requested fields', async () => {
+        const db = getMockDB()
+        const repo = getRepository(db)
 
-            const memberSpy = vi.spyOn(memberListener, 'callback')
+        seedMockRepository('members', [
+            { name: 'John' },
+            { age: 20, name: 'Jane' },
+            { name: 'Jack' },
+            { age: 27, name: 'Jane' }
+        ])
 
-            repo.on('update', 'members', memberListener.callback)
+        const memberIds = await repo.query<Member>('members', undefined, ['id'])
 
-            await repo.update('members', '1', { name: 'Jill' })
+        expect(memberIds).toEqual([
+            { id: '0' },
+            { id: '1' },
+            { id: '2' },
+            { id: '3' }
+        ])
 
-            expect(memberSpy).toHaveBeenCalledTimes(1)
-            expect(memberSpy).toHaveBeenCalledWith({
-                id: '1',
-                name: 'Jill'
-            })
+        const memberNames = await repo.query<Member>('members', undefined, [
+            'name'
+        ])
 
-            await repo.update('members', '1', { age: 20, name: 'Jill' })
+        expect(memberNames).toEqual([
+            { name: 'John' },
+            { name: 'Jane' },
+            { name: 'Jack' },
+            { name: 'Jane' }
+        ])
+    })
 
-            expect(memberSpy).toHaveBeenCalledTimes(2)
-            expect(memberSpy).toHaveBeenCalledWith({
-                age: 20,
-                id: '1',
-                name: 'Jill'
-            })
+    it('should support __name__ as a constraint', async () => {
+        const db = getMockDB()
+        const repo = getRepository(db)
+
+        seedMockRepository('members', [
+            { name: 'John' },
+            { age: 20, name: 'Jane' },
+            { name: 'Jack' },
+            { age: 27, name: 'Jane' }
+        ])
+
+        const members = await repo.query<Member>('members', {
+            where: [['__name__', '==', '1']]
         })
 
-        it('should trigger the "remove" event when removing an entry', async () => {
-            const db = getMockDB()
-            const repo = getRepository(db)
+        expect(members).toEqual([{ age: 20, id: '1', name: 'Jane' }])
+    })
 
-            seedMockRepository('members', [
-                { name: 'John' },
-                { name: 'Jane' },
-                { name: 'Jack' }
-            ])
-            const memberListener = {
-                callback: async () => {}
-            }
+    it('should support __name__ for ordering', async () => {
+        const db = getMockDB()
+        const repo = getRepository(db)
 
-            const memberSpy = vi.spyOn(memberListener, 'callback')
+        seedMockRepository('members', [
+            { name: 'John' },
+            { age: 20, name: 'Jane' },
+            { name: 'Jack' },
+            { age: 27, name: 'Jane' }
+        ])
 
-            repo.on('remove', 'members', memberListener.callback)
-
-            await repo.remove('members', '1')
-
-            expect(memberSpy).toHaveBeenCalledTimes(1)
-            expect(memberSpy).toHaveBeenCalledWith({ id: '1' })
-
-            await repo.remove('members', '2')
-
-            expect(memberSpy).toHaveBeenCalledTimes(2)
-            expect(memberSpy).toHaveBeenCalledWith({
-                id: '2'
-            })
+        const members = await repo.query<Member>('members', {
+            orderBy: { __name__: 'desc' }
         })
 
-        it('should not trigger other events', async () => {
-            const db = getMockDB()
-            const repo = getRepository(db)
+        expect(members).toEqual([
+            { age: 27, id: '3', name: 'Jane' },
+            { id: '2', name: 'Jack' },
+            { age: 20, id: '1', name: 'Jane' },
+            { id: '0', name: 'John' }
+        ])
+    })
 
-            const memberListener = {
-                createCallback: async () => {},
-                removeCallback: async () => {},
-                updateCallback: async () => {}
-            }
+    it('should AND multiple query constraints together', async () => {
+        const db = getMockDB()
+        const repo = getRepository(db)
 
-            const createSpy = vi.spyOn(memberListener, 'createCallback')
-            const updateSpy = vi.spyOn(memberListener, 'updateCallback')
-            const removeSpy = vi.spyOn(memberListener, 'removeCallback')
+        seedMockRepository('members', [
+            { name: 'John' },
+            { age: 20, name: 'Jane' },
+            { name: 'Jack' },
+            { age: 27, name: 'Jane' }
+        ])
 
-            repo.on('create', 'members', memberListener.createCallback)
-            repo.on('update', 'members', memberListener.updateCallback)
-            repo.on('remove', 'members', memberListener.removeCallback)
-
-            await repo.create('members', { name: 'John' })
-
-            expect(createSpy).toHaveBeenCalledTimes(1)
-            expect(updateSpy).not.toHaveBeenCalled()
-            expect(removeSpy).not.toHaveBeenCalled()
-
-            await repo.update('members', '0', { name: 'Jane' })
-
-            expect(createSpy).toHaveBeenCalledTimes(1)
-            expect(updateSpy).toHaveBeenCalledTimes(1)
-            expect(removeSpy).not.toHaveBeenCalled()
-
-            await repo.remove('members', '0')
-
-            expect(createSpy).toHaveBeenCalledTimes(1)
-            expect(updateSpy).toHaveBeenCalledTimes(1)
-            expect(removeSpy).toHaveBeenCalledTimes(1)
+        const members = await repo.query<Member>('members', {
+            where: [
+                ['name', '==', 'Jane'],
+                ['age', '>=', 25]
+            ]
         })
 
-        it('should not trigger events of other tables', async () => {
-            const db = getMockDB()
-            const repo = getRepository(db)
+        expect(members).toEqual([{ age: 27, id: '3', name: 'Jane' }])
+    })
 
-            seedMockRepository('members', [{ name: 'John' }])
-            seedMockRepository('users', [{ name: 'John' }])
+    it('should be possible to limit the amount of rows returned by query', async () => {
+        const db = getMockDB()
+        const repo = getRepository(db)
 
-            const memberListener = {
-                callback: async () => {}
-            }
+        seedMockRepository('members', [
+            { name: 'John' },
+            { age: 20, name: 'Jane' },
+            { name: 'Jack' },
+            { age: 27, name: 'Jane' }
+        ])
 
-            const userListener = {
-                callback: async () => {}
-            }
-
-            const memberSpy = vi.spyOn(memberListener, 'callback')
-            const userSpy = vi.spyOn(userListener, 'callback')
-
-            repo.on('update', 'members', memberListener.callback)
-
-            await repo.update('members', '0', { name: 'Jane' })
-
-            expect(memberSpy).toHaveBeenCalledTimes(1)
-            expect(userSpy).not.toHaveBeenCalled()
+        const members = await repo.query<Member>('members', {
+            limit: 2
         })
 
-        it('should be possible to register multiple listeners', async () => {
-            const db = getMockDB()
-            const repo = getRepository(db)
+        expect(members).toEqual([
+            { id: '0', name: 'John' },
+            { age: 20, id: '1', name: 'Jane' }
+        ])
+    })
 
-            seedMockRepository('members', [{ name: 'John' }])
-            const memberListener1 = {
-                callback: async () => {}
-            }
-            const memberListener2 = {
-                callback: async () => {}
-            }
+    it('should return only requested query fields', async () => {
+        const db = getMockDB()
+        const repo = getRepository(db)
 
-            const memberSpy1 = vi.spyOn(memberListener1, 'callback')
-            const memberSpy2 = vi.spyOn(memberListener2, 'callback')
+        seedMockRepository('members', [
+            { name: 'John' },
+            { age: 20, name: 'Jane' },
+            { name: 'Jack' },
+            { age: 27, name: 'Jane' }
+        ])
 
-            repo.on('update', 'members', memberListener1.callback)
-            repo.on('update', 'members', memberListener2.callback)
+        const members = await repo.query<Member>('members', undefined, ['name'])
 
-            await repo.update('members', '0', { name: 'Jane' })
+        expect(members).toEqual([
+            { name: 'John' },
+            { name: 'Jane' },
+            { name: 'Jack' },
+            { name: 'Jane' }
+        ])
+    })
 
-            expect(memberSpy1).toHaveBeenCalledTimes(1)
-            expect(memberSpy2).toHaveBeenCalledTimes(1)
-        })
+    it('should return correct count for queryCount', async () => {
+        const db = getMockDB()
+        const repo = getRepository(db)
 
-        it('should be possible to unregister a single listener', async () => {
-            const db = getMockDB()
-            const repo = getRepository(db)
+        const mockMembers = [
+            { name: 'John' },
+            { age: 20, name: 'Jane' },
+            { name: 'Jack' },
+            { age: 27, name: 'Jane' }
+        ]
+        seedMockRepository('members', mockMembers)
 
-            seedMockRepository('members', [{ name: 'John' }])
-            const memberListener1 = {
-                callback: async () => {}
-            }
-            const memberListener2 = {
-                callback: async () => {}
-            }
+        const members = await repo.queryCount<Member>('members')
 
-            const memberSpy1 = vi.spyOn(memberListener1, 'callback')
-            const memberSpy2 = vi.spyOn(memberListener2, 'callback')
-
-            repo.on('update', 'members', memberListener1.callback)
-            repo.on('update', 'members', memberListener2.callback)
-
-            await repo.update('members', '0', { name: 'Jane' })
-
-            expect(memberSpy1).toHaveBeenCalledTimes(1)
-            expect(memberSpy2).toHaveBeenCalledTimes(1)
-
-            repo.off('update', 'members', memberListener1.callback)
-
-            await repo.update('members', '0', { age: 20, name: 'Jill' })
-
-            expect(memberSpy1).toHaveBeenCalledTimes(1)
-            expect(memberSpy2).toHaveBeenCalledTimes(2)
-
-            repo.off('update', 'members', memberListener2.callback)
-
-            expect(memberSpy1).toHaveBeenCalledTimes(1)
-            expect(memberSpy2).toHaveBeenCalledTimes(2)
-        })
-
-        it('should be possible to unregister all listeners', async () => {
-            const db = getMockDB()
-            const repo = getRepository(db)
-
-            seedMockRepository('members', [{ name: 'John' }])
-
-            const memberListener1 = {
-                callback: async () => {}
-            }
-            const memberListener2 = {
-                callback: async () => {}
-            }
-
-            const memberSpy1 = vi.spyOn(memberListener1, 'callback')
-            const memberSpy2 = vi.spyOn(memberListener2, 'callback')
-
-            repo.on('update', 'members', memberListener1.callback)
-            repo.on('update', 'members', memberListener2.callback)
-
-            await repo.update('members', '0', { name: 'Jane' })
-
-            expect(memberSpy1).toHaveBeenCalledTimes(1)
-            expect(memberSpy2).toHaveBeenCalledTimes(1)
-
-            repo.off('update', 'members')
-
-            await repo.update('members', '0', { age: 20, name: 'Jill' })
-
-            expect(memberSpy1).toHaveBeenCalledTimes(1)
-            expect(memberSpy2).toHaveBeenCalledTimes(1)
-        })
-
-        it('should trigger the "create" event once after a bulkCreate', async () => {
-            const db = getMockDB()
-            const repo = getRepository(db)
-
-            const memberListener = {
-                callback: async () => {}
-            }
-
-            const memberSpy = vi.spyOn(memberListener, 'callback')
-
-            repo.on('create', 'members', memberListener.callback)
-
-            await repo.bulkCreate('members', [
-                { name: 'John' },
-                { name: 'Jane' }
-            ])
-
-            expect(memberSpy).toHaveBeenCalledTimes(1)
-            expect(memberSpy).toHaveBeenCalledWith([
-                { id: '0', name: 'John' },
-                { id: '1', name: 'Jane' }
-            ])
-        })
-
-        it('should trigger the "update" event once after a bulkUpdate', async () => {
-            const db = getMockDB()
-            const repo = getRepository(db)
-
-            seedMockRepository('members', [
-                { name: 'John' },
-                { name: 'Jane' },
-                { name: 'Jack' }
-            ])
-
-            const memberListener = {
-                callback: async () => {}
-            }
-
-            const memberSpy = vi.spyOn(memberListener, 'callback')
-
-            repo.on('update', 'members', memberListener.callback)
-
-            await repo.bulkUpdate('members', [
-                { id: '0', name: 'Jill' },
-                { id: '1', name: 'Jill' }
-            ])
-
-            expect(memberSpy).toHaveBeenCalledTimes(1)
-            expect(memberSpy).toHaveBeenCalledWith([
-                { id: '0', name: 'Jill' },
-                { id: '1', name: 'Jill' }
-            ])
-        })
-
-        it('should trigger the "remove" event once after a bulkRemove', async () => {
-            const db = getMockDB()
-            const repo = getRepository(db)
-
-            seedMockRepository('members', [
-                { name: 'John' },
-                { name: 'Jane' },
-                { name: 'Jack' }
-            ])
-
-            const memberListener = {
-                callback: async () => {}
-            }
-
-            const memberSpy = vi.spyOn(memberListener, 'callback')
-
-            repo.on('remove', 'members', memberListener.callback)
-
-            await repo.bulkRemove('members', ['1', '2'])
-
-            expect(memberSpy).toHaveBeenCalledTimes(1)
-            expect(memberSpy).toHaveBeenCalledWith({ id: ['1', '2'] })
-        })
+        expect(members).toEqual(mockMembers.length)
     })
 })

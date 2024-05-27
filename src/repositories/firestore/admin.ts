@@ -1,14 +1,13 @@
 import admin from 'firebase-admin'
 
+import type { RepositoryWithEvents } from '@core/repositories/events'
+import { withEvents } from '@core/repositories/events'
 import type {
     Constraints,
     DBMeta,
     Entity,
     ID,
     Operators,
-    Repository,
-    RepositoryEvent,
-    RepositoryEventListener,
     Table
 } from '@core/repositories/interface'
 
@@ -85,12 +84,7 @@ export interface FirebaseConstraints<Row extends Entity>
     where?: [keyof (Row & { __name__: string }), Operators, any][]
 }
 
-export interface FirebaseListeners {
-    [event: string]: {
-        [table: string]: RepositoryEventListener<any>[]
-    }
-}
-export interface FirebaseRepository extends Repository {
+export interface FirebaseRepository extends RepositoryWithEvents {
     query: <Row extends Entity>(
         table: Table,
         constraints?: FirebaseConstraints<Row>,
@@ -103,25 +97,8 @@ export interface FirebaseRepository extends Repository {
     ) => Promise<number>
 }
 
-const getRepository = (db: admin.firestore.Firestore): FirebaseRepository => {
-    const listeners: FirebaseListeners = {}
-
-    const triggerEvent = async (
-        event: RepositoryEvent,
-        table: Table,
-        data: Entity
-    ) => {
-        const eventListeners = listeners[event]?.[table]
-        if (!eventListeners) {
-            return
-        }
-
-        for (const listener of eventListeners) {
-            await listener(data)
-        }
-    }
-
-    return {
+const getRepository = (db: admin.firestore.Firestore): FirebaseRepository =>
+    withEvents({
         bulkCreate: async (table, rows) => {
             const batch = db.batch()
 
@@ -139,8 +116,6 @@ const getRepository = (db: admin.firestore.Firestore): FirebaseRepository => {
 
             await batch.commit()
 
-            await triggerEvent('create', table, createdRows)
-
             return createdRows
         },
 
@@ -153,8 +128,6 @@ const getRepository = (db: admin.firestore.Firestore): FirebaseRepository => {
             }
 
             await batch.commit()
-
-            await triggerEvent('remove', table, { id: ids })
         },
 
         bulkUpdate: async (table, rows) => {
@@ -166,8 +139,6 @@ const getRepository = (db: admin.firestore.Firestore): FirebaseRepository => {
             }
 
             await batch.commit()
-
-            await triggerEvent('update', table, rows)
         },
 
         create: async (table, data, createId?) => {
@@ -177,8 +148,6 @@ const getRepository = (db: admin.firestore.Firestore): FirebaseRepository => {
             }
 
             const { id } = await db.collection(table).add(data)
-
-            await triggerEvent('create', table, { id, ...data })
 
             return id
         },
@@ -194,34 +163,6 @@ const getRepository = (db: admin.firestore.Firestore): FirebaseRepository => {
             }
 
             return await mapDocs(doc)
-        },
-
-        off: <Row extends Entity>(
-            event: RepositoryEvent,
-            table: Table,
-            callback?: RepositoryEventListener<Row>
-        ) => {
-            if (!listeners[event]?.[table]) {
-                return
-            }
-
-            if (callback) {
-                listeners[event][table] = listeners[event][table].filter(
-                    (cb) => cb !== callback
-                )
-            } else {
-                listeners[event][table] = []
-            }
-        },
-
-        on: <Row extends Entity>(
-            event: RepositoryEvent,
-            table: Table,
-            callback: RepositoryEventListener<Row>
-        ) => {
-            listeners[event] ??= {}
-            listeners[event]![table] ??= []
-            listeners[event]![table]!.push(callback)
         },
 
         query: async (table, constraints = {}, fields?) => {
@@ -264,14 +205,11 @@ const getRepository = (db: admin.firestore.Firestore): FirebaseRepository => {
 
         remove: async (table, id) => {
             await db.collection(table).doc(id).delete()
-            await triggerEvent('remove', table, { id })
         },
 
         update: async (table, id, data) => {
             await db.collection(table).doc(id).update(data)
-            await triggerEvent('update', table, { id, ...data })
         }
-    }
-}
+    })
 
 export default getRepository
