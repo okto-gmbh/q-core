@@ -29,17 +29,17 @@ export function withEvents(repository: Repository): RepositoryWithEvents {
         table: Table,
         data: Entity
     ) => {
-        try {
-            const eventListeners = listeners[event]?.[table]
-            if (!eventListeners) {
-                return
-            }
+        const eventListeners = listeners[event]?.[table]
+        if (!eventListeners) {
+            return
+        }
 
-            for (const listener of eventListeners) {
+        for (const listener of eventListeners) {
+            try {
                 await listener(data)
+            } catch (error) {
+                console.error(`Error in event listener ${event}`, error)
             }
-        } catch (error) {
-            console.error(`Error in event listener ${event}`, error)
         }
     }
 
