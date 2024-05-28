@@ -201,7 +201,7 @@ describe('firestore', () => {
             expect(userSpy).not.toHaveBeenCalled()
         })
 
-        it('should return the data anyways, event if the listener function throws', async () => {
+        it('should return the data anyways, even if the listener function throws', async () => {
             const db = getMockDB()
             const repo = getRepository(db)
 
