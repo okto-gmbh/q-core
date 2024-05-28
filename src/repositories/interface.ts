@@ -22,7 +22,7 @@ export interface RepositoryEventListeners {
 
 export type RepositoryEvent = 'create' | 'update' | 'remove'
 export type RepositoryEventListener<Row extends Entity> = (
-    data: Row | Row[]
+    data: Row
 ) => Promise<void>
 export interface Repository {
     bulkCreate: <Row extends Entity & Partial<DBMeta>>(
