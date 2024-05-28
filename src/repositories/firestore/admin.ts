@@ -198,10 +198,13 @@ const getRepository = (db: admin.firestore.Firestore): FirebaseRepository => ({
         return snapshot.data().count
     },
 
-    remove: async (table, id) => void db.collection(table).doc(id).delete(),
+    remove: async (table, id) => {
+        await db.collection(table).doc(id).delete()
+    },
 
-    update: async (table, id, data) =>
-        void db.collection(table).doc(id).update(data)
+    update: async (table, id, data) => {
+        await db.collection(table).doc(id).update(data)
+    }
 })
 
 export default getRepository
