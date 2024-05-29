@@ -135,7 +135,7 @@ const getRepository = (db: admin.firestore.Firestore): FirebaseRepository =>
 
             for (const row of rows) {
                 const doc = db.collection(table).doc(row.id)
-                batch.set(doc, row)
+                batch.set(doc, row, { merge: true })
             }
 
             await batch.commit()
