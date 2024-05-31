@@ -1,3 +1,5 @@
+'use client'
+
 import * as Styled from './Box.styled'
 
 import type {
