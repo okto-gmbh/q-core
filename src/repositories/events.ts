@@ -1,34 +1,52 @@
 import type {
-    Entity,
-    Repository,
-    RepositoryEvent,
-    RepositoryEventListener,
-    RepositoryEventListeners,
-    Table
+    DatabaseSchemaTemplate,
+    DBMeta,
+    Repository
 } from '@core/repositories/interface'
 
-export interface RepositoryWithEvents extends Repository {
-    off: <Row extends Entity>(
-        event: RepositoryEvent,
+export type RepositoryEvent = 'create' | 'update' | 'remove'
+
+export type RepositoryEventListener = (data: DBMeta) => Promise<void>
+
+export type RepositoryEventListeners<
+    DatabaseSchema extends DatabaseSchemaTemplate
+> = {
+    [Evt in RepositoryEvent]?: {
+        [Table in keyof DatabaseSchema & string]?: RepositoryEventListener[]
+    }
+}
+
+export interface RepositoryWithEvents<
+    DatabaseSchema extends DatabaseSchemaTemplate
+> extends Repository<DatabaseSchema> {
+    off: <
+        Evt extends RepositoryEvent,
+        Table extends keyof DatabaseSchema & string
+    >(
+        event: Evt,
         table: Table,
-        callback?: RepositoryEventListener<Row>
+        callback?: RepositoryEventListener
     ) => void
 
-    on: <Row extends Entity>(
-        event: RepositoryEvent,
+    on: <
+        Evt extends RepositoryEvent,
+        Table extends keyof DatabaseSchema & string
+    >(
+        event: Evt,
         table: Table,
-        callback: RepositoryEventListener<Row>
+        callback: RepositoryEventListener
     ) => void
 }
 
-export function withEvents(repository: Repository): RepositoryWithEvents {
-    const listeners: RepositoryEventListeners = {}
+export function withEvents<DatabaseSchema extends DatabaseSchemaTemplate>(
+    repository: Repository<DatabaseSchema>
+): RepositoryWithEvents<DatabaseSchema> {
+    const listeners: RepositoryEventListeners<DatabaseSchema> = {}
 
-    const triggerEvent = async (
-        event: RepositoryEvent,
-        table: Table,
-        data: Entity
-    ) => {
+    async function triggerEvent<
+        Evt extends RepositoryEvent,
+        Table extends keyof DatabaseSchema & string
+    >(event: Evt, table: Table, data: DBMeta) {
         const eventListeners = listeners[event]?.[table]
         if (!eventListeners) {
             return
@@ -45,13 +63,15 @@ export function withEvents(repository: Repository): RepositoryWithEvents {
 
     return {
         ...repository,
+
         bulkCreate: async (table, rows) => {
             const createdRows = await repository.bulkCreate(table, rows)
             for (const row of createdRows) {
-                await triggerEvent('create', table, row)
+                await triggerEvent('create', table, { id: row.id })
             }
             return createdRows
         },
+
         bulkRemove: async (table, ids) => {
             await repository.bulkRemove(table, ids)
             for (const id of ids) {
@@ -62,7 +82,7 @@ export function withEvents(repository: Repository): RepositoryWithEvents {
         bulkUpdate: async (table, rows) => {
             await repository.bulkUpdate(table, rows)
             for (const row of rows) {
-                await triggerEvent('update', table, row)
+                await triggerEvent('update', table, { id: row.id })
             }
         },
 
@@ -72,32 +92,29 @@ export function withEvents(repository: Repository): RepositoryWithEvents {
             return id
         },
 
-        off: <Row extends Entity>(
-            event: RepositoryEvent,
-            table: Table,
-            callback?: RepositoryEventListener<Row>
-        ) => {
+        off: (event, table, callback?) => {
             if (!listeners[event]?.[table]) {
                 return
             }
 
             if (callback) {
-                listeners[event][table] = listeners[event][table].filter(
+                // @ts-expect-error
+                listeners[event]![table] = listeners[event]![table]!.filter(
                     (cb) => cb !== callback
                 )
             } else {
-                listeners[event][table] = []
+                listeners[event]![table]!.length = 0
             }
         },
 
-        on: <Row extends Entity>(
-            event: RepositoryEvent,
-            table: Table,
-            callback: RepositoryEventListener<Row>
-        ) => {
+        on: (event, table, callback) => {
             listeners[event] ??= {}
-            listeners[event]![table] ??= []
-            listeners[event]![table]!.push(callback)
+            if (!listeners[event]![table]) {
+                // @ts-expect-error
+                listeners[event]![table] = [callback]
+            } else {
+                listeners[event]![table]!.push(callback)
+            }
         },
 
         remove: async (table, id) => {
@@ -109,5 +126,5 @@ export function withEvents(repository: Repository): RepositoryWithEvents {
             await repository.update(table, id, data)
             await triggerEvent('update', table, { id, ...data })
         }
-    } satisfies RepositoryWithEvents
+    } satisfies RepositoryWithEvents<DatabaseSchema>
 }

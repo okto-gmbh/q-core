@@ -1,12 +1,12 @@
 import type * as operators from './operators'
 
 export type ID = string
-export type Table = string
 export type DBMeta = { id: ID }
-export type Entity = Record<string, any>
+export type RowTemplate = { [field: string]: any }
+export type DatabaseSchemaTemplate = { [table: string]: RowTemplate }
 export type Operators = (typeof operators)[keyof typeof operators]
 
-export interface Constraints<Row extends Entity> {
+export interface Constraints<Row extends RowTemplate> {
     limit?: number
     orderBy?: {
         [key in keyof Row]?: 'asc' | 'desc'
@@ -14,51 +14,72 @@ export interface Constraints<Row extends Entity> {
     where?: [keyof Row, Operators, any][]
 }
 
-export interface RepositoryEventListeners {
-    [event: string]: {
-        [table: string]: RepositoryEventListener<any>[]
-    }
-}
-
-export type RepositoryEvent = 'create' | 'update' | 'remove'
-export type RepositoryEventListener<Row extends Entity> = (
-    data: Row
-) => Promise<void>
-export interface Repository {
-    bulkCreate: <Row extends Entity & Partial<DBMeta>>(
+export interface Repository<DatabaseSchema extends DatabaseSchemaTemplate> {
+    bulkCreate: <
+        Table extends keyof DatabaseSchema & string,
+        Row extends DatabaseSchema[Table]
+    >(
         table: Table,
         rows: Row[]
-    ) => Promise<(Omit<Row, 'id'> & DBMeta)[]>
+    ) => Promise<Row[]>
 
-    bulkRemove: (table: Table, ids: ID[]) => Promise<void>
+    bulkRemove: <Table extends keyof DatabaseSchema & string>(
+        table: Table,
+        ids: ID[]
+    ) => Promise<void>
 
-    bulkUpdate: <Row extends Entity>(table: Table, rows: Row[]) => Promise<void>
+    bulkUpdate: <
+        Table extends keyof DatabaseSchema & string,
+        Row extends DatabaseSchema[Table]
+    >(
+        table: Table,
+        rows: Row[]
+    ) => Promise<void>
 
-    create: <Row extends Entity>(
+    create: <
+        Table extends keyof DatabaseSchema & string,
+        Row extends DatabaseSchema[Table]
+    >(
         table: Table,
         data: Row,
         createId?: ID
     ) => Promise<ID>
 
-    find: <Row extends Entity>(
+    find: <
+        Table extends keyof DatabaseSchema & string,
+        Row extends DatabaseSchema[Table]
+    >(
         table: Table,
         id: ID
-    ) => Promise<(DBMeta & Row) | undefined>
+    ) => Promise<Row | undefined>
 
-    query: <Row extends Entity>(
+    query: <
+        Table extends keyof DatabaseSchema & string,
+        Row extends DatabaseSchema[Table],
+        Fields extends (keyof Row & string)[] | undefined
+    >(
         table: Table,
         constraints?: Constraints<Row>,
-        fields?: (keyof (DBMeta & Row))[]
-    ) => Promise<(DBMeta & Row)[]>
+        fields?: Fields
+    ) => Promise<Fields extends string[] ? Pick<Row, Fields[number]>[] : Row[]>
 
-    queryCount: <Row extends Entity>(
+    queryCount: <
+        Table extends keyof DatabaseSchema & string,
+        Row extends DatabaseSchema[Table]
+    >(
         table: Table,
         constraints?: Constraints<Row>
     ) => Promise<number>
 
-    remove: (table: Table, id: ID) => Promise<void>
+    remove: <Table extends keyof DatabaseSchema & string>(
+        table: Table,
+        id: ID
+    ) => Promise<void>
 
-    update: <Row extends Entity>(
+    update: <
+        Table extends keyof DatabaseSchema & string,
+        Row extends DatabaseSchema[Table]
+    >(
         table: Table,
         id: ID,
         data: Partial<Row>

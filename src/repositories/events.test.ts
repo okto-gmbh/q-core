@@ -8,9 +8,12 @@ import {
     verifyMock
 } from '@core/repositories/firestore/mock'
 
-interface Member {
-    name: string
-    age?: number
+type TestRepository = {
+    members: {
+        name: string
+        age?: number
+        id?: string
+    }
 }
 
 describe('firestore', () => {
@@ -46,7 +49,8 @@ describe('firestore', () => {
     describe('events', () => {
         it('should trigger the "create" event when creating an entry', async () => {
             const db = getMockDB()
-            const repo = getRepository(db)
+            const repo = getRepository<TestRepository>(db)
+
             const memberListener = {
                 callback: async () => {}
             }
@@ -75,7 +79,7 @@ describe('firestore', () => {
 
         it('should trigger the "update" event when updating an entry', async () => {
             const db = getMockDB()
-            const repo = getRepository(db)
+            const repo = getRepository<TestRepository>(db)
 
             seedMockRepository('members', [
                 { name: 'John' },
@@ -110,7 +114,7 @@ describe('firestore', () => {
 
         it('should trigger the "remove" event when removing an entry', async () => {
             const db = getMockDB()
-            const repo = getRepository(db)
+            const repo = getRepository<TestRepository>(db)
 
             seedMockRepository('members', [
                 { name: 'John' },
@@ -140,7 +144,7 @@ describe('firestore', () => {
 
         it('should not trigger other events', async () => {
             const db = getMockDB()
-            const repo = getRepository(db)
+            const repo = getRepository<TestRepository>(db)
 
             const memberListener = {
                 createCallback: async () => {},
@@ -177,7 +181,7 @@ describe('firestore', () => {
 
         it('should not trigger events of other tables', async () => {
             const db = getMockDB()
-            const repo = getRepository(db)
+            const repo = getRepository<TestRepository>(db)
 
             seedMockRepository('members', [{ name: 'John' }])
             seedMockRepository('users', [{ name: 'John' }])
@@ -203,7 +207,7 @@ describe('firestore', () => {
 
         it('should return the data anyways, even if the listener function throws', async () => {
             const db = getMockDB()
-            const repo = getRepository(db)
+            const repo = getRepository<TestRepository>(db)
 
             const memberListener = {
                 callback: async () => {
@@ -223,7 +227,7 @@ describe('firestore', () => {
 
         it('should be possible to register multiple listeners', async () => {
             const db = getMockDB()
-            const repo = getRepository(db)
+            const repo = getRepository<TestRepository>(db)
 
             seedMockRepository('members', [{ name: 'John' }])
             const memberListener1 = {
@@ -247,7 +251,7 @@ describe('firestore', () => {
 
         it('should be possible to unregister a single listener', async () => {
             const db = getMockDB()
-            const repo = getRepository(db)
+            const repo = getRepository<TestRepository>(db)
 
             seedMockRepository('members', [{ name: 'John' }])
             const memberListener1 = {
@@ -283,7 +287,7 @@ describe('firestore', () => {
 
         it('should be possible to unregister all listeners', async () => {
             const db = getMockDB()
-            const repo = getRepository(db)
+            const repo = getRepository<TestRepository>(db)
 
             seedMockRepository('members', [{ name: 'John' }])
 
@@ -315,7 +319,7 @@ describe('firestore', () => {
 
         it('should trigger the "create" event for each row after a bulkCreate', async () => {
             const db = getMockDB()
-            const repo = getRepository(db)
+            const repo = getRepository<TestRepository>(db)
 
             const memberListener = {
                 callback: async () => {}
@@ -332,18 +336,16 @@ describe('firestore', () => {
 
             expect(memberSpy).toHaveBeenCalledTimes(2)
             expect(memberSpy).toHaveBeenNthCalledWith(1, {
-                id: '0',
-                name: 'John'
+                id: '0'
             })
             expect(memberSpy).toHaveBeenNthCalledWith(2, {
-                id: '1',
-                name: 'Jane'
+                id: '1'
             })
         })
 
         it('should trigger the "update" event for each row after a bulkUpdate', async () => {
             const db = getMockDB()
-            const repo = getRepository(db)
+            const repo = getRepository<TestRepository>(db)
 
             seedMockRepository('members', [
                 { name: 'John' },
@@ -366,18 +368,16 @@ describe('firestore', () => {
 
             expect(memberSpy).toHaveBeenCalledTimes(2)
             expect(memberSpy).toHaveBeenNthCalledWith(1, {
-                id: '0',
-                name: 'Jill'
+                id: '0'
             })
             expect(memberSpy).toHaveBeenNthCalledWith(2, {
-                id: '1',
-                name: 'James'
+                id: '1'
             })
         })
 
         it('should trigger the "remove" event for each row after a bulkRemove', async () => {
             const db = getMockDB()
-            const repo = getRepository(db)
+            const repo = getRepository<TestRepository>(db)
 
             seedMockRepository('members', [
                 { name: 'John' },
@@ -402,7 +402,7 @@ describe('firestore', () => {
 
         it('should still return all data, even if some of the listeners throw an error', async () => {
             const db = getMockDB()
-            const repo = getRepository(db)
+            const repo = getRepository<TestRepository>(db)
 
             const memberListener = {
                 callback: async () => {

@@ -9,11 +9,26 @@ import {
     seedMockRepository,
     verifyMock
 } from '@core/repositories/firestore/mock'
+import type { DatabaseSchemaTemplate } from '@core/repositories/interface'
 
-interface Member {
-    name: string
-    age?: number
+type FirebaseMeta<Repository extends DatabaseSchemaTemplate> = {
+    [Table in keyof Repository]: {
+        [Field in keyof Repository[Table]]:
+            | Repository[Table][Field]
+            | ReturnType<typeof FieldValue.delete>
+    } & {
+        __name__?: string
+        id?: string
+    }
 }
+
+type TestRepository = FirebaseMeta<{
+    members: {
+        name: string
+        age?: number | ReturnType<typeof FieldValue.delete>
+        id?: string
+    }
+}>
 
 describe('firestore', () => {
     beforeAll(() => {
@@ -59,14 +74,14 @@ describe('firestore', () => {
 
     it('should return the id when creating an entry', async () => {
         const db = getMockDB()
-        const repo = getRepository(db)
+        const repo = getRepository<TestRepository>(db)
         const id = await repo.create('members', { name: 'John' })
         expect(id).toBe('0')
     })
 
     it('should use the createId when provided', async () => {
         const db = getMockDB()
-        const repo = getRepository(db)
+        const repo = getRepository<TestRepository>(db)
         const id = await repo.create('members', { name: 'John' }, '2')
         expect(id).toBe('2')
         expect(Object.keys(getRawMockData().members)[0]).toBe('2')
@@ -74,7 +89,7 @@ describe('firestore', () => {
 
     it('should reflect the entry in the database after creation', async () => {
         const db = getMockDB()
-        const repo = getRepository(db)
+        const repo = getRepository<TestRepository>(db)
         const id = await repo.create('members', { name: 'John' })
 
         expect(id).toBe('0')
@@ -84,7 +99,7 @@ describe('firestore', () => {
 
     it('should bulk add entries into the database', async () => {
         const db = getMockDB()
-        const repo = getRepository(db)
+        const repo = getRepository<TestRepository>(db)
         const members = await repo.bulkCreate('members', [
             { name: 'John' },
             { name: 'Jane' }
@@ -98,7 +113,7 @@ describe('firestore', () => {
 
     it('should add the id as a property for entries returned with find', async () => {
         const db = getMockDB()
-        const repo = getRepository(db)
+        const repo = getRepository<TestRepository>(db)
 
         seedMockRepository('members', [{ name: 'John' }, { name: 'Jane' }])
 
@@ -108,7 +123,7 @@ describe('firestore', () => {
 
     it('should add the id as a property for entries returned with query', async () => {
         const db = getMockDB()
-        const repo = getRepository(db)
+        const repo = getRepository<TestRepository>(db)
 
         seedMockRepository('members', [{ name: 'John' }])
 
@@ -118,7 +133,7 @@ describe('firestore', () => {
 
     it('should find the correct entry by id', async () => {
         const db = getMockDB()
-        const repo = getRepository(db)
+        const repo = getRepository<TestRepository>(db)
 
         seedMockRepository('members', [{ name: 'John' }, { name: 'Jane' }])
 
@@ -131,7 +146,7 @@ describe('firestore', () => {
 
     it('should remove the correct entry by id', async () => {
         const db = getMockDB()
-        const repo = getRepository(db)
+        const repo = getRepository<TestRepository>(db)
 
         seedMockRepository('members', [
             { name: 'John' },
@@ -149,7 +164,7 @@ describe('firestore', () => {
 
     it('should bulk remove the correct entries', async () => {
         const db = getMockDB()
-        const repo = getRepository(db)
+        const repo = getRepository<TestRepository>(db)
 
         seedMockRepository('members', [
             { name: 'John' },
@@ -167,7 +182,7 @@ describe('firestore', () => {
 
     it('should update the correct entry by id', async () => {
         const db = getMockDB()
-        const repo = getRepository(db)
+        const repo = getRepository<TestRepository>(db)
 
         seedMockRepository('members', [
             { name: 'John' },
@@ -195,7 +210,7 @@ describe('firestore', () => {
 
     it('should remove entries with the deleteTransform value on update', async () => {
         const db = getMockDB()
-        const repo = getRepository(db)
+        const repo = getRepository<TestRepository>(db)
 
         seedMockRepository('members', [
             { name: 'John' },
@@ -213,7 +228,7 @@ describe('firestore', () => {
 
     it('should filter queries by constraints', async () => {
         const db = getMockDB()
-        const repo = getRepository(db)
+        const repo = getRepository<TestRepository>(db)
 
         seedMockRepository('members', [
             { name: 'John' },
@@ -222,7 +237,7 @@ describe('firestore', () => {
             { age: 27, name: 'Jane' }
         ])
 
-        const members = await repo.query<Member>('members', {
+        const members = await repo.query('members', {
             where: [['name', '==', 'Jane']]
         })
 
@@ -234,7 +249,7 @@ describe('firestore', () => {
 
     it('should reduce query responses to the requested fields', async () => {
         const db = getMockDB()
-        const repo = getRepository(db)
+        const repo = getRepository<TestRepository>(db)
 
         seedMockRepository('members', [
             { name: 'John' },
@@ -243,7 +258,7 @@ describe('firestore', () => {
             { age: 27, name: 'Jane' }
         ])
 
-        const memberIds = await repo.query<Member>('members', undefined, ['id'])
+        const memberIds = await repo.query('members', undefined, ['id'])
 
         expect(memberIds).toEqual([
             { id: '0' },
@@ -252,9 +267,7 @@ describe('firestore', () => {
             { id: '3' }
         ])
 
-        const memberNames = await repo.query<Member>('members', undefined, [
-            'name'
-        ])
+        const memberNames = await repo.query('members', undefined, ['name'])
 
         expect(memberNames).toEqual([
             { name: 'John' },
@@ -266,7 +279,7 @@ describe('firestore', () => {
 
     it('should support __name__ as a constraint', async () => {
         const db = getMockDB()
-        const repo = getRepository(db)
+        const repo = getRepository<TestRepository>(db)
 
         seedMockRepository('members', [
             { name: 'John' },
@@ -275,7 +288,7 @@ describe('firestore', () => {
             { age: 27, name: 'Jane' }
         ])
 
-        const members = await repo.query<Member>('members', {
+        const members = await repo.query('members', {
             where: [['__name__', '==', '1']]
         })
 
@@ -284,7 +297,7 @@ describe('firestore', () => {
 
     it('should support __name__ for ordering', async () => {
         const db = getMockDB()
-        const repo = getRepository(db)
+        const repo = getRepository<TestRepository>(db)
 
         seedMockRepository('members', [
             { name: 'John' },
@@ -293,7 +306,7 @@ describe('firestore', () => {
             { age: 27, name: 'Jane' }
         ])
 
-        const members = await repo.query<Member>('members', {
+        const members = await repo.query('members', {
             orderBy: { __name__: 'desc' }
         })
 
@@ -307,7 +320,7 @@ describe('firestore', () => {
 
     it('should AND multiple query constraints together', async () => {
         const db = getMockDB()
-        const repo = getRepository(db)
+        const repo = getRepository<TestRepository>(db)
 
         seedMockRepository('members', [
             { name: 'John' },
@@ -316,7 +329,7 @@ describe('firestore', () => {
             { age: 27, name: 'Jane' }
         ])
 
-        const members = await repo.query<Member>('members', {
+        const members = await repo.query('members', {
             where: [
                 ['name', '==', 'Jane'],
                 ['age', '>=', 25]
@@ -328,7 +341,7 @@ describe('firestore', () => {
 
     it('should be possible to limit the amount of rows returned by query', async () => {
         const db = getMockDB()
-        const repo = getRepository(db)
+        const repo = getRepository<TestRepository>(db)
 
         seedMockRepository('members', [
             { name: 'John' },
@@ -337,7 +350,7 @@ describe('firestore', () => {
             { age: 27, name: 'Jane' }
         ])
 
-        const members = await repo.query<Member>('members', {
+        const members = await repo.query('members', {
             limit: 2
         })
 
@@ -349,7 +362,7 @@ describe('firestore', () => {
 
     it('should return only requested query fields', async () => {
         const db = getMockDB()
-        const repo = getRepository(db)
+        const repo = getRepository<TestRepository>(db)
 
         seedMockRepository('members', [
             { name: 'John' },
@@ -358,7 +371,7 @@ describe('firestore', () => {
             { age: 27, name: 'Jane' }
         ])
 
-        const members = await repo.query<Member>('members', undefined, ['name'])
+        const members = await repo.query('members', undefined, ['name'])
 
         expect(members).toEqual([
             { name: 'John' },
@@ -370,7 +383,7 @@ describe('firestore', () => {
 
     it('should return correct count for queryCount', async () => {
         const db = getMockDB()
-        const repo = getRepository(db)
+        const repo = getRepository<TestRepository>(db)
 
         const mockMembers = [
             { name: 'John' },
@@ -380,7 +393,7 @@ describe('firestore', () => {
         ]
         seedMockRepository('members', mockMembers)
 
-        const members = await repo.queryCount<Member>('members')
+        const members = await repo.queryCount('members')
 
         expect(members).toEqual(mockMembers.length)
     })
