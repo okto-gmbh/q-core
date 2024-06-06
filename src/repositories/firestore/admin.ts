@@ -5,6 +5,7 @@ import { withEvents } from '@core/repositories/events'
 import type {
     Constraints,
     DatabaseSchemaTemplate,
+    DBMeta,
     ID,
     Operators,
     RowTemplate
@@ -93,7 +94,11 @@ export interface FirebaseRepository<
         table: Table,
         constraints?: FirebaseConstraints<Row>,
         fields?: Fields
-    ) => Promise<Fields extends string[] ? Pick<Row, Fields[number]>[] : Row[]>
+    ) => Promise<
+        Fields extends string[]
+            ? Pick<Row & DBMeta, Fields[number]>[]
+            : (Row & DBMeta)[]
+    >
 
     queryCount: <
         Table extends keyof DatabaseSchema & string,
@@ -210,8 +215,8 @@ const getRepository = <DatabaseSchema extends DatabaseSchemaTemplate>(
             const mappedRows = await mapRows(docs, fields)
 
             return mappedRows as Fields extends string[]
-                ? Pick<Row, Fields[number]>[]
-                : Row[]
+                ? Pick<Row & DBMeta, Fields[number]>[]
+                : (Row & DBMeta)[]
         },
 
         queryCount: async (table, constraints = {}) => {

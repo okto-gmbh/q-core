@@ -143,8 +143,8 @@ const getRepository = <DatabaseSchema extends DatabaseSchemaTemplate>(
             }
 
             return data as Fields extends string[]
-                ? Pick<Row, Fields[number]>[]
-                : Row[]
+                ? Pick<Row & DBMeta, Fields[number]>[]
+                : (Row & DBMeta)[]
         },
         queryCount: async (table, constraints = {}) => {
             const { where } = constraints

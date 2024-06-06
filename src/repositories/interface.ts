@@ -51,7 +51,7 @@ export interface Repository<DatabaseSchema extends DatabaseSchemaTemplate> {
     >(
         table: Table,
         id: ID
-    ) => Promise<Row | undefined>
+    ) => Promise<(Row & DBMeta) | undefined>
 
     query: <
         Table extends keyof DatabaseSchema & string,
@@ -61,7 +61,11 @@ export interface Repository<DatabaseSchema extends DatabaseSchemaTemplate> {
         table: Table,
         constraints?: Constraints<Row>,
         fields?: Fields
-    ) => Promise<Fields extends string[] ? Pick<Row, Fields[number]>[] : Row[]>
+    ) => Promise<
+        Fields extends string[]
+            ? Pick<Row & DBMeta, Fields[number]>[]
+            : (Row & DBMeta)[]
+    >
 
     queryCount: <
         Table extends keyof DatabaseSchema & string,
