@@ -33,7 +33,7 @@ export interface Repository<DatabaseSchema extends DatabaseSchemaTemplate> {
         Row extends DatabaseSchema[Table]
     >(
         table: Table,
-        rows: Row[]
+        rows: (Partial<Omit<Row, 'id'>> & DBMeta)[]
     ) => Promise<void>
 
     create: <
