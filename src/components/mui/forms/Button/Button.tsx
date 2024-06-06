@@ -1,3 +1,5 @@
+'use client'
+
 import * as Styled from './Button.styled'
 
 import type { ButtonVariant } from '../../../Button/Button'
