@@ -2,12 +2,13 @@
 
 import { FieldValue } from 'firebase-admin/firestore'
 
-import type { FirebaseRepository } from '@core/repositories/firestore/admin'
+import { withEvents } from '@core/repositories/events'
+import type { FirebaseConstraints } from '@core/repositories/firestore/admin'
 import type {
+    DatabaseSchemaTemplate,
     DBMeta,
-    Entity,
     Operators,
-    Table
+    RowTemplate
 } from '@core/repositories/interface'
 
 import type { Firestore } from 'firebase-admin/firestore'
@@ -30,12 +31,14 @@ const DATABASE: Database = {
     }
 }
 
-const getRepository = (db: Firestore): FirebaseRepository => {
+const getRepository = <DatabaseSchema extends DatabaseSchemaTemplate>(
+    db: Firestore
+) => {
     verifyMock.verifyMock()
 
     void db
 
-    return {
+    return withEvents<DatabaseSchema>({
         bulkCreate: async (table, rows) => {
             DATABASE.data[table] ??= {}
 
@@ -83,7 +86,15 @@ const getRepository = (db: Firestore): FirebaseRepository => {
             mapDocs({
                 [id]: DATABASE.data[table][id]
             })[0],
-        query: async (table, constraints = {}, fields?) => {
+        query: async <
+            Table extends keyof DatabaseSchema & string,
+            Row extends DatabaseSchema[Table],
+            Fields extends (keyof Row & string)[] | undefined
+        >(
+            table: Table,
+            constraints: FirebaseConstraints<Row> = {},
+            fields?: Fields
+        ) => {
             const { limit, orderBy, where } = constraints
 
             let data = mapDocs(DATABASE.data[table] ?? {})
@@ -130,7 +141,10 @@ const getRepository = (db: Firestore): FirebaseRepository => {
                     }, {})
                 )
             }
-            return data
+
+            return data as Fields extends string[]
+                ? Pick<Row & DBMeta, Fields[number]>[]
+                : (Row & DBMeta)[]
         },
         queryCount: async (table, constraints = {}) => {
             const { where } = constraints
@@ -163,12 +177,16 @@ const getRepository = (db: Firestore): FirebaseRepository => {
                 ...data
             })
         }
-    }
+    })
 }
 
 export default getRepository
 
-export const seedMockRepository = <Rows extends Entity[]>(
+export const seedMockRepository = <
+    DatabaseSchema extends DatabaseSchemaTemplate,
+    Table extends keyof DatabaseSchema & string,
+    Rows extends DatabaseSchema[Table][]
+>(
     table: Table,
     data: Rows
 ) => {
@@ -193,7 +211,7 @@ export const verifyMock = {
     }
 }
 
-const transformFieldValue = (data: Entity) =>
+const transformFieldValue = (data: RowTemplate) =>
     Object.fromEntries(
         Object.entries(data).filter(
             ([, value]) =>

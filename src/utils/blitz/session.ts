@@ -1,10 +1,11 @@
-import type { BaseUser } from '../user'
+import type { User } from '@core/models/users'
+import type { DBMeta } from '@core/repositories/interface'
 
 import type { BlitzCtx } from '@blitzjs/auth'
 
-export const createSession = async <User extends BaseUser>(
+export const createSession = async (
     { session }: BlitzCtx,
-    { id, role, tenantId }: User
+    { id, role, tenantId }: User & DBMeta
 ) =>
     await session.$create({
         role,

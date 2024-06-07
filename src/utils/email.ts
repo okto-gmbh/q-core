@@ -26,10 +26,10 @@ export const sendEmail = async (options: SendMailOptions): Promise<any> =>
     await mailTransport.sendMail({
         ...options,
         from: process.env.EMAIL_USERNAME,
-        ...(process.env.NODE_ENV === 'development' && process.env.DEV_EMAIL
+        ...(process.env.NODE_ENV === 'development'
             ? {
-                  bcc: options.bcc ? process.env.DEV_EMAIL : undefined,
-                  cc: options.cc ? process.env.DEV_EMAIL : undefined,
+                  bcc: undefined,
+                  cc: undefined,
                   html:
                       options.html &&
                       `
@@ -48,7 +48,7 @@ export const sendEmail = async (options: SendMailOptions): Promise<any> =>
                         \n\n
                         ${options.text}
                   `,
-                  to: options.to ? process.env.DEV_EMAIL : undefined
+                  to: process.env.DEV_EMAIL ?? 'dev@okto.ch'
               }
             : {})
     })

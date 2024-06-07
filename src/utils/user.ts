@@ -1,23 +1,14 @@
-type BaseRole = 'ADMIN' | 'MANAGER' | 'USER'
+import type { User, UserRole } from '@core/models/users'
 
-export const ROLE_ADMIN: BaseRole = 'ADMIN'
-export const ROLE_MANAGER: BaseRole = 'MANAGER'
-export const ROLE_USER: BaseRole = 'USER'
+export const ROLE_ADMIN = 'ADMIN' satisfies UserRole
+export const ROLE_MANAGER = 'MANAGER' satisfies UserRole
+export const ROLE_USER = 'USER' satisfies UserRole
 
-export interface BaseUser {
-    email: string
-    hashedPassword: string
-    id: string
-    role: BaseRole | string
-    tenantId?: string
-}
+export const mapSafeUserFields = (users: User[]) => users.map(getSafeUserFields)
 
-export const mapSafeUserFields = <User extends BaseUser>(users: User[]) =>
-    users.map(getSafeUserFields)
-
-export const getSafeUserFields: <User extends BaseUser>(
-    user: User
-) => Omit<User, 'hashedPassword'> = (user) => {
+export const getSafeUserFields: (user: User) => Omit<User, 'hashedPassword'> = (
+    user
+) => {
     const { hashedPassword: _hashedPassword, ...safeUserFields } = user || {}
     return safeUserFields || null
 }

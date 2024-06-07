@@ -10,8 +10,6 @@ import { getSafeUserFields } from '../../utils/user'
 
 import { Login } from './validations'
 
-import type { BaseUser } from '../../utils/user'
-
 import type { BlitzCtx } from '@blitzjs/auth'
 
 type Input = {
@@ -19,16 +17,13 @@ type Input = {
     password: string
 }
 
-const authenticateUser = async <User extends BaseUser>(
-    rawEmail: string,
-    rawPassword: string
-): Promise<User> => {
+const authenticateUser = async (rawEmail: string, rawPassword: string) => {
     const { email, password } = Login.parse({
         email: rawEmail,
         password: rawPassword
     })
 
-    const [user] = await repo.query<User[]>('users', {
+    const [user] = await repo.query('users', {
         where: [['email', OP_EQUALS, email]]
     })
 
@@ -49,14 +44,11 @@ const authenticateUser = async <User extends BaseUser>(
     return user
 }
 
-const login = async <User extends BaseUser>(
-    { email, password }: Input,
-    ctx: BlitzCtx
-) => {
-    const user = await authenticateUser<User>(email, password)
+const login = async ({ email, password }: Input, ctx: BlitzCtx) => {
+    const user = await authenticateUser(email, password)
     await createSession(ctx, user)
 
-    return getSafeUserFields<User>(user)
+    return getSafeUserFields(user)
 }
 
 export default resolver.pipe(resolver.zod(Login), login)

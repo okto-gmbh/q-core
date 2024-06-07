@@ -1,44 +1,35 @@
 import admin from 'firebase-admin'
 
+import type { RepositoryWithEvents } from '@core/repositories/events'
+import { withEvents } from '@core/repositories/events'
 import type {
     Constraints,
+    DatabaseSchemaTemplate,
     DBMeta,
-    Entity,
     ID,
     Operators,
-    Repository,
-    Table
+    RowTemplate
 } from '@core/repositories/interface'
 
-/* eslint-disable no-redeclare */
-async function mapDocs<Doc extends Entity>(
-    doc: admin.firestore.DocumentSnapshot<admin.firestore.DocumentData>,
-    fields?: (keyof Doc)[]
-): Promise<(DBMeta & Doc) | undefined>
-async function mapDocs<Doc extends Entity>(
-    doc: admin.firestore.DocumentSnapshot<admin.firestore.DocumentData>[],
-    fields?: (keyof Doc)[]
-): Promise<(DBMeta & Doc)[] | undefined>
-async function mapDocs<Doc extends Entity>(
-    doc:
-        | admin.firestore.DocumentSnapshot<admin.firestore.DocumentData>
-        | admin.firestore.DocumentSnapshot<admin.firestore.DocumentData>[],
-    fields?: (keyof Doc)[]
-): Promise<(DBMeta & Doc) | (DBMeta & Doc)[] | undefined> {
-    if (Array.isArray(doc)) {
-        return (await Promise.all(
-            doc.map(async (d) => await mapDocs(d, fields))
-        )) as (DBMeta & Doc)[]
-    }
-
+async function mapRow<
+    Row extends RowTemplate,
+    Fields extends (keyof Row & string)[] | undefined
+>(
+    row: admin.firestore.DocumentSnapshot<admin.firestore.DocumentData>,
+    fields?: Fields
+): Promise<
+    (Fields extends string[] ? Pick<Row, Fields[number]> : Row) | undefined
+> {
     if (fields && fields.length === 1 && fields.includes('id')) {
         return {
-            id: doc.id
-        } as DBMeta & Doc
+            id: row.id
+        } as unknown as Fields extends string[]
+            ? Pick<Row, Fields[number]>
+            : Row
     }
 
-    const data = doc.data() || {}
-    data.id = doc.id
+    const data = row.data() || {}
+    data.id = row.id
 
     if (Object.keys(data).length === 1) {
         return
@@ -46,7 +37,7 @@ async function mapDocs<Doc extends Entity>(
 
     for (const propName in data) {
         // Exclude fields
-        if (fields && !fields.includes(propName)) {
+        if (fields && !fields.includes(propName as keyof Row & string)) {
             delete data[propName]
             continue
         }
@@ -54,10 +45,7 @@ async function mapDocs<Doc extends Entity>(
         // Map types
         const prop = data[propName]
         if (prop instanceof admin.firestore.DocumentReference) {
-            data[propName] = (
-                (origProp) => async () =>
-                    await mapDocs(await origProp.get())
-            )(prop)
+            data[propName] = await mapRow(await prop.get())
         }
         if (prop instanceof admin.firestore.Timestamp) {
             data[propName] = prop.toDate()
@@ -70,12 +58,24 @@ async function mapDocs<Doc extends Entity>(
         }
     }
 
-    return data as DBMeta & Doc
+    return data as unknown as Fields extends string[]
+        ? Pick<Row, Fields[number]>
+        : Row
 }
 
-export type FirebaseEntity = Entity
+async function mapRows<
+    Row extends RowTemplate,
+    Fields extends (keyof Row & string)[]
+>(
+    rows: admin.firestore.DocumentSnapshot<admin.firestore.DocumentData>[],
+    fields?: Fields
+) {
+    return await Promise.all(rows.map(async (row) => await mapRow(row, fields)))
+}
 
-export interface FirebaseConstraints<Row extends Entity>
+export type FirebaseEntity = RowTemplate
+
+export interface FirebaseConstraints<Row extends RowTemplate>
     extends Constraints<Row> {
     orderBy?: {
         [key in keyof (Row & { __name__: string })]?: 'asc' | 'desc'
@@ -83,128 +83,162 @@ export interface FirebaseConstraints<Row extends Entity>
     where?: [keyof (Row & { __name__: string }), Operators, any][]
 }
 
-export interface FirebaseRepository extends Repository {
-    query: <Row extends Entity>(
+export interface FirebaseRepository<
+    DatabaseSchema extends DatabaseSchemaTemplate
+> extends RepositoryWithEvents<DatabaseSchema> {
+    query: <
+        Table extends keyof DatabaseSchema & string,
+        Fields extends (keyof DatabaseSchema[Table] & string)[] | undefined
+    >(
         table: Table,
-        constraints?: FirebaseConstraints<Row>,
-        fields?: (keyof (DBMeta & Row))[]
-    ) => Promise<(DBMeta & Row)[]>
+        constraints?: FirebaseConstraints<DatabaseSchema[Table]>,
+        fields?: Fields
+    ) => Promise<
+        Fields extends string[]
+            ? Pick<DatabaseSchema[Table] & DBMeta, Fields[number]>[]
+            : (DatabaseSchema[Table] & DBMeta)[]
+    >
 
-    queryCount: <Row extends Entity>(
+    queryCount: <Table extends keyof DatabaseSchema & string>(
         table: Table,
-        constraints?: FirebaseConstraints<Row>
+        constraints?: FirebaseConstraints<DatabaseSchema[Table]>
     ) => Promise<number>
 }
 
-const getRepository = (db: admin.firestore.Firestore): FirebaseRepository => ({
-    bulkCreate: async (table, rows) => {
-        const batch = db.batch()
+const getRepository = <DatabaseSchema extends DatabaseSchemaTemplate>(
+    db: admin.firestore.Firestore
+) =>
+    withEvents<DatabaseSchema>({
+        bulkCreate: async (table, rows) => {
+            const batch = db.batch()
 
-        const createdRows = []
-        for (const { id, ...row } of rows) {
-            const doc = id
-                ? db.collection(table).doc(id)
-                : db.collection(table).doc()
-            createdRows.push({
-                id: doc.id,
-                ...row
+            const createdRows = rows.map((row) => {
+                const doc = row.id
+                    ? db.collection(table).doc(row.id)
+                    : db.collection(table).doc()
+                batch.set(doc, row)
+                return {
+                    ...row,
+                    id: doc.id
+                }
             })
-            batch.set(doc, row)
-        }
 
-        await batch.commit()
+            await batch.commit()
 
-        return createdRows
-    },
+            return createdRows
+        },
 
-    bulkRemove: async (table, ids) => {
-        const batch = db.batch()
+        bulkRemove: async (table, ids) => {
+            const batch = db.batch()
 
-        for (const id of ids) {
-            const doc = db.collection(table).doc(id)
-            batch.delete(doc)
-        }
-
-        await batch.commit()
-    },
-
-    bulkUpdate: async (table, rows) => {
-        const batch = db.batch()
-
-        for (const row of rows) {
-            const doc = db.collection(table).doc(row.id)
-            batch.set(doc, row)
-        }
-
-        await batch.commit()
-    },
-
-    create: async (table, data, createId?) => {
-        if (createId) {
-            await db.collection(table).doc(createId).set(data)
-            return createId
-        }
-
-        const { id } = await db.collection(table).add(data)
-        return id
-    },
-
-    find: async (table: Table, id: ID) => {
-        if (!id) {
-            return
-        }
-
-        const doc = await db.collection(table).doc(id).get()
-        if (!doc) {
-            return
-        }
-
-        return await mapDocs(doc)
-    },
-
-    query: async (table, constraints = {}, fields?) => {
-        const { limit, orderBy, where } = constraints
-        let query: admin.firestore.Query<Entity> = db.collection(table)
-
-        if (where) {
-            for (const [field, operation, value] of where) {
-                query = query.where(field as string, operation, value)
+            for (const id of ids) {
+                const doc = db.collection(table).doc(id)
+                batch.delete(doc)
             }
-        }
-        if (orderBy) {
-            for (const [field, direction = 'asc'] of Object.entries(orderBy)) {
-                query = query.orderBy(field, direction)
+
+            await batch.commit()
+        },
+
+        bulkUpdate: async (table, rows) => {
+            const batch = db.batch()
+
+            for (const row of rows) {
+                const doc = db.collection(table).doc(row.id)
+                batch.set(doc, row, { merge: true })
             }
-        }
-        if (limit) {
-            query = query.limit(limit)
-        }
 
-        const { docs } = await query.get()
-        return (await mapDocs(docs, fields)) || []
-    },
+            await batch.commit()
+        },
 
-    queryCount: async (table, constraints = {}) => {
-        const { where } = constraints
-        let query: admin.firestore.Query<Entity> = db.collection(table)
-
-        if (where) {
-            for (const [field, operation, value] of where) {
-                query = query.where(field as string, operation, value)
+        create: async (table, data, createId?) => {
+            if (createId) {
+                await db.collection(table).doc(createId).set(data)
+                return createId
             }
+
+            const { id } = await db.collection(table).add(data)
+
+            return id
+        },
+
+        find: async <
+            Table extends keyof DatabaseSchema & string,
+            Row extends DatabaseSchema[Table]
+        >(
+            table: Table,
+            id: ID
+        ) => {
+            if (!id) {
+                return
+            }
+
+            const doc = await db.collection(table).doc(id).get()
+            if (!doc) {
+                return
+            }
+
+            const mappedRows = await mapRow(doc)
+
+            return mappedRows as Row
+        },
+
+        query: async <
+            Table extends keyof DatabaseSchema & string,
+            Row extends DatabaseSchema[Table],
+            Fields extends (keyof Row & string)[] | undefined
+        >(
+            table: Table,
+            constraints: FirebaseConstraints<Row> = {},
+            fields?: Fields
+        ) => {
+            const { limit, orderBy, where } = constraints
+            let query: admin.firestore.Query<RowTemplate> = db.collection(table)
+
+            if (where) {
+                for (const [field, operation, value] of where) {
+                    query = query.where(field as string, operation, value)
+                }
+            }
+            if (orderBy) {
+                for (const [field, direction = 'asc'] of Object.entries(
+                    orderBy
+                )) {
+                    query = query.orderBy(field, direction)
+                }
+            }
+            if (limit) {
+                query = query.limit(limit)
+            }
+
+            const { docs } = await query.get()
+            const mappedRows = await mapRows(docs, fields)
+
+            return mappedRows as Fields extends string[]
+                ? Pick<Row & DBMeta, Fields[number]>[]
+                : (Row & DBMeta)[]
+        },
+
+        queryCount: async (table, constraints = {}) => {
+            const { where } = constraints
+            let query: admin.firestore.Query<RowTemplate> = db.collection(table)
+
+            if (where) {
+                for (const [field, operation, value] of where) {
+                    query = query.where(field as string, operation, value)
+                }
+            }
+
+            const snapshot = await query.count().get()
+            return snapshot.data().count
+        },
+
+        remove: async (table, id) => {
+            await db.collection(table).doc(id).delete()
+        },
+
+        update: async (table, id, data) => {
+            await db.collection(table).doc(id).update(data)
         }
-
-        const snapshot = await query.count().get()
-        return snapshot.data().count
-    },
-
-    remove: async (table, id) => {
-        await db.collection(table).doc(id).delete()
-    },
-
-    update: async (table, id, data) => {
-        await db.collection(table).doc(id).update(data)
-    }
-})
+    })
 
 export default getRepository
