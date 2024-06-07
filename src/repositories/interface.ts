@@ -15,64 +15,48 @@ export interface Constraints<Row extends RowTemplate> {
 }
 
 export interface Repository<DatabaseSchema extends DatabaseSchemaTemplate> {
-    bulkCreate: <
-        Table extends keyof DatabaseSchema & string,
-        Row extends DatabaseSchema[Table]
-    >(
+    bulkCreate: <Table extends keyof DatabaseSchema & string>(
         table: Table,
-        rows: Row[]
-    ) => Promise<Row[]>
+        rows: DatabaseSchema[Table][]
+    ) => Promise<DatabaseSchema[Table][]>
 
     bulkRemove: <Table extends keyof DatabaseSchema & string>(
         table: Table,
         ids: ID[]
     ) => Promise<void>
 
-    bulkUpdate: <
-        Table extends keyof DatabaseSchema & string,
-        Row extends DatabaseSchema[Table]
-    >(
+    bulkUpdate: <Table extends keyof DatabaseSchema & string>(
         table: Table,
-        rows: (Partial<Omit<Row, 'id'>> & DBMeta)[]
+        rows: (Partial<Omit<DatabaseSchema[Table], 'id'>> & DBMeta)[]
     ) => Promise<void>
 
-    create: <
-        Table extends keyof DatabaseSchema & string,
-        Row extends DatabaseSchema[Table]
-    >(
+    create: <Table extends keyof DatabaseSchema & string>(
         table: Table,
-        data: Row,
+        data: DatabaseSchema[Table],
         createId?: ID
     ) => Promise<ID>
 
-    find: <
-        Table extends keyof DatabaseSchema & string,
-        Row extends DatabaseSchema[Table]
-    >(
+    find: <Table extends keyof DatabaseSchema & string>(
         table: Table,
         id: ID
-    ) => Promise<(Row & DBMeta) | undefined>
+    ) => Promise<(DatabaseSchema[Table] & DBMeta) | undefined>
 
     query: <
         Table extends keyof DatabaseSchema & string,
-        Row extends DatabaseSchema[Table],
-        Fields extends (keyof Row & string)[] | undefined
+        Fields extends (keyof DatabaseSchema[Table] & string)[] | undefined
     >(
         table: Table,
-        constraints?: Constraints<Row>,
+        constraints?: Constraints<DatabaseSchema[Table]>,
         fields?: Fields
     ) => Promise<
         Fields extends string[]
-            ? Pick<Row & DBMeta, Fields[number]>[]
-            : (Row & DBMeta)[]
+            ? Pick<DatabaseSchema[Table] & DBMeta, Fields[number]>[]
+            : (DatabaseSchema[Table] & DBMeta)[]
     >
 
-    queryCount: <
-        Table extends keyof DatabaseSchema & string,
-        Row extends DatabaseSchema[Table]
-    >(
+    queryCount: <Table extends keyof DatabaseSchema & string>(
         table: Table,
-        constraints?: Constraints<Row>
+        constraints?: Constraints<DatabaseSchema[Table]>
     ) => Promise<number>
 
     remove: <Table extends keyof DatabaseSchema & string>(
@@ -80,12 +64,9 @@ export interface Repository<DatabaseSchema extends DatabaseSchemaTemplate> {
         id: ID
     ) => Promise<void>
 
-    update: <
-        Table extends keyof DatabaseSchema & string,
-        Row extends DatabaseSchema[Table]
-    >(
+    update: <Table extends keyof DatabaseSchema & string>(
         table: Table,
         id: ID,
-        data: Partial<Row>
+        data: Partial<DatabaseSchema[Table]>
     ) => Promise<void>
 }

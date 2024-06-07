@@ -88,24 +88,20 @@ export interface FirebaseRepository<
 > extends RepositoryWithEvents<DatabaseSchema> {
     query: <
         Table extends keyof DatabaseSchema & string,
-        Row extends DatabaseSchema[Table],
-        Fields extends (keyof Row & string)[] | undefined
+        Fields extends (keyof DatabaseSchema[Table] & string)[] | undefined
     >(
         table: Table,
-        constraints?: FirebaseConstraints<Row>,
+        constraints?: FirebaseConstraints<DatabaseSchema[Table]>,
         fields?: Fields
     ) => Promise<
         Fields extends string[]
-            ? Pick<Row & DBMeta, Fields[number]>[]
-            : (Row & DBMeta)[]
+            ? Pick<DatabaseSchema[Table] & DBMeta, Fields[number]>[]
+            : (DatabaseSchema[Table] & DBMeta)[]
     >
 
-    queryCount: <
-        Table extends keyof DatabaseSchema & string,
-        Row extends DatabaseSchema[Table]
-    >(
+    queryCount: <Table extends keyof DatabaseSchema & string>(
         table: Table,
-        constraints?: FirebaseConstraints<Row>
+        constraints?: FirebaseConstraints<DatabaseSchema[Table]>
     ) => Promise<number>
 }
 
