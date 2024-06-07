@@ -117,7 +117,10 @@ const getRepository = <DatabaseSchema extends DatabaseSchemaTemplate>(
                     ? db.collection(table).doc(row.id)
                     : db.collection(table).doc()
                 batch.set(doc, row)
-                return row
+                return {
+                    ...row,
+                    id: doc.id
+                }
             })
 
             await batch.commit()
