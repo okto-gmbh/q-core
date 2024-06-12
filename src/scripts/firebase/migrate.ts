@@ -21,10 +21,13 @@ export type MigrationContext = {
     algolia: SearchClient
     db: FirebaseFirestore.Firestore
     deleteField: () => FirebaseFirestore.FieldValue
+    onBulkCreate: (tableName: any, rows: any) => Promise<any>
+    onBulkDelete: (tableName: any, ids: string[]) => Promise<void>
+    onBulkUpdate: (tableName: any, rows: any) => Promise<void>
     onCreate: (tableName: any, id: any, data: any) => Promise<void>
     onDelete: (tableName: any, id: any) => Promise<void>
     onUpdate: (tableName: any, id: any, data: any) => Promise<void>
-    repo: Repository
+    repo: Repository<any>
     storage: Storage
     tenantId: string
 }
@@ -76,7 +79,14 @@ export default async ({
 
     // FIXME: Make this work without doku dependency `onUpdate` and `onDelete`
     const { default: getAlgoliaClient } = await import('@core/services/algolia')
-    const { onCreate, onDelete, onUpdate } = await import('~core/utils/algolia')
+    const {
+        onBulkCreate,
+        onBulkDelete,
+        onBulkUpdate,
+        onCreate,
+        onDelete,
+        onUpdate
+    } = await import('~core/utils/algolia')
     const { getBucket } = await import('@core/services/firebaseAdmin')
     const { getStorage } = await import('@core/storage/firebase/admin')
 
@@ -94,6 +104,9 @@ export default async ({
         algolia,
         db,
         deleteField,
+        onBulkCreate,
+        onBulkDelete,
+        onBulkUpdate,
         onCreate,
         onDelete,
         onUpdate,
