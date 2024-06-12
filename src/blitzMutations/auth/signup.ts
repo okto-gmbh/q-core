@@ -7,27 +7,25 @@ import { getSafeUserFields, ROLE_USER } from '../../utils/user'
 
 import { Signup } from './validations'
 
-import type { BaseUser } from '../../utils/user'
-
 type Input = {
     email: string
     password: string
 }
 
-const signup = async <User extends BaseUser>({ email, password }: Input) => {
+const signup = async ({ email, password }: Input) => {
     const hashedPassword = await SecurePassword.hash(password)
     const user = {
         email,
         hashedPassword,
         role: ROLE_USER
-    }
+    } as const
 
     const id = await repo.create('users', user)
 
-    return getSafeUserFields<User>({
+    return getSafeUserFields({
         ...user,
         id
-    } as User)
+    })
 }
 
 export default resolver.pipe(resolver.zod(Signup), signup)
