@@ -18,7 +18,7 @@ export interface Repository<DatabaseSchema extends DatabaseSchemaTemplate> {
     bulkCreate: <Table extends keyof DatabaseSchema & string>(
         table: Table,
         rows: DatabaseSchema[Table][]
-    ) => Promise<DatabaseSchema[Table][]>
+    ) => Promise<(DatabaseSchema[Table] & DBMeta)[]>
 
     bulkRemove: <Table extends keyof DatabaseSchema & string>(
         table: Table,
