@@ -1,3 +1,5 @@
+'use client'
+
 import GridArea from './GridArea'
 import GridItem from './GridItem'
 
