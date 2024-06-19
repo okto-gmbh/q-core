@@ -87,8 +87,10 @@ export interface FirebaseRepository<
     DatabaseSchema extends DatabaseSchemaTemplate
 > extends RepositoryWithEvents<DatabaseSchema> {
     query: <
-        Table extends keyof DatabaseSchema & string,
-        Fields extends (keyof DatabaseSchema[Table] & string)[] | undefined
+        const Table extends keyof DatabaseSchema & string,
+        const Fields extends
+            | (keyof DatabaseSchema[Table] & string)[]
+            | undefined
     >(
         table: Table,
         constraints?: FirebaseConstraints<DatabaseSchema[Table]>,
@@ -99,7 +101,7 @@ export interface FirebaseRepository<
             : (DatabaseSchema[Table] & DBMeta)[]
     >
 
-    queryCount: <Table extends keyof DatabaseSchema & string>(
+    queryCount: <const Table extends keyof DatabaseSchema & string>(
         table: Table,
         constraints?: FirebaseConstraints<DatabaseSchema[Table]>
     ) => Promise<number>
