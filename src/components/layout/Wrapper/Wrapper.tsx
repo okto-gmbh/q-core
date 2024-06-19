@@ -1,3 +1,5 @@
+'use client'
+
 import * as Styled from './Wrapper.styled'
 
 import type { FC, HTMLAttributes } from 'react'
