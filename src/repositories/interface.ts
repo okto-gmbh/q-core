@@ -15,35 +15,35 @@ export interface Constraints<Row extends RowTemplate> {
 }
 
 export interface Repository<DatabaseSchema extends DatabaseSchemaTemplate> {
-    bulkCreate: <Table extends keyof DatabaseSchema & string>(
+    bulkCreate: <const Table extends keyof DatabaseSchema & string>(
         table: Table,
         rows: DatabaseSchema[Table][]
     ) => Promise<(DatabaseSchema[Table] & DBMeta)[]>
 
-    bulkRemove: <Table extends keyof DatabaseSchema & string>(
+    bulkRemove: <const Table extends keyof DatabaseSchema & string>(
         table: Table,
         ids: ID[]
     ) => Promise<void>
 
-    bulkUpdate: <Table extends keyof DatabaseSchema & string>(
+    bulkUpdate: <const Table extends keyof DatabaseSchema & string>(
         table: Table,
         rows: (Partial<Omit<DatabaseSchema[Table], 'id'>> & DBMeta)[]
     ) => Promise<void>
 
-    create: <Table extends keyof DatabaseSchema & string>(
+    create: <const Table extends keyof DatabaseSchema & string>(
         table: Table,
         data: DatabaseSchema[Table],
         createId?: ID
     ) => Promise<ID>
 
-    find: <Table extends keyof DatabaseSchema & string>(
+    find: <const Table extends keyof DatabaseSchema & string>(
         table: Table,
         id: ID
     ) => Promise<(DatabaseSchema[Table] & DBMeta) | undefined>
 
     query: <
-        Table extends keyof DatabaseSchema & string,
-        Fields extends (keyof DatabaseSchema[Table] & string)[] | undefined
+        const Table extends keyof DatabaseSchema & string,
+        const Fields extends (keyof DatabaseSchema[Table] & string)[] | undefined
     >(
         table: Table,
         constraints?: Constraints<DatabaseSchema[Table]>,
@@ -54,17 +54,17 @@ export interface Repository<DatabaseSchema extends DatabaseSchemaTemplate> {
             : (DatabaseSchema[Table] & DBMeta)[]
     >
 
-    queryCount: <Table extends keyof DatabaseSchema & string>(
+    queryCount: <const Table extends keyof DatabaseSchema & string>(
         table: Table,
         constraints?: Constraints<DatabaseSchema[Table]>
     ) => Promise<number>
 
-    remove: <Table extends keyof DatabaseSchema & string>(
+    remove: <const Table extends keyof DatabaseSchema & string>(
         table: Table,
         id: ID
     ) => Promise<void>
 
-    update: <Table extends keyof DatabaseSchema & string>(
+    update: <const Table extends keyof DatabaseSchema & string>(
         table: Table,
         id: ID,
         data: Partial<DatabaseSchema[Table]>
