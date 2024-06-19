@@ -88,7 +88,9 @@ export interface FirebaseRepository<
 > extends RepositoryWithEvents<DatabaseSchema> {
     query: <
         const Table extends keyof DatabaseSchema & string,
-        const Fields extends (keyof DatabaseSchema[Table] & string)[] | undefined
+        const Fields extends
+            | (keyof DatabaseSchema[Table] & string)[]
+            | undefined
     >(
         table: Table,
         constraints?: FirebaseConstraints<DatabaseSchema[Table]>,

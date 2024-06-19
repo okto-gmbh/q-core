@@ -43,7 +43,9 @@ export interface Repository<DatabaseSchema extends DatabaseSchemaTemplate> {
 
     query: <
         const Table extends keyof DatabaseSchema & string,
-        const Fields extends (keyof DatabaseSchema[Table] & string)[] | undefined
+        const Fields extends
+            | (keyof DatabaseSchema[Table] & string)[]
+            | undefined
     >(
         table: Table,
         constraints?: Constraints<DatabaseSchema[Table]>,
