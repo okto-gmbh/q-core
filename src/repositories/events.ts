@@ -5,19 +5,6 @@ import type {
 } from '@core/repositories/interface'
 
 type RepositoryEvent = 'create' | 'update' | 'remove'
-type RepositoryBulkEvent = 'bulkCreate' | 'bulkUpdate' | 'bulkRemove'
-
-const REPOSITORY_EVENT_MAP = {
-    bulkCreate: 'create',
-    bulkRemove: 'remove',
-    bulkUpdate: 'update',
-    create: 'create',
-    remove: 'remove',
-    update: 'update'
-} as const satisfies Record<
-    RepositoryEvent | RepositoryBulkEvent,
-    RepositoryEvent
->
 
 type RepositoryEventListeners<DatabaseSchema extends DatabaseSchemaTemplate> = {
     [Evt in RepositoryEvent]?: {
@@ -71,16 +58,14 @@ export function withEvents<DatabaseSchema extends DatabaseSchemaTemplate>(
     const listeners: RepositoryEventListeners<DatabaseSchema> = {}
 
     async function triggerEvent<
-        const Evt extends RepositoryEvent | RepositoryBulkEvent,
+        const Evt extends RepositoryEvent,
         const Table extends keyof DatabaseSchema & string
     >(
         event: Evt,
         table: Table,
         data: RepositoryEventDataTypeMap<DatabaseSchema, Table>[Evt]
     ) {
-        const eventName = REPOSITORY_EVENT_MAP[event]
-
-        const eventListeners = listeners[eventName]?.[table]
+        const eventListeners = listeners[event]?.[table]
 
         if (!eventListeners) {
             return
@@ -88,7 +73,6 @@ export function withEvents<DatabaseSchema extends DatabaseSchemaTemplate>(
 
         for (const listener of eventListeners) {
             try {
-                // @ts-expect-error
                 await listener(data)
             } catch (error) {
                 console.error(`Error in event listener ${event}`, error)
@@ -102,9 +86,7 @@ export function withEvents<DatabaseSchema extends DatabaseSchemaTemplate>(
         bulkCreate: async (table, rows) => {
             const createdRows = await repository.bulkCreate(table, rows)
             for (const row of createdRows) {
-                await triggerEvent('bulkCreate', table, {
-                    id: row.id
-                })
+                await triggerEvent('create', table, row)
             }
             return createdRows
         },
@@ -112,16 +94,14 @@ export function withEvents<DatabaseSchema extends DatabaseSchemaTemplate>(
         bulkRemove: async (table, ids) => {
             await repository.bulkRemove(table, ids)
             for (const id of ids) {
-                await triggerEvent('bulkRemove', table, { id })
+                await triggerEvent('remove', table, { id })
             }
         },
 
         bulkUpdate: async (table, rows) => {
             await repository.bulkUpdate(table, rows)
             for (const row of rows) {
-                await triggerEvent('bulkUpdate', table, {
-                    id: row.id
-                })
+                await triggerEvent('update', table, row)
             }
         },
 

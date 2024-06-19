@@ -27,7 +27,7 @@ export interface Repository<DatabaseSchema extends DatabaseSchemaTemplate> {
 
     bulkUpdate: <const Table extends keyof DatabaseSchema & string>(
         table: Table,
-        rows: (Partial<Omit<DatabaseSchema[Table], 'id'>> & DBMeta)[]
+        rows: (Partial<DatabaseSchema[Table]> & DBMeta)[]
     ) => Promise<void>
 
     create: <const Table extends keyof DatabaseSchema & string>(
