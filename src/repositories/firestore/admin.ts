@@ -88,20 +88,22 @@ export interface FirebaseRepository<
 > extends RepositoryWithEvents<DatabaseSchema> {
     query: <
         Table extends keyof DatabaseSchema & string,
-        Fields extends (keyof DatabaseSchema[Table] & string)[] | undefined
+        Fields extends
+            | (keyof DatabaseSchema[Table]['all'] & string)[]
+            | undefined
     >(
         table: Table,
-        constraints?: FirebaseConstraints<DatabaseSchema[Table]>,
+        constraints?: FirebaseConstraints<DatabaseSchema[Table]['all']>,
         fields?: Fields
     ) => Promise<
         Fields extends string[]
-            ? Pick<DatabaseSchema[Table] & DBMeta, Fields[number]>[]
-            : (DatabaseSchema[Table] & DBMeta)[]
+            ? Pick<DatabaseSchema[Table]['all'] & DBMeta, Fields[number]>[]
+            : (DatabaseSchema[Table]['all'] & DBMeta)[]
     >
 
     queryCount: <Table extends keyof DatabaseSchema & string>(
         table: Table,
-        constraints?: FirebaseConstraints<DatabaseSchema[Table]>
+        constraints?: FirebaseConstraints<DatabaseSchema[Table]['all']>
     ) => Promise<number>
 }
 
@@ -163,7 +165,7 @@ const getRepository = <DatabaseSchema extends DatabaseSchemaTemplate>(
 
         find: async <
             Table extends keyof DatabaseSchema & string,
-            Row extends DatabaseSchema[Table]
+            Row extends DatabaseSchema[Table]['all']
         >(
             table: Table,
             id: ID
@@ -184,7 +186,7 @@ const getRepository = <DatabaseSchema extends DatabaseSchemaTemplate>(
 
         query: async <
             Table extends keyof DatabaseSchema & string,
-            Row extends DatabaseSchema[Table],
+            Row extends DatabaseSchema[Table]['all'],
             Fields extends (keyof Row & string)[] | undefined
         >(
             table: Table,
