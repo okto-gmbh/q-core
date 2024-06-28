@@ -33,7 +33,7 @@ export interface Repository<DatabaseSchema extends DatabaseSchemaTemplate> {
 
     bulkUpdate: <Table extends keyof DatabaseSchema & string>(
         table: Table,
-        rows: (Partial<Omit<DatabaseSchema[Table]['partial'], 'id'>> & DBMeta)[]
+        rows: (DatabaseSchema[Table]['partial'] & DBMeta)[]
     ) => Promise<void>
 
     create: <Table extends keyof DatabaseSchema & string>(
@@ -45,7 +45,7 @@ export interface Repository<DatabaseSchema extends DatabaseSchemaTemplate> {
     find: <Table extends keyof DatabaseSchema & string>(
         table: Table,
         id: ID
-    ) => Promise<(DatabaseSchema[Table]['all'] & DBMeta) | undefined>
+    ) => Promise<DatabaseSchema[Table]['all'] | undefined>
 
     query: <
         Table extends keyof DatabaseSchema & string,
@@ -58,8 +58,8 @@ export interface Repository<DatabaseSchema extends DatabaseSchemaTemplate> {
         fields?: Fields
     ) => Promise<
         Fields extends string[]
-            ? Pick<DatabaseSchema[Table]['all'] & DBMeta, Fields[number]>[]
-            : (DatabaseSchema[Table]['all'] & DBMeta)[]
+            ? Pick<DatabaseSchema[Table]['all'], Fields[number]>[]
+            : DatabaseSchema[Table]['all'][]
     >
 
     queryCount: <Table extends keyof DatabaseSchema & string>(
@@ -75,6 +75,6 @@ export interface Repository<DatabaseSchema extends DatabaseSchemaTemplate> {
     update: <Table extends keyof DatabaseSchema & string>(
         table: Table,
         id: ID,
-        data: Partial<DatabaseSchema[Table]['partial']>
+        data: DatabaseSchema[Table]['partial']
     ) => Promise<void>
 }
