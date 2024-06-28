@@ -105,10 +105,10 @@ export const Grid = styled(
                       height: 100%;
                   `
                 : colHeight
-                ? css`
-                      height: ${colHeight};
-                  `
-                : undefined}
+                  ? css`
+                        height: ${colHeight};
+                    `
+                  : undefined}
     }
 `
 
@@ -149,10 +149,10 @@ export const Item = styled(
                   height: 100%;
               `
             : colHeight
-            ? css`
-                  height: ${colHeight};
-              `
-            : undefined}
+              ? css`
+                    height: ${colHeight};
+                `
+              : undefined}
 
     img {
         width: 100%;
