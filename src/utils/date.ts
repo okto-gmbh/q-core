@@ -2,7 +2,7 @@ export const DEFAULT_TIMEZONE = 'Europe/Zurich'
 export const DEFAULT_LOCALE = 'de-CH'
 
 export const format = (
-    date: string | Date,
+    date: string | Date | null | undefined,
     {
         locale,
         ...options
@@ -22,7 +22,7 @@ export const format = (
 }
 
 export const formatDate = (
-    date: string | Date,
+    date: string | Date | null | undefined,
     locale = DEFAULT_LOCALE,
     timeZone = DEFAULT_TIMEZONE
 ): string =>
