@@ -3,12 +3,13 @@ import type * as operators from './operators'
 export type ID = string
 export type DBMeta = { id: ID }
 export type RowTemplate = { [field: string]: any }
+export type DatabaseSchemaTypes = {
+    all: RowTemplate
+    create: RowTemplate
+    partial: Partial<RowTemplate>
+}
 export type DatabaseSchemaTemplate = {
-    [table: string]: {
-        all: RowTemplate
-        create: RowTemplate
-        partial: Partial<RowTemplate>
-    }
+    [table: string]: DatabaseSchemaTypes
 }
 export type Operators = (typeof operators)[keyof typeof operators]
 
