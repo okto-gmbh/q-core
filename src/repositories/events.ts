@@ -4,37 +4,51 @@ import type {
     Repository
 } from '@core/repositories/interface'
 
-export type RepositoryEvent = 'create' | 'update' | 'remove'
+type RepositoryEvent = 'create' | 'update' | 'remove'
 
-export type RepositoryEventListener = (data: DBMeta) => Promise<void>
-
-export type RepositoryEventListeners<
-    DatabaseSchema extends DatabaseSchemaTemplate
-> = {
+type RepositoryEventListeners<DatabaseSchema extends DatabaseSchemaTemplate> = {
     [Evt in RepositoryEvent]?: {
-        [Table in keyof DatabaseSchema & string]?: RepositoryEventListener[]
+        [Table in keyof DatabaseSchema & string]?: ((
+            data: RepositoryEventDataTypeMap<DatabaseSchema, Table>[Evt]
+        ) => Promise<void>)[]
     }
+}
+
+type RepositoryEventDataTypeMap<
+    DatabaseSchema extends DatabaseSchemaTemplate,
+    Table extends keyof DatabaseSchema & string
+> = {
+    bulkCreate: DBMeta
+    bulkRemove: DBMeta
+    bulkUpdate: DBMeta
+    create: DatabaseSchema[Table]['all'] & DBMeta
+    remove: DBMeta
+    update: DatabaseSchema[Table]['partial'] & DBMeta
 }
 
 export interface RepositoryWithEvents<
     DatabaseSchema extends DatabaseSchemaTemplate
 > extends Repository<DatabaseSchema> {
     off: <
-        Evt extends RepositoryEvent,
-        Table extends keyof DatabaseSchema & string
+        const Evt extends RepositoryEvent,
+        const Table extends keyof DatabaseSchema & string
     >(
         event: Evt,
         table: Table,
-        callback?: RepositoryEventListener
+        callback?: (
+            data: RepositoryEventDataTypeMap<DatabaseSchema, Table>[Evt]
+        ) => Promise<void>
     ) => void
 
     on: <
-        Evt extends RepositoryEvent,
-        Table extends keyof DatabaseSchema & string
+        const Evt extends RepositoryEvent,
+        const Table extends keyof DatabaseSchema & string
     >(
         event: Evt,
         table: Table,
-        callback: RepositoryEventListener
+        callback: (
+            data: RepositoryEventDataTypeMap<DatabaseSchema, Table>[Evt]
+        ) => Promise<void>
     ) => void
 }
 
@@ -44,10 +58,15 @@ export function withEvents<DatabaseSchema extends DatabaseSchemaTemplate>(
     const listeners: RepositoryEventListeners<DatabaseSchema> = {}
 
     async function triggerEvent<
-        Evt extends RepositoryEvent,
-        Table extends keyof DatabaseSchema & string
-    >(event: Evt, table: Table, data: DBMeta) {
+        const Evt extends RepositoryEvent,
+        const Table extends keyof DatabaseSchema & string
+    >(
+        event: Evt,
+        table: Table,
+        data: RepositoryEventDataTypeMap<DatabaseSchema, Table>[Evt]
+    ) {
         const eventListeners = listeners[event]?.[table]
+
         if (!eventListeners) {
             return
         }
@@ -67,7 +86,7 @@ export function withEvents<DatabaseSchema extends DatabaseSchemaTemplate>(
         bulkCreate: async (table, rows) => {
             const createdRows = await repository.bulkCreate(table, rows)
             for (const row of createdRows) {
-                await triggerEvent('create', table, { id: row.id })
+                await triggerEvent('create', table, row)
             }
             return createdRows
         },
@@ -82,7 +101,7 @@ export function withEvents<DatabaseSchema extends DatabaseSchemaTemplate>(
         bulkUpdate: async (table, rows) => {
             await repository.bulkUpdate(table, rows)
             for (const row of rows) {
-                await triggerEvent('update', table, { id: row.id })
+                await triggerEvent('update', table, row)
             }
         },
 
@@ -113,6 +132,7 @@ export function withEvents<DatabaseSchema extends DatabaseSchemaTemplate>(
                 // @ts-expect-error
                 listeners[event]![table] = [callback]
             } else {
+                // @ts-expect-error
                 listeners[event]![table]!.push(callback)
             }
         },

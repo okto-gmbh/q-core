@@ -336,10 +336,12 @@ describe('firestore', () => {
 
             expect(memberSpy).toHaveBeenCalledTimes(2)
             expect(memberSpy).toHaveBeenNthCalledWith(1, {
-                id: '0'
+                id: '0',
+                name: 'John'
             })
             expect(memberSpy).toHaveBeenNthCalledWith(2, {
-                id: '1'
+                id: '1',
+                name: 'Jane'
             })
         })
 
@@ -368,10 +370,12 @@ describe('firestore', () => {
 
             expect(memberSpy).toHaveBeenCalledTimes(2)
             expect(memberSpy).toHaveBeenNthCalledWith(1, {
-                id: '0'
+                id: '0',
+                name: 'Jill'
             })
             expect(memberSpy).toHaveBeenNthCalledWith(2, {
-                id: '1'
+                id: '1',
+                name: 'James'
             })
         })
 

@@ -100,7 +100,7 @@ export interface FirebaseRepository<
             : DatabaseSchema[Table]['all'][]
     >
 
-    queryCount: <Table extends keyof DatabaseSchema & string>(
+    queryCount: <const Table extends keyof DatabaseSchema & string>(
         table: Table,
         constraints?: FirebaseConstraints<DatabaseSchema[Table]['all']>
     ) => Promise<number>
