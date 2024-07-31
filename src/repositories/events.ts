@@ -87,7 +87,7 @@ export function withEvents<DatabaseSchema extends DatabaseSchemaTemplate>(
         bulkCreate: async (table, rows) => {
             const createdRows = await repository.bulkCreate(table, rows)
             for (const row of createdRows) {
-                await triggerEvent('create', table, row.id)
+                await triggerEvent('create', table, row)
             }
             return createdRows
         },
