@@ -4,7 +4,7 @@ import type {
     Repository
 } from '@core/repositories/interface'
 
-type RepositoryEvent = 'create' | 'update' | 'remove' | 'preRemove'
+type RepositoryEvent = 'create' | 'update' | 'remove' | 'beforeRemove'
 
 type RepositoryEventListeners<DatabaseSchema extends DatabaseSchemaTemplate> = {
     [Evt in RepositoryEvent]?: {
@@ -18,11 +18,11 @@ type RepositoryEventDataTypeMap<
     DatabaseSchema extends DatabaseSchemaTemplate,
     Table extends keyof DatabaseSchema & string
 > = {
+    beforeRemove: DBMeta
     bulkCreate: DBMeta
     bulkRemove: DBMeta
     bulkUpdate: DBMeta
     create: DatabaseSchema[Table]['all'] & DBMeta
-    preRemove: DBMeta
     remove: DBMeta
     update: DatabaseSchema[Table]['partial'] & DBMeta
 }
@@ -94,7 +94,7 @@ export function withEvents<DatabaseSchema extends DatabaseSchemaTemplate>(
 
         bulkRemove: async (table, ids) => {
             for (const id of ids) {
-                await triggerEvent('preRemove', table, { id })
+                await triggerEvent('beforeRemove', table, { id })
             }
             await repository.bulkRemove(table, ids)
             for (const id of ids) {
@@ -142,7 +142,7 @@ export function withEvents<DatabaseSchema extends DatabaseSchemaTemplate>(
         },
 
         remove: async (table, id) => {
-            await triggerEvent('preRemove', table, { id })
+            await triggerEvent('beforeRemove', table, { id })
             await repository.remove(table, id)
             await triggerEvent('remove', table, { id })
         },
