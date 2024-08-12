@@ -185,7 +185,7 @@ export default getRepository
 export const seedMockRepository = <
     DatabaseSchema extends DatabaseSchemaTemplate,
     Table extends keyof DatabaseSchema & string,
-    Rows extends DatabaseSchema[Table][]
+    Rows extends DatabaseSchema[Table]['create'][]
 >(
     table: Table,
     data: Rows

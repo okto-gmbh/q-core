@@ -1,3 +1,5 @@
+'use client'
+
 import * as Styled from './Typography.styled'
 
 import type { Display, FontSize, FontWeight } from '../../types'

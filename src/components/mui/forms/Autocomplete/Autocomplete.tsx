@@ -1,3 +1,5 @@
+'use client'
+
 import * as Styled from './Autocomplete.styled'
 
 import type { FC } from 'react'

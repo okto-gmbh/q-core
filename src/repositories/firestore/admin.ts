@@ -5,7 +5,6 @@ import { withEvents } from '@core/repositories/events'
 import type {
     Constraints,
     DatabaseSchemaTemplate,
-    DBMeta,
     ID,
     Operators,
     RowTemplate
@@ -87,23 +86,23 @@ export interface FirebaseRepository<
     DatabaseSchema extends DatabaseSchemaTemplate
 > extends RepositoryWithEvents<DatabaseSchema> {
     query: <
-        const Table extends keyof DatabaseSchema & string,
-        const Fields extends
-            | (keyof DatabaseSchema[Table] & string)[]
+        Table extends keyof DatabaseSchema & string,
+        Fields extends
+            | (keyof DatabaseSchema[Table]['all'] & string)[]
             | undefined
     >(
         table: Table,
-        constraints?: FirebaseConstraints<DatabaseSchema[Table]>,
+        constraints?: FirebaseConstraints<DatabaseSchema[Table]['all']>,
         fields?: Fields
     ) => Promise<
         Fields extends string[]
-            ? Pick<DatabaseSchema[Table] & DBMeta, Fields[number]>[]
-            : (DatabaseSchema[Table] & DBMeta)[]
+            ? Pick<DatabaseSchema[Table]['all'], Fields[number]>[]
+            : DatabaseSchema[Table]['all'][]
     >
 
     queryCount: <const Table extends keyof DatabaseSchema & string>(
         table: Table,
-        constraints?: FirebaseConstraints<DatabaseSchema[Table]>
+        constraints?: FirebaseConstraints<DatabaseSchema[Table]['all']>
     ) => Promise<number>
 }
 
@@ -165,7 +164,7 @@ const getRepository = <DatabaseSchema extends DatabaseSchemaTemplate>(
 
         find: async <
             Table extends keyof DatabaseSchema & string,
-            Row extends DatabaseSchema[Table]
+            Row extends DatabaseSchema[Table]['all']
         >(
             table: Table,
             id: ID
@@ -186,7 +185,7 @@ const getRepository = <DatabaseSchema extends DatabaseSchemaTemplate>(
 
         query: async <
             Table extends keyof DatabaseSchema & string,
-            Row extends DatabaseSchema[Table],
+            Row extends DatabaseSchema[Table]['all'],
             Fields extends (keyof Row & string)[] | undefined
         >(
             table: Table,
@@ -216,8 +215,8 @@ const getRepository = <DatabaseSchema extends DatabaseSchemaTemplate>(
             const mappedRows = await mapRows(docs, fields)
 
             return mappedRows as Fields extends string[]
-                ? Pick<Row & DBMeta, Fields[number]>[]
-                : (Row & DBMeta)[]
+                ? Pick<Row, Fields[number]>[]
+                : Row[]
         },
 
         queryCount: async (table, constraints = {}) => {

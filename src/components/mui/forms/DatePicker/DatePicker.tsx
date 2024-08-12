@@ -1,5 +1,5 @@
 import { DatePicker as MuiDatePicker } from '@mui/x-date-pickers-pro'
-import { forwardRef, useRef } from 'react'
+import { forwardRef } from 'react'
 import { Controller } from 'react-hook-form'
 
 import Paper from '../../Paper'
@@ -33,8 +33,6 @@ const DatePicker: FC<DatePickerProps> = ({
     value,
     ...props
 }) => {
-    const pickerRef = useRef<HTMLDivElement | null>()
-
     const handleChange = (
         date: Date | null,
         field: ControllerRenderProps<FieldValues, string>
@@ -52,16 +50,11 @@ const DatePicker: FC<DatePickerProps> = ({
     const renderPicker = (
         field: ControllerRenderProps<FieldValues, string>
     ) => (
-        <div ref={(ref) => (pickerRef.current = ref)}>
+        <div>
             <MuiDatePicker
                 value={field.value ? new Date(field.value) : null}
                 label={label}
                 format="dd.MM.yyyy"
-                slotProps={{
-                    popper: {
-                        anchorEl: pickerRef.current
-                    }
-                }}
                 slots={{
                     desktopPaper: Paper,
                     textField: forwardRef(function TextField(

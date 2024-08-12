@@ -3,7 +3,14 @@ import type * as operators from './operators'
 export type ID = string
 export type DBMeta = { id: ID }
 export type RowTemplate = { [field: string]: any }
-export type DatabaseSchemaTemplate = { [table: string]: RowTemplate }
+export type DatabaseSchemaTypes = {
+    all: RowTemplate
+    create: RowTemplate
+    partial: Partial<RowTemplate>
+}
+export type DatabaseSchemaTemplate = {
+    [table: string]: DatabaseSchemaTypes
+}
 export type Operators = (typeof operators)[keyof typeof operators]
 
 export interface Constraints<Row extends RowTemplate> {
@@ -17,8 +24,8 @@ export interface Constraints<Row extends RowTemplate> {
 export interface Repository<DatabaseSchema extends DatabaseSchemaTemplate> {
     bulkCreate: <const Table extends keyof DatabaseSchema & string>(
         table: Table,
-        rows: DatabaseSchema[Table][]
-    ) => Promise<(DatabaseSchema[Table] & DBMeta)[]>
+        rows: DatabaseSchema[Table]['create'][]
+    ) => Promise<DatabaseSchema[Table]['all'][]>
 
     bulkRemove: <const Table extends keyof DatabaseSchema & string>(
         table: Table,
@@ -27,38 +34,38 @@ export interface Repository<DatabaseSchema extends DatabaseSchemaTemplate> {
 
     bulkUpdate: <const Table extends keyof DatabaseSchema & string>(
         table: Table,
-        rows: (Partial<DatabaseSchema[Table]> & DBMeta)[]
+        rows: (DatabaseSchema[Table]['partial'] & DBMeta)[]
     ) => Promise<void>
 
     create: <const Table extends keyof DatabaseSchema & string>(
         table: Table,
-        data: DatabaseSchema[Table],
+        data: DatabaseSchema[Table]['create'],
         createId?: ID
     ) => Promise<ID>
 
     find: <const Table extends keyof DatabaseSchema & string>(
         table: Table,
         id: ID
-    ) => Promise<(DatabaseSchema[Table] & DBMeta) | undefined>
+    ) => Promise<DatabaseSchema[Table]['all'] | undefined>
 
     query: <
-        const Table extends keyof DatabaseSchema & string,
-        const Fields extends
-            | (keyof DatabaseSchema[Table] & string)[]
+        Table extends keyof DatabaseSchema & string,
+        Fields extends
+            | (keyof DatabaseSchema[Table]['all'] & string)[]
             | undefined
     >(
         table: Table,
-        constraints?: Constraints<DatabaseSchema[Table]>,
+        constraints?: Constraints<DatabaseSchema[Table]['all']>,
         fields?: Fields
     ) => Promise<
         Fields extends string[]
-            ? Pick<DatabaseSchema[Table] & DBMeta, Fields[number]>[]
-            : (DatabaseSchema[Table] & DBMeta)[]
+            ? Pick<DatabaseSchema[Table]['all'], Fields[number]>[]
+            : DatabaseSchema[Table]['all'][]
     >
 
     queryCount: <const Table extends keyof DatabaseSchema & string>(
         table: Table,
-        constraints?: Constraints<DatabaseSchema[Table]>
+        constraints?: Constraints<DatabaseSchema[Table]['all']>
     ) => Promise<number>
 
     remove: <const Table extends keyof DatabaseSchema & string>(
@@ -69,6 +76,6 @@ export interface Repository<DatabaseSchema extends DatabaseSchemaTemplate> {
     update: <const Table extends keyof DatabaseSchema & string>(
         table: Table,
         id: ID,
-        data: Partial<DatabaseSchema[Table]>
+        data: DatabaseSchema[Table]['partial']
     ) => Promise<void>
 }

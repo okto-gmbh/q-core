@@ -1,3 +1,5 @@
+'use client'
+
 import { createFilterOptions } from '@mui/material/Autocomplete'
 import match from 'autosuggest-highlight/match'
 import parse from 'autosuggest-highlight/parse'
@@ -121,8 +123,8 @@ const Select = (
         const createOptions = multiple
             ? values.filter(({ create }: { create?: boolean }) => create)
             : values?.create
-            ? [values]
-            : []
+              ? [values]
+              : []
 
         if (createOptions.length > 0) {
             const newOptions = await Promise.all(
