@@ -42,14 +42,6 @@ const DateRangePicker: FC<DateRangePickerProps> = ({
     shortcuts,
     ...props
 }) => {
-    let disabled = false
-    if (
-        !props.minDate ||
-        props.minDate.getTime() === props.maxDate?.getTime()
-    ) {
-        disabled = true
-    }
-
     const handleChange = (
         range: any[],
         field: ControllerRenderProps<FieldValues, string>
@@ -84,7 +76,6 @@ const DateRangePicker: FC<DateRangePickerProps> = ({
             localeText={{ end: '', start: label }}
             onAccept={(range) => handleChange(range, field)}
             slotProps={slotProps}
-            disabled={disabled}
             slots={{
                 desktopPaper: Paper,
                 /*
