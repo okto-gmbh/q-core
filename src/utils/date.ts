@@ -47,7 +47,7 @@ export const formatDayAndMonth = (
     })
 
 // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types, @typescript-eslint/no-explicit-any
-export const isValidDate = (date: any): boolean =>
+export const isValidDate = (date: any): date is Date =>
     Object.prototype.toString.call(date) === '[object Date]' && !isNaN(date)
 
 export const getTimestamp = (date?: Date | string | number) => {
