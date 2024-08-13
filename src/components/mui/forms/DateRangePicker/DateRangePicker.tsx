@@ -40,6 +40,7 @@ const DateRangePicker: FC<DateRangePickerProps> = ({
     label,
     onChange,
     shortcuts,
+    slots,
     ...props
 }) => {
     const handleChange = (
@@ -96,7 +97,8 @@ const DateRangePicker: FC<DateRangePickerProps> = ({
                             helperText={helperText}
                         />
                     )
-                })
+                }),
+                ...(slots ?? {})
             }}
             {...props}
         />
