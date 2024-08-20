@@ -4,8 +4,6 @@ import type { Repository } from '@core/repositories/interface'
 import type { BaseOptions } from '@core/scripts/common'
 import type { Storage } from '@core/storage/interface'
 
-import type { SearchClient } from 'algoliasearch'
-
 export const ALL_TENANTS = 'all'
 
 export type Migrations = {
@@ -18,15 +16,8 @@ export interface MigrationOptions extends BaseOptions {
 }
 
 export type MigrationContext = {
-    algolia: SearchClient
     db: FirebaseFirestore.Firestore
     deleteField: () => FirebaseFirestore.FieldValue
-    onBulkCreate: (tableName: any, rows: any) => Promise<any>
-    onBulkDelete: (tableName: any, ids: string[]) => Promise<void>
-    onBulkUpdate: (tableName: any, rows: any) => Promise<void>
-    onCreate: (tableName: any, id: any, data: any) => Promise<void>
-    onDelete: (tableName: any, id: any) => Promise<void>
-    onUpdate: (tableName: any, id: any, data: any) => Promise<void>
     repo: Repository<any>
     storage: Storage
     tenantId: string
@@ -77,16 +68,6 @@ export default async ({
     console.log(`Loading .env.${scope}`)
     dotenv.config({ path: `.env.${scope}` })
 
-    // FIXME: Make this work without doku dependency `onUpdate` and `onDelete`
-    const { default: getAlgoliaClient } = await import('@core/services/algolia')
-    const {
-        onBulkCreate,
-        onBulkDelete,
-        onBulkUpdate,
-        onCreate,
-        onDelete,
-        onUpdate
-    } = await import('~core/utils/algolia')
     const { getBucket } = await import('@core/services/firebaseAdmin')
     const { getStorage } = await import('@core/storage/firebase/admin')
 
@@ -98,18 +79,9 @@ export default async ({
         deleteField
     } = await import('@core/repositories/firestore')
 
-    const algolia = getAlgoliaClient(process.env.ALGOLIA_ADMIN_API_KEY)
-
     const ctx: MigrationContext = {
-        algolia,
         db,
         deleteField,
-        onBulkCreate,
-        onBulkDelete,
-        onBulkUpdate,
-        onCreate,
-        onDelete,
-        onUpdate,
         repo,
         storage,
         tenantId: tenant
