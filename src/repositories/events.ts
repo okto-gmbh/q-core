@@ -102,7 +102,6 @@ export function withEvents<DatabaseSchema extends DatabaseSchemaTemplate>(
             }
 
             if (callback) {
-                // @ts-expect-error
                 listeners[event][table] = listeners[event][table].filter((cb) => cb !== callback)
             } else {
                 listeners[event][table].length = 0
@@ -115,7 +114,6 @@ export function withEvents<DatabaseSchema extends DatabaseSchemaTemplate>(
                 // @ts-expect-error
                 listeners[event]![table] = [callback]
             } else {
-                // @ts-expect-error
                 listeners[event]![table].push(callback)
             }
         },
