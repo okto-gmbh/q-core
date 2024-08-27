@@ -4,7 +4,6 @@ import { assertNever, joinValues, jsonStringifyReplacer } from '../helpers'
 
 import type { ZodErrorMap } from 'zod'
 
-// eslint-disable-next-line sonarjs/cognitive-complexity
 const errorMap: ZodErrorMap = (issue, { defaultError }) => {
     let message = ''
     switch (issue.code) {

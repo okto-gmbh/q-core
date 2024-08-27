@@ -1,5 +1,3 @@
-/* eslint-disable sonarjs/cognitive-complexity */
-
 import { FieldValue } from 'firebase-admin/firestore'
 
 import { withEvents } from '@core/repositories/events'

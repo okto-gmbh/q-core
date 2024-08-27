@@ -16,7 +16,6 @@ export type ResolvedParameters<ProvidedParameters extends Parameters> = {
         : string
 }
 
-// eslint-disable-next-line sonarjs/cognitive-complexity
 export async function createScript<ProvidedParameters extends Parameters>(
     confirmationQuestion: string | undefined,
     parameters: ProvidedParameters

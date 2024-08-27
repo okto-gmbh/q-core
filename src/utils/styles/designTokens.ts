@@ -1,4 +1,3 @@
-/* eslint-disable sonarjs/no-duplicate-string */
 import Color from 'color'
 import merge from 'lodash.merge'
 
