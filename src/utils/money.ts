@@ -9,5 +9,5 @@ export const formatMoney = (
         maximumFractionDigits: 0,
         minimumFractionDigits: 0,
         style: 'currency',
-        ...options
+        ...options,
     })

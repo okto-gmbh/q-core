@@ -50,9 +50,7 @@ export interface Repository<DatabaseSchema extends DatabaseSchemaTemplate> {
 
     query: <
         Table extends keyof DatabaseSchema & string,
-        Fields extends
-            | (keyof DatabaseSchema[Table]['all'] & string)[]
-            | undefined
+        Fields extends (keyof DatabaseSchema[Table]['all'] & string)[] | undefined,
     >(
         table: Table,
         constraints?: Constraints<DatabaseSchema[Table]['all']>,

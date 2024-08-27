@@ -2,19 +2,20 @@
 
 import * as Styled from './Box.styled'
 
+import type { ComponentType, FC, HTMLAttributes } from 'react'
+
 import type {
     AlignItems,
     Display,
     FlexDirection,
     JustifyContent,
     Spacing,
-    TextAlign
+    TextAlign,
 } from '../../../types'
-import type { ComponentType, FC, HTMLAttributes } from 'react'
 
 export interface BoxProps extends Partial<HTMLAttributes<HTMLDivElement>> {
     alignItems?: AlignItems
-    as?: string | ComponentType<any>
+    as?: ComponentType<any> | string
     centered?: boolean
     display?: Display
     flexDirection?: FlexDirection

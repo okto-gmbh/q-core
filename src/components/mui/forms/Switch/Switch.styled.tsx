@@ -21,17 +21,17 @@ export const Switch = styled(
     {
         shouldForwardProp(prop: keyof (MuiSwitchProps & SwitchProps)) {
             return ![
-                'leftIcon',
-                'rightIcon',
-                'leftIconActive',
-                'rightIconActive',
                 'borderWidth',
                 'buttonSize',
+                'leftIcon',
+                'leftIconActive',
                 'offset',
                 'outerHeight',
-                'outerWidth'
+                'outerWidth',
+                'rightIcon',
+                'rightIconActive',
             ].includes(prop as string)
-        }
+        },
     }
 )(
     ({
@@ -43,7 +43,7 @@ export const Switch = styled(
         outerHeight,
         outerWidth,
         rightIcon,
-        rightIconActive
+        rightIconActive,
     }: SwitchProps) => ({
         '&&': {
             height: `${outerHeight}px`,
@@ -61,7 +61,7 @@ export const Switch = styled(
                     position: 'absolute',
                     right: 0,
                     top: 0,
-                    width: `${outerHeight}px`
+                    width: `${outerHeight}px`,
                 },
 
                 '&::before': {
@@ -73,14 +73,14 @@ export const Switch = styled(
                     left: 0,
                     position: 'absolute',
                     top: 0,
-                    width: `${outerHeight}px`
+                    width: `${outerHeight}px`,
                 },
                 backgroundColor: 'var(--colors-white) !important',
                 borderRadius: buttonSize,
 
                 boxShadow: 'var(--shadows-mui)',
 
-                opacity: '1 !important'
+                opacity: '1 !important',
             },
 
             [`.${switchClasses.thumb}`]: {
@@ -93,12 +93,12 @@ export const Switch = styled(
                     left: 0,
                     position: 'absolute',
                     top: 0,
-                    width: '100%'
+                    width: '100%',
                 },
 
                 boxSizing: 'border-box',
                 height: buttonSize,
-                width: buttonSize
+                width: buttonSize,
             },
 
             [`.${switchClasses.switchBase}`]: {
@@ -111,11 +111,11 @@ export const Switch = styled(
 
                     [`.${switchClasses.thumb}`]: {
                         '&::before': {
-                            backgroundImage: `url('data:image/svg+xml;utf8,${rightIconActive}')`
-                        }
-                    }
-                }
-            }
-        }
+                            backgroundImage: `url('data:image/svg+xml;utf8,${rightIconActive}')`,
+                        },
+                    },
+                },
+            },
+        },
     })
 )

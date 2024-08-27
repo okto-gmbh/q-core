@@ -22,9 +22,7 @@ const StyledStack: ForwardRefRenderFunction<HTMLDivElement, StackProps> = (
     ref
 ) => React.createElement(Component, { ...rest, ref } as any, children)
 
-export const Element = styled(
-    forwardRef<HTMLDivElement, StackProps>(StyledStack)
-)`
+export const Element = styled(forwardRef<HTMLDivElement, StackProps>(StyledStack))`
     width: 100%;
 
     ${({ alignItems, direction, justifyContent }) =>
@@ -48,9 +46,7 @@ export const Element = styled(
                                     `
                                         display: flex;
                                         align-items: ${alignItems};
-                                        flex-direction: ${getFlexDirection(
-                                            direction
-                                        )};
+                                        flex-direction: ${getFlexDirection(direction)};
                                     `
                                 }
                             }
@@ -69,23 +65,16 @@ export const Element = styled(
                 .map(
                     ([
                         breakpoint,
-                        {
-                            direction: breakpointDirection,
-                            spacing: breakpointSpacing
-                        }
+                        { direction: breakpointDirection, spacing: breakpointSpacing },
                     ]) => `
                             @media ${from[breakpoint]} {
                                 margin-left: initial;
                                 margin-top: initial;
 
                                 ${getDirectionSpacing(
-                                    breakpointDirection
-                                        ? breakpointDirection
-                                        : direction
+                                    breakpointDirection ? breakpointDirection : direction
                                 )}: var(--spacings-${
-                                    breakpointSpacing
-                                        ? breakpointSpacing
-                                        : spacing
+                                    breakpointSpacing ? breakpointSpacing : spacing
                                 });
                             }
                         `

@@ -8,7 +8,7 @@ import type {
     DatabaseSchemaTemplate,
     DBMeta,
     Operators,
-    RowTemplate
+    RowTemplate,
 } from '@core/repositories/interface'
 
 import type { Firestore } from 'firebase-admin/firestore'
@@ -28,12 +28,10 @@ const DATABASE: Database = {
     data: {},
     get id() {
         return `${this._currentId++}`
-    }
+    },
 }
 
-const getRepository = <DatabaseSchema extends DatabaseSchemaTemplate>(
-    db: Firestore
-) => {
+const getRepository = <DatabaseSchema extends DatabaseSchemaTemplate>(db: Firestore) => {
     verifyMock.verifyMock()
 
     void db
@@ -51,7 +49,7 @@ const getRepository = <DatabaseSchema extends DatabaseSchemaTemplate>(
 
                 createdRows.push(<Row>{
                     id,
-                    ...transformFieldValue(row)
+                    ...transformFieldValue(row),
                 })
             }
 
@@ -70,7 +68,7 @@ const getRepository = <DatabaseSchema extends DatabaseSchemaTemplate>(
             for (const { id, ...data } of rows) {
                 DATABASE.data[table][id] = transformFieldValue({
                     ...DATABASE.data[table][id],
-                    ...data
+                    ...data,
                 })
             }
         },
@@ -84,12 +82,12 @@ const getRepository = <DatabaseSchema extends DatabaseSchemaTemplate>(
         find: async (table, id) =>
             DATABASE.data[table]?.[id] &&
             mapDocs({
-                [id]: DATABASE.data[table][id]
+                [id]: DATABASE.data[table][id],
             })[0],
         query: async <
             Table extends keyof DatabaseSchema & string,
             Row extends DatabaseSchema[Table],
-            Fields extends (keyof Row & string)[] | undefined
+            Fields extends (keyof Row & string)[] | undefined,
         >(
             table: Table,
             constraints: FirebaseConstraints<Row> = {},
@@ -105,19 +103,12 @@ const getRepository = <DatabaseSchema extends DatabaseSchemaTemplate>(
                 for (const [field, operation, value] of where) {
                     const resolvedField = field === '__name__' ? 'id' : field
                     data = data.filter((doc) =>
-                        checkWhereFilterOp(
-                            doc[resolvedField],
-                            operation,
-                            value,
-                            ops
-                        )
+                        checkWhereFilterOp(doc[resolvedField], operation, value, ops)
                     )
                 }
             }
             if (orderBy) {
-                for (const [field, direction = 'asc'] of Object.entries(
-                    orderBy
-                )) {
+                for (const [field, direction = 'asc'] of Object.entries(orderBy)) {
                     const resolvedField = field === '__name__' ? 'id' : field
 
                     data = data.sort((a: any, b: any) => {
@@ -143,8 +134,8 @@ const getRepository = <DatabaseSchema extends DatabaseSchemaTemplate>(
             }
 
             return data as Fields extends string[]
-                ? Pick<Row & DBMeta, Fields[number]>[]
-                : (Row & DBMeta)[]
+                ? Pick<DBMeta & Row, Fields[number]>[]
+                : (DBMeta & Row)[]
         },
         queryCount: async (table, constraints = {}) => {
             const { where } = constraints
@@ -157,12 +148,7 @@ const getRepository = <DatabaseSchema extends DatabaseSchemaTemplate>(
                 for (const [field, operation, value] of where) {
                     const resolvedField = field === '__name__' ? 'id' : field
                     data = data.filter((doc) =>
-                        checkWhereFilterOp(
-                            doc[resolvedField],
-                            operation,
-                            value,
-                            ops
-                        )
+                        checkWhereFilterOp(doc[resolvedField], operation, value, ops)
                     )
                 }
             }
@@ -174,9 +160,9 @@ const getRepository = <DatabaseSchema extends DatabaseSchemaTemplate>(
         update: async (table, id, data) => {
             DATABASE.data[table][id] = transformFieldValue({
                 ...DATABASE.data[table][id],
-                ...data
+                ...data,
             })
-        }
+        },
     })
 }
 
@@ -185,7 +171,7 @@ export default getRepository
 export const seedMockRepository = <
     DatabaseSchema extends DatabaseSchemaTemplate,
     Table extends keyof DatabaseSchema & string,
-    Rows extends DatabaseSchema[Table]['create'][]
+    Rows extends DatabaseSchema[Table]['create'][],
 >(
     table: Table,
     data: Rows
@@ -208,14 +194,13 @@ const getOps = async () => await import('@core/repositories/operators')
 export const verifyMock = {
     verifyMock() {
         return true
-    }
+    },
 }
 
 const transformFieldValue = (data: RowTemplate) =>
     Object.fromEntries(
         Object.entries(data).filter(
-            ([, value]) =>
-                JSON.stringify(value) !== JSON.stringify(FieldValue.delete())
+            ([, value]) => JSON.stringify(value) !== JSON.stringify(FieldValue.delete())
         )
     )
 
@@ -253,10 +238,7 @@ const checkWhereFilterOp = (
         return Array.isArray(actual) && actual.includes(expected)
     }
     if (operator === ops.OP_CONTAINS_ANY) {
-        return (
-            Array.isArray(expected) &&
-            expected.some((item: any) => actual.includes(item))
-        )
+        return Array.isArray(expected) && expected.some((item: any) => actual.includes(item))
     }
     if (operator === ops.OP_NOT_IN) {
         return Array.isArray(actual) && !actual.includes(expected)

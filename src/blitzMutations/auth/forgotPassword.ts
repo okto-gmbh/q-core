@@ -12,15 +12,14 @@ type Input = {
 
 const forgotPassword = async ({ email }: Input) => {
     const [user] = await repo.query('users', {
-        where: [['email', OP_EQUALS, email]]
+        where: [['email', OP_EQUALS, email]],
     })
 
     const token = generateToken()
     const hashedToken = hash256(token)
     const expiresAt = new Date()
     expiresAt.setHours(
-        expiresAt.getHours() +
-            parseInt(process.env.RESET_TOKEN_EXPIRATION || '1', 10)
+        expiresAt.getHours() + parseInt(process.env.RESET_TOKEN_EXPIRATION || '1', 10)
     )
 
     if (!user) {
@@ -34,8 +33,8 @@ const forgotPassword = async ({ email }: Input) => {
     const tokens = await repo.query('tokens', {
         where: [
             ['type', OP_EQUALS, 'RESET_PASSWORD'],
-            ['user', OP_EQUALS, user.id]
-        ]
+            ['user', OP_EQUALS, user.id],
+        ],
     })
 
     for (const { id } of tokens) {
@@ -47,7 +46,7 @@ const forgotPassword = async ({ email }: Input) => {
         hashedToken,
         sentTo: user.email,
         type: 'RESET_PASSWORD',
-        user: user.id
+        user: user.id,
     })
 
     return { token, user }

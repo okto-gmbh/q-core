@@ -4,14 +4,9 @@ import { Controller } from 'react-hook-form'
 
 import * as Styled from './Checkbox.styled'
 
-import type { FC } from 'react'
-import type {
-    Control,
-    ControllerRenderProps,
-    FieldValues
-} from 'react-hook-form'
-
 import type { SwitchProps } from '@mui/material'
+import type { FC } from 'react'
+import type { Control, ControllerRenderProps, FieldValues } from 'react-hook-form'
 
 type CheckboxProps = SwitchProps & {
     fieldName: string
@@ -34,23 +29,18 @@ const Checkbox: FC<CheckboxProps> = ({
     onChange,
     ...props
 }) => {
-    const handleChange = (
-        value: boolean,
-        field: ControllerRenderProps<FieldValues, string>
-    ) => {
+    const handleChange = (value: boolean, field: ControllerRenderProps<FieldValues, string>) => {
         field.onChange(value)
 
         if (control) {
             onChange(field.name, value, {
                 shouldDirty: true,
-                shouldValidate: true
+                shouldValidate: true,
             })
         }
     }
 
-    const renderCheckbox = (
-        field: ControllerRenderProps<FieldValues, string>
-    ) => (
+    const renderCheckbox = (field: ControllerRenderProps<FieldValues, string>) => (
         <Styled.Control error={error}>
             <Styled.Group>
                 <Styled.Label
@@ -68,16 +58,16 @@ const Checkbox: FC<CheckboxProps> = ({
     if (!control) {
         return renderCheckbox({
             onChange,
-            value: props.value
+            value: props.value,
         } as ControllerRenderProps<FieldValues, string>)
     }
 
     return (
         <Controller
             control={control}
+            defaultValue={defaultValue}
             name={fieldName}
             render={({ field }) => renderCheckbox(field)}
-            defaultValue={defaultValue}
         />
     )
 }

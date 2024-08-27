@@ -1,5 +1,5 @@
 /* eslint-disable security/detect-child-process */
-import { exec } from 'child_process'
+import { exec } from 'node:child_process'
 
 import * as dotenv from 'dotenv'
 
@@ -27,7 +27,7 @@ export default async ({
     env = 'dev',
     firestore = true,
     project,
-    storage: includeStorage = true
+    storage: includeStorage = true,
 }: ResetOptions) => {
     const scope = env === 'dev' ? 'local' : env
     console.log(`Loading .env.${scope}`)

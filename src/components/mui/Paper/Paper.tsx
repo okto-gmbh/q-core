@@ -10,7 +10,7 @@ export interface PaperProps extends HTMLAttributes<HTMLDivElement> {
     borderRadius?: string
     height?: string
     overflow?: string
-    scroll?: 'x' | 'y' | 'all'
+    scroll?: 'all' | 'x' | 'y'
     width?: string
 }
 

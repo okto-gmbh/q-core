@@ -1,16 +1,11 @@
 import * as Styled from './SVGIcon.styled'
 
-import type { Breakpoints } from '../../types'
 import type { FC, HTMLAttributes } from 'react'
 import type React from 'react'
 
-export type SVGIconSize =
-    | 'tiny'
-    | 'small'
-    | 'medium'
-    | 'default'
-    | 'large'
-    | 'huge'
+import type { Breakpoints } from '../../types'
+
+export type SVGIconSize = 'default' | 'huge' | 'large' | 'medium' | 'small' | 'tiny'
 
 export interface SVGIconProps extends Partial<HTMLAttributes<HTMLDivElement>> {
     children: React.ReactNode
@@ -18,11 +13,7 @@ export interface SVGIconProps extends Partial<HTMLAttributes<HTMLDivElement>> {
     breakpoints?: Breakpoints
 }
 
-const SVGIcon: FC<SVGIconProps> = ({
-    children,
-    size = 'default',
-    ...props
-}) => (
+const SVGIcon: FC<SVGIconProps> = ({ children, size = 'default', ...props }) => (
     <Styled.Container size={size} {...props}>
         {children}
     </Styled.Container>

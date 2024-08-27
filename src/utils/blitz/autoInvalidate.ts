@@ -6,7 +6,7 @@ export default {
             onSuccess: async () => {
                 const queryClient = getQueryClient()
                 await queryClient.invalidateQueries()
-            }
-        }
-    }
+            },
+        },
+    },
 }

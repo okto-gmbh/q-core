@@ -28,11 +28,7 @@ const CookieBanner = ({ button, text }: CookieBannerProps) => {
     return (
         <Styled.Container>
             {text}
-            <span
-                onClick={() => accept()}
-                onKeyPress={() => accept()}
-                role="button"
-                tabIndex={0}>
+            <span onClick={() => accept()} onKeyPress={() => accept()} role="button" tabIndex={0}>
                 {button}
             </span>
         </Styled.Container>

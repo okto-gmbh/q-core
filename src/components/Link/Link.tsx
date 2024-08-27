@@ -2,8 +2,7 @@ import NextLink from 'next/link'
 
 import type { AnchorHTMLAttributes, FC } from 'react'
 
-export interface LinkProps
-    extends Partial<AnchorHTMLAttributes<HTMLAnchorElement>> {
+export interface LinkProps extends Partial<AnchorHTMLAttributes<HTMLAnchorElement>> {
     href: string
     next13?: boolean
 }
@@ -15,8 +14,8 @@ const Link: FC<LinkProps> = ({ children, href, ...props }) => {
         return (
             <a
                 href={href.startsWith('http') ? href : `https://${href}`}
-                target="_blank"
                 rel="noopener noreferrer"
+                target="_blank"
                 {...props}>
                 {children}
             </a>

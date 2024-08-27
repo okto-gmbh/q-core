@@ -14,10 +14,7 @@ export const fileToBase64 = (file: Blob) =>
         const reader = new FileReader()
         reader.addEventListener(
             'load',
-            () =>
-                resolve(
-                    Buffer.from(reader.result as ArrayBuffer).toString('base64')
-                ),
+            () => resolve(Buffer.from(reader.result as ArrayBuffer).toString('base64')),
             false
         )
         reader.readAsArrayBuffer(file)

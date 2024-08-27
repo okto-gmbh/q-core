@@ -2,10 +2,10 @@
 
 import * as Styled from './Button.styled'
 
-import type { ButtonVariant } from '../../../Button/Button'
+import type { ButtonProps as MuiButtonProps } from '@mui/material'
 import type { FC } from 'react'
 
-import type { ButtonProps as MuiButtonProps } from '@mui/material'
+import type { ButtonVariant } from '../../../Button/Button'
 
 export type ButtonProps = Omit<MuiButtonProps, 'variant'> & {
     variant: ButtonVariant

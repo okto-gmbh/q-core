@@ -22,10 +22,7 @@ const errorMap: ZodErrorMap = (issue, { defaultError }) => {
             )}`
             break
         case ZodIssueCode.unrecognized_keys:
-            message = `Unerkannte Objekt-Key(s): ${joinValues(
-                issue.keys,
-                ', '
-            )}`
+            message = `Unerkannte Objekt-Key(s): ${joinValues(issue.keys, ', ')}`
             break
         case ZodIssueCode.invalid_union:
             message = 'Ungültige Eingabe'

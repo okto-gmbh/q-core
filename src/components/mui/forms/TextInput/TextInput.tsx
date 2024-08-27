@@ -5,14 +5,9 @@ import { Controller } from 'react-hook-form'
 
 import * as Styled from './TextInput.styled'
 
-import type { Ref } from 'react'
-import type {
-    Control,
-    ControllerRenderProps,
-    FieldValues
-} from 'react-hook-form'
-
 import type { TextFieldProps } from '@mui/material'
+import type { Ref } from 'react'
+import type { Control, ControllerRenderProps, FieldValues } from 'react-hook-form'
 
 export type TextInputProps = TextFieldProps & {
     control?: Control<FieldValues>
@@ -41,21 +36,18 @@ const TextInput = (
                 if (typeof ref === 'function') {
                     ref(r)
                 } else {
-                    ;(ref.current as any) = r
+                    ref.current = r
                 }
             }
         })
 
-    const handleChange = (
-        event: any,
-        field: ControllerRenderProps<FieldValues, string>
-    ) => {
+    const handleChange = (event: any, field: ControllerRenderProps<FieldValues, string>) => {
         field.onChange?.(event)
 
         if (control && onChange) {
             ;(onChange as any)(field.name, event.target.value, {
                 shouldDirty: true,
-                shouldValidate: true
+                shouldValidate: true,
             })
         }
     }
@@ -65,23 +57,21 @@ const TextInput = (
         props.inputProps = {
             ...props.inputProps,
             inputMode: 'numeric',
-            pattern: '[\\.0-9]*'
+            pattern: '[\\.0-9]*',
         }
     } else if (type === 'email') {
         props.inputProps = {
             ...props.inputProps,
-            type: 'email'
+            type: 'email',
         }
     } else if (type === 'tel') {
         props.inputProps = {
             ...props.inputProps,
-            type: 'tel'
+            type: 'tel',
         }
     }
 
-    const getValue = (
-        field: ControllerRenderProps<FieldValues, string>
-    ): string => {
+    const getValue = (field: ControllerRenderProps<FieldValues, string>): string => {
         if (control) {
             return field.value ?? defaultValue ?? ''
         }
@@ -91,20 +81,18 @@ const TextInput = (
 
     const renderInput = (field: ControllerRenderProps<FieldValues, string>) => (
         <Styled.Input
-            InputLabelProps={
-                props.multiline ? { sx: Styled.multilineLabelProps } : undefined
-            }
+            InputLabelProps={props.multiline ? { sx: Styled.multilineLabelProps } : undefined}
             {...props}
-            round={round}
+            inputRef={setRef}
             onChange={(event: any) => handleChange(event, field)}
-            value={getValue(field)}
-            inputRef={setRef}></Styled.Input>
+            round={round}
+            value={getValue(field)}></Styled.Input>
     )
 
     if (!control) {
         return renderInput({
             onChange,
-            value
+            value,
         } as ControllerRenderProps<FieldValues, string>)
     }
 
@@ -117,6 +105,4 @@ const TextInput = (
     )
 }
 
-export default forwardRef<HTMLDivElement | undefined | null, TextInputProps>(
-    TextInput
-)
+export default forwardRef<HTMLDivElement | null | undefined, TextInputProps>(TextInput)

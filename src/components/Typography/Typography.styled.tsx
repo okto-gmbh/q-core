@@ -13,12 +13,8 @@ export const Element = styled(
 )`
     display: ${({ display }) => display || 'block'};
     font-size: ${({ fontSize }) =>
-        fontSize
-            ? `var(--fontSizes-${fontSize}) `
-            : 'var(--fontSizes-default)'};
+        fontSize ? `var(--fontSizes-${fontSize}) ` : 'var(--fontSizes-default)'};
     font-weight: ${({ fontWeight }) => fontWeight};
     line-height: ${({ fontSize }) =>
-        fontSize
-            ? `var(--lineHeights-${fontSize}) `
-            : 'var(--lineHeights-default)'};
+        fontSize ? `var(--lineHeights-${fontSize}) ` : 'var(--lineHeights-default)'};
 `
