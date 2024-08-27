@@ -2,11 +2,8 @@ export const DEFAULT_TIMEZONE = 'Europe/Zurich'
 export const DEFAULT_LOCALE = 'de-CH'
 
 export const format = (
-    date: string | Date | null | undefined,
-    {
-        locale,
-        ...options
-    }: Intl.DateTimeFormatOptions & { locale: Intl.LocalesArgument }
+    date: Date | string | null | undefined,
+    { locale, ...options }: Intl.DateTimeFormatOptions & { locale: Intl.LocalesArgument }
 ): string => {
     if (!date) return ''
     if (typeof date === 'string') {
@@ -15,14 +12,14 @@ export const format = (
 
     const config: Intl.DateTimeFormatOptions = {
         timeZone: options.timeZone || DEFAULT_TIMEZONE,
-        ...options
+        ...options,
     }
 
     return date.toLocaleString(locale || DEFAULT_LOCALE, config)
 }
 
 export const formatDate = (
-    date: string | Date | null | undefined,
+    date: Date | string | null | undefined,
     locale = DEFAULT_LOCALE,
     timeZone = DEFAULT_TIMEZONE
 ): string =>
@@ -31,11 +28,11 @@ export const formatDate = (
         locale,
         month: '2-digit',
         timeZone,
-        year: 'numeric'
+        year: 'numeric',
     })
 
 export const formatDayAndMonth = (
-    date: string | Date,
+    date: Date | string,
     locale = DEFAULT_LOCALE,
     timeZone = DEFAULT_TIMEZONE
 ): string =>
@@ -43,14 +40,13 @@ export const formatDayAndMonth = (
         day: '2-digit',
         locale,
         month: '2-digit',
-        timeZone
+        timeZone,
     })
 
-// eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types, @typescript-eslint/no-explicit-any
 export const isValidDate = (date: any): date is Date =>
     Object.prototype.toString.call(date) === '[object Date]' && !isNaN(date)
 
-export const getTimestamp = (date?: Date | string | number) => {
+export const getTimestamp = (date?: Date | number | string) => {
     if (!date) return
 
     date = new Date(date)
@@ -87,7 +83,7 @@ export const timestampToDate = (timestamp: number): Date | null => {
 
 export const getExportDate = (timeZone: string = 'Europe/Zurich'): string =>
     new Date().toLocaleDateString('fr-CA', {
-        timeZone
+        timeZone,
     })
 
 const cutoffs = [60, 3600, 86400, 86400 * 7, 86400 * 30, 86400 * 365, Infinity]
@@ -98,15 +94,13 @@ const units: Intl.RelativeTimeFormatUnit[] = [
     'day',
     'week',
     'month',
-    'year'
+    'year',
 ]
 
 export function getRelativeTime(date: Date | number, lang = 'de'): string {
     const timeMs = typeof date === 'number' ? date : date.getTime()
     const deltaSeconds = Math.round((timeMs - Date.now()) / 1000)
-    const unitIndex = cutoffs.findIndex(
-        (cutoff) => cutoff > Math.abs(deltaSeconds)
-    )
+    const unitIndex = cutoffs.findIndex((cutoff) => cutoff > Math.abs(deltaSeconds))
     const divisor = unitIndex ? cutoffs[unitIndex - 1] : 1
 
     const rtf = new Intl.RelativeTimeFormat(lang, { numeric: 'auto' })

@@ -24,13 +24,11 @@ export const Grid = styled(
 
     display: grid;
     align-items: ${({ alignItems }) => alignItems || 'flex-start'};
-    grid-gap: ${({ gap }) =>
-        gap ? `var(--spacings-${gap}) 0` : 'var(--_gap) 0'};
+    grid-gap: ${({ gap }) => (gap ? `var(--spacings-${gap}) 0` : 'var(--_gap) 0')};
     grid-template-columns: repeat(${GRID_COLS}, 1fr);
 
     @media ${from.tabletPortrait} {
-        grid-gap: ${({ gap }) =>
-            gap ? `var(--spacings-${gap}) ` : 'var(--_gap)'};
+        grid-gap: ${({ gap }) => (gap ? `var(--spacings-${gap}) ` : 'var(--_gap)')};
     }
 
     img {
@@ -121,7 +119,14 @@ export const Item = styled(
         span: _span,
         ...rest
     }: GridItemProps) => (
-        <Component className={(className += ` ${GRID_ITEM_CLASS}`)} {...rest} />
+        <Component
+            className={
+                (className += `
+                    ${GRID_ITEM_CLASS}
+                `)
+            }
+            {...rest}
+        />
     )
 )`
     width: 100%;

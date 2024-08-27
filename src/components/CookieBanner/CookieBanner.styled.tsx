@@ -4,10 +4,7 @@ import { from } from '../../utils/breakpoints'
 import Stack from '../layout/Stack'
 
 export const Container = styled(Stack)`
-    --_backgroundColor: var(
-        --cookieBanner-backgroundColor,
-        var(--colors-gray-10)
-    );
+    --_backgroundColor: var(--cookieBanner-backgroundColor, var(--colors-gray-10));
     --_color: var(--cookieBanner-color, var(--colors-white));
 
     position: fixed;

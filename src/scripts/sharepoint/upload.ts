@@ -1,6 +1,7 @@
-import { createReadStream } from "node:fs"
-import { stat } from "node:fs/promises"
-import { Readable } from "node:stream"
+import { createReadStream } from 'node:fs'
+import { stat } from 'node:fs/promises'
+
+import type { Readable } from 'node:stream'
 
 type AuthContext = {
     clientId: string
@@ -8,8 +9,13 @@ type AuthContext = {
     redirectUri: string
     tenantId: string
 }
-    
-async function getAccessToken({ clientId, clientSecret, redirectUri, tenantId }: AuthContext): Promise<string> {
+
+async function getAccessToken({
+    clientId,
+    clientSecret,
+    redirectUri,
+    tenantId,
+}: AuthContext): Promise<string> {
     const params = new URLSearchParams({
         client_id: clientId,
         client_secret: clientSecret,
@@ -34,14 +40,13 @@ async function getAccessToken({ clientId, clientSecret, redirectUri, tenantId }:
     if (json.error) {
         throw new Error(json.error)
     }
-    
-    if(typeof json.access_token !== 'string') {
+
+    if (typeof json.access_token !== 'string') {
         throw new Error('Access token is not a string')
     }
 
     return json.access_token
 }
-
 
 type SessionContext = {
     accessToken: string
@@ -77,7 +82,7 @@ async function createUploadSession({
 }
 
 function getChunks(size: number) {
-     const sep = size < 60 * 1024 * 1024 ? size : 60 * 1024 * 1024 - 1
+    const sep = size < 60 * 1024 * 1024 ? size : 60 * 1024 * 1024 - 1
 
     const params: {
         chunkEnd: number
@@ -139,7 +144,9 @@ export default async function uploadFile({
     const stats = await stat(sourceFile)
     const size = stats.size
     const chunks = getChunks(size)
-    const stream = createReadStream(sourceFile, { highWaterMark: Math.ceil(size / (chunks.length - 1)) })
+    const stream = createReadStream(sourceFile, {
+        highWaterMark: Math.ceil(size / (chunks.length - 1)),
+    })
 
     for (const chunk of chunks) {
         const content = await readBytes(stream, chunk.contentLength)
@@ -158,7 +165,7 @@ export default async function uploadFile({
         if (json.error) {
             throw new Error(json.errors)
         }
-        
+
         if (chunk.chunkEnd === size - 1) {
             return
         }
@@ -174,16 +181,15 @@ export default async function uploadFile({
 async function readBytes(stream: Readable, bytes: number): Promise<Uint8Array> {
     return new Promise<Uint8Array>((resolve, reject) => {
         const read = () => {
-            if(stream.readableLength >= bytes) {
-                stream.pause();
-                stream.off('readable', read);
+            if (stream.readableLength >= bytes) {
+                stream.pause()
+                stream.off('readable', read)
                 return resolve(stream.read(bytes))
             }
 
             if (stream.isPaused()) {
                 stream.resume()
             }
-        
         }
         stream.on('readable', read)
         stream.pause()
@@ -193,9 +199,9 @@ async function readBytes(stream: Readable, bytes: number): Promise<Uint8Array> {
 function validateEnv(env: typeof process.env = process.env): asserts env is {
     CLIENT_ID: string
     CLIENT_SECRET: string
+    NODE_ENV: typeof process.env.NODE_ENV
     TARGET_SITE: string
     TENANT_ID: string
-    NODE_ENV: typeof process.env.NODE_ENV
 } {
     if (typeof env.CLIENT_ID !== 'string') {
         throw new Error('process.env.CLIENT_ID is not defined')

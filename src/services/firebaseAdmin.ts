@@ -1,8 +1,8 @@
 import {
-    cert,
     getApp as adminGetApp,
+    initializeApp as adminInitializeApp,
+    cert,
     getApps,
-    initializeApp as adminInitializeApp
 } from 'firebase-admin/app'
 import { getAuth as adminGetAuth } from 'firebase-admin/auth'
 import { getFirestore as adminGetFirestore } from 'firebase-admin/firestore'
@@ -17,23 +17,18 @@ export const initializeApp = (config = process.env, appName = 'default') => {
     return adminInitializeApp(
         {
             credential: cert({
-                auth_provider_x509_cert_url:
-                    config.FIREBASE_ADMIN_AUTH_PROVIDER_X509_CERT_URL,
+                auth_provider_x509_cert_url: config.FIREBASE_ADMIN_AUTH_PROVIDER_X509_CERT_URL,
                 auth_uri: config.FIREBASE_ADMIN_AUTH_URI,
                 client_email: config.FIREBASE_ADMIN_CLIENT_EMAIL,
                 client_id: config.FIREBASE_ADMIN_CLIENT_ID,
-                client_x509_cert_url:
-                    config.FIREBASE_ADMIN_CLIENT_X509_CERT_URL,
+                client_x509_cert_url: config.FIREBASE_ADMIN_CLIENT_X509_CERT_URL,
                 databaseURL: config.FIREBASE_DATABASE_URL,
-                private_key: config.FIREBASE_ADMIN_PRIVATE_KEY!.replace(
-                    /\\n/g,
-                    '\n'
-                ),
+                private_key: config.FIREBASE_ADMIN_PRIVATE_KEY.replace(/\\n/g, '\n'),
                 private_key_id: config.FIREBASE_ADMIN_PRIVATE_KEY_ID,
                 project_id: config.FIREBASE_ADMIN_PROJECT_ID,
                 token_uri: config.FIREBASE_ADMIN_TOKEN_URI,
-                type: config.FIREBASE_ADMIN_TYPE
-            } as ServiceAccount)
+                type: config.FIREBASE_ADMIN_TYPE,
+            } as ServiceAccount),
         },
         appName
     )

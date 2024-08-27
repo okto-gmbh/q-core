@@ -13,20 +13,20 @@ const password = z
 
 export const Signup = z.object({
     email,
-    password
+    password,
 })
 
 export const Login = z.object({
     email,
-    password: z.string()
+    password: z.string(),
 })
 
 export const ForgotPassword = z.object({
-    email
+    email,
 })
 
 export const RenewPassword = z.object({
     password,
     token: z.string(),
-    userId: z.string()
+    userId: z.string(),
 })

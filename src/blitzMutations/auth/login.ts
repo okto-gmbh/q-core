@@ -7,7 +7,6 @@ import { OP_EQUALS } from '@core/repositories/operators'
 
 import { createSession } from '../../utils/blitz/session'
 import { getSafeUserFields } from '../../utils/user'
-
 import { Login } from './validations'
 
 import type { BlitzCtx } from '@blitzjs/auth'
@@ -20,11 +19,11 @@ type Input = {
 const authenticateUser = async (rawEmail: string, rawPassword: string) => {
     const { email, password } = Login.parse({
         email: rawEmail,
-        password: rawPassword
+        password: rawPassword,
     })
 
     const [user] = await repo.query('users', {
-        where: [['email', OP_EQUALS, email]]
+        where: [['email', OP_EQUALS, email]],
     })
 
     if (!user) {
@@ -37,7 +36,7 @@ const authenticateUser = async (rawEmail: string, rawPassword: string) => {
     if (result === SecurePassword.VALID_NEEDS_REHASH) {
         const improvedHash = await SecurePassword.hash(password)
         await repo.update('users', user.id, {
-            hashedPassword: improvedHash
+            hashedPassword: improvedHash,
         })
     }
 

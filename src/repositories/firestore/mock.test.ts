@@ -7,25 +7,25 @@ import {
     getRawMockData,
     resetMockRepository,
     seedMockRepository,
-    verifyMock
+    verifyMock,
 } from '@core/repositories/firestore/mock'
 import type { DatabaseSchemaTemplate } from '@core/repositories/interface'
 
 type FirebaseMeta<Repository extends DatabaseSchemaTemplate> = {
     [Table in keyof Repository]: {
+        __name__?: string
+        id?: string
+    } & {
         [Field in keyof Repository[Table]]:
             | Repository[Table][Field]
             | ReturnType<typeof FieldValue.delete>
-    } & {
-        __name__?: string
-        id?: string
     }
 }
 
 type TestRepository = FirebaseMeta<{
     members: {
         name: string
-        age?: number | ReturnType<typeof FieldValue.delete>
+        age?: ReturnType<typeof FieldValue.delete> | number
         id?: string
     }
 }>
@@ -100,10 +100,7 @@ describe('firestore', () => {
     it('should bulk add entries into the database', async () => {
         const db = getMockDB()
         const repo = getRepository<TestRepository>(db)
-        const members = await repo.bulkCreate('members', [
-            { name: 'John' },
-            { name: 'Jane' }
-        ])
+        const members = await repo.bulkCreate('members', [{ name: 'John' }, { name: 'Jane' }])
 
         expect(members).toHaveLength(2)
         expect(Object.keys(getRawMockData().members)).toHaveLength(2)
@@ -148,11 +145,7 @@ describe('firestore', () => {
         const db = getMockDB()
         const repo = getRepository<TestRepository>(db)
 
-        seedMockRepository('members', [
-            { name: 'John' },
-            { name: 'Jane' },
-            { name: 'Jack' }
-        ])
+        seedMockRepository('members', [{ name: 'John' }, { name: 'Jane' }, { name: 'Jack' }])
 
         await repo.remove('members', '1')
 
@@ -166,11 +159,7 @@ describe('firestore', () => {
         const db = getMockDB()
         const repo = getRepository<TestRepository>(db)
 
-        seedMockRepository('members', [
-            { name: 'John' },
-            { name: 'Jane' },
-            { name: 'Jack' }
-        ])
+        seedMockRepository('members', [{ name: 'John' }, { name: 'Jane' }, { name: 'Jack' }])
 
         await repo.bulkRemove('members', ['1', '2'])
 
@@ -184,11 +173,7 @@ describe('firestore', () => {
         const db = getMockDB()
         const repo = getRepository<TestRepository>(db)
 
-        seedMockRepository('members', [
-            { name: 'John' },
-            { name: 'Jane' },
-            { name: 'Jack' }
-        ])
+        seedMockRepository('members', [{ name: 'John' }, { name: 'Jane' }, { name: 'Jack' }])
 
         await repo.update('members', '1', { name: 'Jill' })
 
@@ -203,7 +188,7 @@ describe('firestore', () => {
         expect(getRawMockData().members['0']).toEqual({ name: 'John' })
         expect(getRawMockData().members['1']).toEqual({
             age: 20,
-            name: 'Jill'
+            name: 'Jill',
         })
         expect(getRawMockData().members['2']).toEqual({ name: 'Jack' })
     })
@@ -215,7 +200,7 @@ describe('firestore', () => {
         seedMockRepository('members', [
             { name: 'John' },
             { age: 20, name: 'Jane' },
-            { name: 'Jack' }
+            { name: 'Jack' },
         ])
 
         await repo.update('members', '1', { age: FieldValue.delete() })
@@ -234,16 +219,16 @@ describe('firestore', () => {
             { name: 'John' },
             { age: 20, name: 'Jane' },
             { name: 'Jack' },
-            { age: 27, name: 'Jane' }
+            { age: 27, name: 'Jane' },
         ])
 
         const members = await repo.query('members', {
-            where: [['name', '==', 'Jane']]
+            where: [['name', '==', 'Jane']],
         })
 
         expect(members).toEqual([
             { age: 20, id: '1', name: 'Jane' },
-            { age: 27, id: '3', name: 'Jane' }
+            { age: 27, id: '3', name: 'Jane' },
         ])
     })
 
@@ -255,17 +240,12 @@ describe('firestore', () => {
             { name: 'John' },
             { age: 20, name: 'Jane' },
             { name: 'Jack' },
-            { age: 27, name: 'Jane' }
+            { age: 27, name: 'Jane' },
         ])
 
         const memberIds = await repo.query('members', undefined, ['id'])
 
-        expect(memberIds).toEqual([
-            { id: '0' },
-            { id: '1' },
-            { id: '2' },
-            { id: '3' }
-        ])
+        expect(memberIds).toEqual([{ id: '0' }, { id: '1' }, { id: '2' }, { id: '3' }])
 
         const memberNames = await repo.query('members', undefined, ['name'])
 
@@ -273,7 +253,7 @@ describe('firestore', () => {
             { name: 'John' },
             { name: 'Jane' },
             { name: 'Jack' },
-            { name: 'Jane' }
+            { name: 'Jane' },
         ])
     })
 
@@ -285,11 +265,11 @@ describe('firestore', () => {
             { name: 'John' },
             { age: 20, name: 'Jane' },
             { name: 'Jack' },
-            { age: 27, name: 'Jane' }
+            { age: 27, name: 'Jane' },
         ])
 
         const members = await repo.query('members', {
-            where: [['__name__', '==', '1']]
+            where: [['__name__', '==', '1']],
         })
 
         expect(members).toEqual([{ age: 20, id: '1', name: 'Jane' }])
@@ -303,18 +283,18 @@ describe('firestore', () => {
             { name: 'John' },
             { age: 20, name: 'Jane' },
             { name: 'Jack' },
-            { age: 27, name: 'Jane' }
+            { age: 27, name: 'Jane' },
         ])
 
         const members = await repo.query('members', {
-            orderBy: { __name__: 'desc' }
+            orderBy: { __name__: 'desc' },
         })
 
         expect(members).toEqual([
             { age: 27, id: '3', name: 'Jane' },
             { id: '2', name: 'Jack' },
             { age: 20, id: '1', name: 'Jane' },
-            { id: '0', name: 'John' }
+            { id: '0', name: 'John' },
         ])
     })
 
@@ -326,14 +306,14 @@ describe('firestore', () => {
             { name: 'John' },
             { age: 20, name: 'Jane' },
             { name: 'Jack' },
-            { age: 27, name: 'Jane' }
+            { age: 27, name: 'Jane' },
         ])
 
         const members = await repo.query('members', {
             where: [
                 ['name', '==', 'Jane'],
-                ['age', '>=', 25]
-            ]
+                ['age', '>=', 25],
+            ],
         })
 
         expect(members).toEqual([{ age: 27, id: '3', name: 'Jane' }])
@@ -347,16 +327,16 @@ describe('firestore', () => {
             { name: 'John' },
             { age: 20, name: 'Jane' },
             { name: 'Jack' },
-            { age: 27, name: 'Jane' }
+            { age: 27, name: 'Jane' },
         ])
 
         const members = await repo.query('members', {
-            limit: 2
+            limit: 2,
         })
 
         expect(members).toEqual([
             { id: '0', name: 'John' },
-            { age: 20, id: '1', name: 'Jane' }
+            { age: 20, id: '1', name: 'Jane' },
         ])
     })
 
@@ -368,7 +348,7 @@ describe('firestore', () => {
             { name: 'John' },
             { age: 20, name: 'Jane' },
             { name: 'Jack' },
-            { age: 27, name: 'Jane' }
+            { age: 27, name: 'Jane' },
         ])
 
         const members = await repo.query('members', undefined, ['name'])
@@ -377,7 +357,7 @@ describe('firestore', () => {
             { name: 'John' },
             { name: 'Jane' },
             { name: 'Jack' },
-            { name: 'Jane' }
+            { name: 'Jane' },
         ])
     })
 
@@ -389,7 +369,7 @@ describe('firestore', () => {
             { name: 'John' },
             { age: 20, name: 'Jane' },
             { name: 'Jack' },
-            { age: 27, name: 'Jane' }
+            { age: 27, name: 'Jane' },
         ]
         seedMockRepository('members', mockMembers)
 

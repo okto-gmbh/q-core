@@ -1,5 +1,4 @@
 import Stack from '../layout/Stack'
-
 import * as Styled from './Button.styled'
 
 import type { ButtonHTMLAttributes, FC } from 'react'
@@ -7,8 +6,7 @@ import type React from 'react'
 
 export type ButtonVariant = 'primary' | 'secondary'
 
-export interface ButtonProps
-    extends Partial<ButtonHTMLAttributes<HTMLButtonElement>> {
+export interface ButtonProps extends Partial<ButtonHTMLAttributes<HTMLButtonElement>> {
     children: React.ReactNode
     variant: ButtonVariant
     endIcon?: React.ReactNode
@@ -25,11 +23,7 @@ const Button: FC<ButtonProps> = ({
     ...props
 }) => {
     const withIcon = (
-        <Stack
-            alignItems="center"
-            direction="horizontal"
-            spacing="small"
-            justifyContent="center">
+        <Stack alignItems="center" direction="horizontal" justifyContent="center" spacing="small">
             {startIcon && <Styled.Icon>{startIcon}</Styled.Icon>}
             <span>{children}</span>
             {endIcon && <Styled.Icon>{endIcon}</Styled.Icon>}

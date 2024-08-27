@@ -4,7 +4,6 @@ import { assertNever, joinValues, jsonStringifyReplacer } from '../helpers'
 
 import type { ZodErrorMap } from 'zod'
 
-// eslint-disable-next-line sonarjs/cognitive-complexity
 const errorMap: ZodErrorMap = (issue, { defaultError }) => {
     let message = ''
     switch (issue.code) {
@@ -22,10 +21,7 @@ const errorMap: ZodErrorMap = (issue, { defaultError }) => {
             )}`
             break
         case ZodIssueCode.unrecognized_keys:
-            message = `Unerkannte Objekt-Key(s): ${joinValues(
-                issue.keys,
-                ', '
-            )}`
+            message = `Unerkannte Objekt-Key(s): ${joinValues(issue.keys, ', ')}`
             break
         case ZodIssueCode.invalid_union:
             message = 'Ungültige Eingabe'

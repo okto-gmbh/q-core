@@ -1,7 +1,4 @@
-export const vars = (
-    template: string,
-    vars: { [key: string]: string }
-): string =>
+export const vars = (template: string, vars: { [key: string]: string }): string =>
     Object.entries(vars).reduce(
         (str, [key, value]) =>
             // TODO: Fix this by using split/join instead of replace
@@ -10,5 +7,4 @@ export const vars = (
         template
     )
 
-const escapeRegex = (str: string): string =>
-    str.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
+const escapeRegex = (str: string): string => str.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')

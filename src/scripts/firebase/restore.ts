@@ -4,7 +4,7 @@
 // - [ ] Run `firebase deploy` to set rules and indexes
 // - [ ] Run this script to restore firestore data
 
-import { readdir, readFile } from 'fs/promises'
+import { readdir, readFile } from 'node:fs/promises'
 
 import * as dotenv from 'dotenv'
 
@@ -15,23 +15,15 @@ import type { Metadata, Storage } from '@core/storage/interface'
 const loadBackup = async (fileName: string, backupPath: string) =>
     JSON.parse(
         await readFile(`${backupPath}/firebase/${fileName}.json`, {
-            encoding: 'utf8'
+            encoding: 'utf8',
         })
     )
 
-const restoreTables = async ({
-    backupPath,
-    repo,
-    schemas,
-    tables,
-    tenants
-}: Context) => {
+const restoreTables = async ({ backupPath, repo, schemas, tables, tenants }: Context) => {
     for (const table of tables) {
         console.log(`Restoring ${table}...`)
         const rows = (await loadBackup(`tables/${table}`, backupPath))
-            .filter(
-                ({ tenantId }: any) => !tenants || tenants.includes(tenantId)
-            )
+            .filter(({ tenantId }: any) => !tenants || tenants.includes(tenantId))
             .map((row: any) => schemas[table].cast(row))
 
         await repo.bulkCreate(table, rows)
@@ -48,7 +40,7 @@ const getFiles = async (
             files.push({
                 meta: file.replace('/files/', '/metadata/') + '.json',
                 name: path.name,
-                path: file
+                path: file,
             })
         } else {
             files.push(...(await getFiles(`${directory}/${path.name}`)))
@@ -58,8 +50,7 @@ const getFiles = async (
     return files
 }
 
-const wait = (timeout = 100) =>
-    new Promise((resolve) => setTimeout(resolve, timeout))
+const wait = (timeout = 100) => new Promise((resolve) => setTimeout(resolve, timeout))
 
 const restoreStorage = async ({ backupPath, storage }: Context) => {
     const basePath = `${backupPath}/firebase/storage/files`
@@ -68,9 +59,7 @@ const restoreStorage = async ({ backupPath, storage }: Context) => {
 
     for (const file of files) {
         const fileName = file.path.substring(basePath.length + 1)
-        const metadata: Metadata = JSON.parse(
-            (await readFile(file.meta, 'utf8')) ?? '{}'
-        )
+        const metadata: Metadata = JSON.parse((await readFile(file.meta, 'utf8')) ?? '{}')
 
         const content = await readFile(file.path)
 
@@ -106,7 +95,7 @@ export default async ({
     schemas = [],
     storage: includeStorage = true,
     tables = [],
-    tenants
+    tenants,
 }: RestoreOptions) => {
     const scope = env === 'dev' ? 'local' : env
     console.log(`Loading .env.${scope}`)
@@ -124,7 +113,7 @@ export default async ({
         schemas,
         storage,
         tables,
-        tenants
+        tenants,
     }
 
     if (firestore) {

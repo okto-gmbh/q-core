@@ -11,14 +11,9 @@ import Paper from '../../Paper'
 import Autocomplete, { Option } from '../Autocomplete'
 import TextInput from '../TextInput'
 
-import type { Ref } from 'react'
-import type {
-    Control,
-    ControllerRenderProps,
-    FieldValues
-} from 'react-hook-form'
-
 import type { AutocompleteProps, FilterOptionsState } from '@mui/material'
+import type { Ref } from 'react'
+import type { Control, ControllerRenderProps, FieldValues } from 'react-hook-form'
 
 const selectFilter = createFilterOptions()
 
@@ -55,21 +50,16 @@ const Select = (
     }: SelectProps,
     ref: Ref<HTMLInputElement>
 ) => {
-    const handleChange = (
-        values: any | any[],
-        field: ControllerRenderProps<FieldValues, any>
-    ) => {
+    const handleChange = (values: any[] | any, field: ControllerRenderProps<FieldValues, any>) => {
         field.onChange(values)
 
         if (control && onChange) {
             ;(onChange as any)(
                 field.name,
-                multiple
-                    ? (values as Array<{ key: string }>).map(({ key }) => key)
-                    : values?.key,
+                multiple ? (values as Array<{ key: string }>).map(({ key }) => key) : values?.key,
                 {
                     shouldDirty: true,
-                    shouldValidate: true
+                    shouldValidate: true,
                 }
             )
         }
@@ -97,8 +87,8 @@ const Select = (
                 create: true,
                 key: params.inputValue,
                 value: vars(createLabel!, {
-                    label: params.inputValue
-                })
+                    label: params.inputValue,
+                }),
             })
         }
 
@@ -116,10 +106,7 @@ const Select = (
         return valuesToOptions([value])?.[0] || null
     }
 
-    const onSelectChange = async (
-        values: any,
-        field: ControllerRenderProps<FieldValues, any>
-    ) => {
+    const onSelectChange = async (values: any, field: ControllerRenderProps<FieldValues, any>) => {
         const createOptions = multiple
             ? values.filter(({ create }: { create?: boolean }) => create)
             : values?.create
@@ -132,16 +119,13 @@ const Select = (
                     const key = await onCreate(value)
                     return {
                         key,
-                        value
+                        value,
                     }
                 })
             )
 
             if (multiple) {
-                handleChange(
-                    [...valuesToOptions(field.value), ...newOptions],
-                    field
-                )
+                handleChange([...valuesToOptions(field.value), ...newOptions], field)
             } else {
                 handleChange(newOptions[0], field)
             }
@@ -153,25 +137,22 @@ const Select = (
     const renderSelect = (field: ControllerRenderProps<FieldValues, any>) => (
         <Autocomplete
             PaperComponent={Paper}
-            multiple={multiple}
             limitTags={limitTags}
+            multiple={multiple}
             options={options}
             {...props}
-            value={getValue(field.value ?? defaultValue)}
-            ref={ref}
-            onChange={(_, values) => onSelectChange(values, field)}
-            filterOptions={(options, params) =>
-                filterOptions(options, params, field)
-            }
+            filterOptions={(options, params) => filterOptions(options, params, field)}
             getOptionLabel={({ value }) => value}
+            onChange={(_, values) => onSelectChange(values, field)}
+            ref={ref}
             renderInput={(params) => (
                 <TextInput
                     {...params}
-                    label={label}
-                    variant="filled"
                     error={error}
                     helperText={helperText}
+                    label={label}
                     onChange={onInputChange}
+                    variant="filled"
                 />
             )}
             renderOption={(props, { key, value }, { inputValue }) => {
@@ -189,7 +170,7 @@ const Select = (
                                     style={{
                                         fontWeight: part.highlight
                                             ? 'var(--fontWeights-bold)'
-                                            : 'var(--fontWeights-default)'
+                                            : 'var(--fontWeights-default)',
                                     }}>
                                     {part.text}
                                 </span>
@@ -198,13 +179,14 @@ const Select = (
                     </Option>
                 )
             }}
+            value={getValue(field.value ?? defaultValue)}
         />
     )
 
     if (!control) {
         return renderSelect({
             onChange,
-            value: props.value
+            value: props.value,
         } as ControllerRenderProps<FieldValues, any>)
     }
 
@@ -224,7 +206,7 @@ export const objectsToOptions = (
 ): Array<{ key: string; value: string }> => {
     objects = objects.map(({ id, [labelField]: label }) => ({
         key: id,
-        value: label
+        value: label,
     }))
 
     if (sort) {

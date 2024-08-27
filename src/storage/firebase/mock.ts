@@ -31,15 +31,10 @@ const getStorage = (bucket?: Bucket): Storage => {
         getFiles: async (path?: string) =>
             path === undefined
                 ? Object.keys(LOCAL_STORAGE)
-                : Object.keys(LOCAL_STORAGE).filter((key) =>
-                      key.startsWith(path)
-                  ),
-        getMetadata: async (path: string): Promise<Metadata> =>
-            LOCAL_STORAGE[path]?.metadata,
+                : Object.keys(LOCAL_STORAGE).filter((key) => key.startsWith(path)),
+        getMetadata: async (path: string): Promise<Metadata> => LOCAL_STORAGE[path]?.metadata,
         remove: async (path: string) => {
-            const files = Object.keys(LOCAL_STORAGE).filter((key) =>
-                key.startsWith(path)
-            )
+            const files = Object.keys(LOCAL_STORAGE).filter((key) => key.startsWith(path))
             for (const path of files) {
                 delete LOCAL_STORAGE[path]
             }
@@ -51,8 +46,8 @@ const getStorage = (bucket?: Bucket): Storage => {
                 ...file,
                 metadata: {
                     ...file.metadata,
-                    ...metadata
-                }
+                    ...metadata,
+                },
             }
         },
         stream: (path: string) => {
@@ -64,27 +59,22 @@ const getStorage = (bucket?: Bucket): Storage => {
             stream.push(null)
             return stream
         },
-        upload: async (
-            path: string,
-            data: Buffer,
-            metadata?: Partial<Metadata>
-        ) => {
+        upload: async (path: string, data: Buffer, metadata?: Partial<Metadata>) => {
             LOCAL_STORAGE[path] = {
                 data,
                 metadata: {
                     contentType: '',
                     size: data.length,
                     updated: new Date().toISOString(),
-                    ...metadata
-                }
+                    ...metadata,
+                },
             }
-        }
+        },
     }
 }
 
 export const seedMockStorage = (data: {
-    [path: string]: Omit<LocalFile, 'metadata'> &
-        Partial<Pick<LocalFile, 'metadata'>>
+    [path: string]: Omit<LocalFile, 'metadata'> & Partial<Pick<LocalFile, 'metadata'>>
 }) => {
     const completeObject = Object.fromEntries(
         Object.entries(data).map(([filePath, fileContent]) => {
@@ -96,9 +86,9 @@ export const seedMockStorage = (data: {
                         metadata: {
                             contentType: '',
                             size: data[filePath].data.length,
-                            updated: new Date().toISOString()
-                        }
-                    }
+                            updated: new Date().toISOString(),
+                        },
+                    },
                 ]
             } else {
                 return [filePath, fileContent]
@@ -121,7 +111,7 @@ export const getMockBucket = () => ({}) as Bucket
 export const verifyMock = {
     verifyMock() {
         return true
-    }
+    },
 }
 
 export default getStorage

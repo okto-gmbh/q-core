@@ -33,11 +33,7 @@ const migrate = async (migrations: Migrations = {}, ctx: MigrationContext) => {
         const docs = await ctx.repo.query(tableName)
         for (const doc of docs) {
             try {
-                if (
-                    ctx.tenantId !== ALL_TENANTS &&
-                    doc.tenantId !== ctx.tenantId
-                )
-                    continue
+                if (ctx.tenantId !== ALL_TENANTS && doc.tenantId !== ctx.tenantId) continue
 
                 const data = await execMigrate(doc.id, doc, ctx)
                 if (!data) {
@@ -59,11 +55,7 @@ const migrate = async (migrations: Migrations = {}, ctx: MigrationContext) => {
     console.timeEnd('duration')
 }
 
-export default async ({
-    env = 'dev',
-    migrations,
-    tenant = ALL_TENANTS
-}: MigrationOptions) => {
+export default async ({ env = 'dev', migrations, tenant = ALL_TENANTS }: MigrationOptions) => {
     const scope = env === 'dev' ? 'local' : env
     console.log(`Loading .env.${scope}`)
     dotenv.config({ path: `.env.${scope}` })
@@ -73,18 +65,14 @@ export default async ({
 
     const storage = getStorage(getBucket())
 
-    const {
-        db,
-        default: repo,
-        deleteField
-    } = await import('@core/repositories/firestore')
+    const { db, default: repo, deleteField } = await import('@core/repositories/firestore')
 
     const ctx: MigrationContext = {
         db,
         deleteField,
         repo,
         storage,
-        tenantId: tenant
+        tenantId: tenant,
     }
 
     await migrate(migrations, ctx)

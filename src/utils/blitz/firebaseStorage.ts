@@ -3,14 +3,14 @@ import { OP_EQUALS } from '@core/repositories/operators'
 
 const getSessionByHandle = async (handle: string) => {
     const [session] = await repo.query('sessions', {
-        where: [['handle', OP_EQUALS, handle]]
+        where: [['handle', OP_EQUALS, handle]],
     })
     return session
 }
 
 const getSessionsByUserId = async (userId: string) => {
     const [session] = await repo.query('sessions', {
-        where: [['userId', OP_EQUALS, userId]]
+        where: [['userId', OP_EQUALS, userId]],
     })
     return session
 }
@@ -42,5 +42,5 @@ export default {
     deleteSession,
     getSession: getSessionByHandle,
     getSessions: getSessionsByUserId,
-    updateSession
+    updateSession,
 }

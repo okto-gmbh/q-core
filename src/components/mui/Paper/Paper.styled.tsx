@@ -22,12 +22,9 @@ export const Element = styled(forwardRef(StyledPaper))`
     overflow: ${({ overflow }) => (overflow ? overflow : 'hidden')};
     width: ${({ width }) => (width ? width : 'auto')};
     height: ${({ height }) => (height ? height : undefined)};
-    border-radius: ${({ borderRadius }) =>
-        borderRadius ? borderRadius : 'var(--radii-default)'};
+    border-radius: ${({ borderRadius }) => (borderRadius ? borderRadius : 'var(--radii-default)')};
     background-color: var(--colors-white);
     box-shadow: var(--shadows-mui);
-    overflow-x: ${({ scroll }) =>
-        scroll === 'x' || scroll === 'all' ? 'auto' : undefined};
-    overflow-y: ${({ scroll }) =>
-        scroll === 'y' || scroll === 'all' ? 'auto' : undefined};
+    overflow-x: ${({ scroll }) => (scroll === 'x' || scroll === 'all' ? 'auto' : undefined)};
+    overflow-y: ${({ scroll }) => (scroll === 'y' || scroll === 'all' ? 'auto' : undefined)};
 `
