@@ -57,7 +57,7 @@ async function mapRows<Row extends RowTemplate, Fields extends (keyof Row & stri
     rows: admin.firestore.DocumentSnapshot<admin.firestore.DocumentData>[],
     fields?: Fields
 ) {
-    return await Promise.all(rows.map(async (row) => await mapRow(row, fields)))
+    return await Promise.all(rows.map((row) => mapRow(row, fields)))
 }
 
 export type FirebaseEntity = RowTemplate
