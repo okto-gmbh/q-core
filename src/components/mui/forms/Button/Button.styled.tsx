@@ -4,28 +4,21 @@ import Button, { buttonClasses } from '@mui/material/Button'
 
 import { composeButtonVariants } from '../../../Button/Button.styled'
 
-import type { ButtonVariant } from '../../../Button/Button'
-
 import type { ButtonProps as MuiButtonProps } from '@mui/material/Button'
 
+import type { ButtonVariant } from '../../../Button/Button'
 import type { ButtonProps } from './Button'
 
 const muiVariants: {
     [key in ButtonVariant]: MuiButtonProps['variant']
 } = {
     primary: 'contained',
-    secondary: 'outlined'
+    secondary: 'outlined',
 }
 
-export const Element = styled(
-    ({ look: _look, variant, ...rest }: ButtonProps) => (
-        <Button
-            color={variant}
-            variant={muiVariants[variant || '']}
-            {...rest}
-        />
-    )
-)`
+export const Element = styled(({ look: _look, variant, ...rest }: ButtonProps) => (
+    <Button color={variant} variant={muiVariants[variant || '']} {...rest} />
+))`
     ${composeButtonVariants}
 
     && {

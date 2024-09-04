@@ -6,7 +6,7 @@ declare global {
 
 export const pageview = (gaId: string, url: string): void => {
     window.gtag('config', gaId, {
-        page_path: url
+        page_path: url,
     })
 }
 
@@ -14,7 +14,7 @@ export const event = ({
     action,
     category,
     label,
-    value
+    value,
 }: {
     action: string
     category: string
@@ -24,7 +24,7 @@ export const event = ({
     window.gtag('event', action, {
         event_category: category,
         event_label: label,
-        value
+        value,
     })
 }
 

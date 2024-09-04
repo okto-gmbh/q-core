@@ -8,15 +8,12 @@ import {
     getRawMockStorage,
     resetMockStorage,
     seedMockStorage,
-    verifyMock
+    verifyMock,
 } from '@core/storage/firebase/mock'
 
 describe('firebase storage', () => {
     beforeAll(() => {
-        vi.mock(
-            '@core/storage/firebase/admin',
-            () => import('@core/storage/firebase/mock')
-        )
+        vi.mock('@core/storage/firebase/admin', () => import('@core/storage/firebase/mock'))
 
         const spy = vi.spyOn(verifyMock, 'verifyMock')
         getStorage(getMockBucket())
@@ -46,8 +43,8 @@ describe('firebase storage', () => {
                     contentType: 'text/plain',
                     name: 'test.txt',
                     size: 4,
-                    updated: new Date().toISOString()
-                }
+                    updated: new Date().toISOString(),
+                },
             },
             'test2.txt': {
                 data: Buffer.from('test'),
@@ -55,9 +52,9 @@ describe('firebase storage', () => {
                     contentType: 'text/plain',
                     name: 'test2.txt',
                     size: 4,
-                    updated: new Date().toISOString()
-                }
-            }
+                    updated: new Date().toISOString(),
+                },
+            },
         }
 
         seedMockStorage(testData)
@@ -67,11 +64,11 @@ describe('firebase storage', () => {
     it('should seed the mock storage auto generated metadata', () => {
         const testData = {
             'test.txt': {
-                data: Buffer.from('test')
+                data: Buffer.from('test'),
             },
             'test2.txt': {
-                data: Buffer.from('test')
-            }
+                data: Buffer.from('test'),
+            },
         }
 
         seedMockStorage(testData)
@@ -84,14 +81,14 @@ describe('firebase storage', () => {
     it('should get all files', async () => {
         const testData = {
             'directory/test.txt': {
-                data: Buffer.from('test')
+                data: Buffer.from('test'),
             },
             'directory/test2.txt': {
-                data: Buffer.from('test')
+                data: Buffer.from('test'),
             },
             'directory2/test.txt': {
-                data: Buffer.from('test')
-            }
+                data: Buffer.from('test'),
+            },
         }
 
         seedMockStorage(testData)
@@ -103,14 +100,14 @@ describe('firebase storage', () => {
     it('should get all matching files', async () => {
         const testData = {
             'directory/test.txt': {
-                data: Buffer.from('test')
+                data: Buffer.from('test'),
             },
             'directory/test2.txt': {
-                data: Buffer.from('test')
+                data: Buffer.from('test'),
             },
             'directory2/test.txt': {
-                data: Buffer.from('test')
-            }
+                data: Buffer.from('test'),
+            },
         }
 
         seedMockStorage(testData)
@@ -174,7 +171,7 @@ describe('firebase storage', () => {
         const bucket = getMockBucket()
         const storage = getStorage(bucket)
         await storage.upload('test.json', Buffer.from('{}'), {
-            contentType: 'text/json'
+            contentType: 'text/json',
         })
         const metadata = await storage.getMetadata('test.json')
         expect(metadata?.contentType).toBe('text/json')
@@ -193,7 +190,7 @@ describe('firebase storage', () => {
         const storage = getStorage(bucket)
         await storage.upload('test.txt', Buffer.from('test'))
         await storage.setMetadata('test.txt', {
-            contentType: 'text/modified'
+            contentType: 'text/modified',
         })
         const metadata = await storage.getMetadata('test.txt')
         expect(metadata?.contentType).toBe('text/modified')

@@ -1,10 +1,6 @@
 import type { BlitzCtx } from '@blitzjs/auth'
 
-export function mockBlitzContext(
-    userId: string,
-    role: string,
-    tenantId?: string
-): BlitzCtx {
+export function mockBlitzContext(userId: string, role: string, tenantId?: string): BlitzCtx {
     const ctx: BlitzCtx = {
         prefetchInfiniteQuery: async () => {},
         prefetchQuery: async () => {},
@@ -30,8 +26,8 @@ export function mockBlitzContext(
             $thisIsAuthorized: () => true,
             role,
             tenantId,
-            userId
-        }
+            userId,
+        },
     }
     return ctx
 }

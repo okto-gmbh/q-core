@@ -11,17 +11,15 @@ const white = 'var(--colors-white)'
 const primaryColor = 'var(--colors-primary)'
 
 export const multilineLabelProps = {
-    zIndex: '4 !important'
+    zIndex: '4 !important',
 }
 
-export const Input = styled(
-    ({ grow: _grow, round: _round, ...props }: TextInputProps) => (
-        <TextField {...props} variant="outlined" />
-    )
-)(({ grow, round }: { grow?: 'auto'; round?: boolean }) => ({
+export const Input = styled(({ grow: _grow, round: _round, ...props }: TextInputProps) => (
+    <TextField {...props} variant="outlined" />
+))(({ grow, round }: { grow?: 'auto'; round?: boolean }) => ({
     [`& .${formLabelClasses.root}`]: {
         textShadow: '0 0 3px var(--colors-white)',
-        zIndex: 1
+        zIndex: 1,
     },
 
     [`& .${inputBaseClasses.root}`]: {
@@ -29,9 +27,9 @@ export const Input = styled(
             [`&:not(.${inputBaseClasses.disabled})`]: {
                 [`& .${outlinedInputClasses.notchedOutline}`]: {
                     borderColor: primaryColor,
-                    borderWidth: '1px'
-                }
-            }
+                    borderWidth: '1px',
+                },
+            },
         },
         backgroundColor: white,
         borderRadius: round ? 'var(--spacings-huge)' : 'var(--radii-default)',
@@ -40,24 +38,23 @@ export const Input = styled(
         padding: round ? '0 var(--spacings-default)' : undefined,
 
         [`&.${autocompleteClasses.inputRoot}`]: {
-            backgroundColor: white
+            backgroundColor: white,
         },
 
         [`& .${inputBaseClasses.input}`]: {
-            textOverflow: 'ellipsis'
+            textOverflow: 'ellipsis',
         },
 
         [`& .${outlinedInputClasses.notchedOutline}`]: {
             borderColor: 'var(--colors-white)',
             borderStyle: 'solid',
             borderWidth: '1px',
-            transition: 'border 0.2s ease-in'
+            transition: 'border 0.2s ease-in',
         },
 
-        [`&.${inputBaseClasses.disabled} .${outlinedInputClasses.notchedOutline}`]:
-            {
-                borderColor: white
-            },
+        [`&.${inputBaseClasses.disabled} .${outlinedInputClasses.notchedOutline}`]: {
+            borderColor: white,
+        },
 
         [`&:not(.${inputBaseClasses.focused})`]: {
             [`&.${inputBaseClasses.multiline}`]:
@@ -65,26 +62,26 @@ export const Input = styled(
                     ? {
                           '> textarea': {
                               textOverflow: 'ellipsis',
-                              whiteSpace: 'nowrap'
+                              whiteSpace: 'nowrap',
                           },
                           position: 'relative',
 
-                          zIndex: 3
+                          zIndex: 3,
                       }
-                    : undefined
+                    : undefined,
         },
 
         [`&.${inputBaseClasses.focused}`]: {
             [`&:not(.${inputBaseClasses.disabled})`]: {
                 [`& .${outlinedInputClasses.notchedOutline}`]: {
                     borderColor: primaryColor,
-                    borderWidth: '1px'
-                }
+                    borderWidth: '1px',
+                },
             },
 
             [`&.${inputBaseClasses.multiline}`]: {
-                zIndex: 3
-            }
-        }
-    }
+                zIndex: 3,
+            },
+        },
+    },
 }))

@@ -6,8 +6,9 @@ import { createRef } from 'react'
 
 import TextInput from '../TextInput'
 
-import type { TextInputProps } from '../TextInput'
 import type { FC } from 'react'
+
+import type { TextInputProps } from '../TextInput'
 
 type SearchInputProps = TextInputProps & {
     clear: () => void
@@ -25,9 +26,6 @@ const SearchInput: FC<SearchInputProps> = ({ clear, value, ...props }) => {
 
     return (
         <TextInput
-            ref={inputRef}
-            round
-            hiddenLabel
             InputProps={{
                 endAdornment: (
                     <InputAdornment position="end">
@@ -44,8 +42,11 @@ const SearchInput: FC<SearchInputProps> = ({ clear, value, ...props }) => {
                             {value ? <Clear /> : <SearchIcon />}
                         </IconButton>
                     </InputAdornment>
-                )
+                ),
             }}
+            hiddenLabel
+            ref={inputRef}
+            round
             {...props}
             value={value}
         />

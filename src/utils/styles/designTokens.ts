@@ -1,13 +1,7 @@
-/* eslint-disable sonarjs/no-duplicate-string */
 import Color from 'color'
 import merge from 'lodash.merge'
 
-import type {
-    Breakpoint,
-    Color as ColorType,
-    FontSize,
-    Heading
-} from '../../types'
+import type { Breakpoint, Color as ColorType, FontSize, Heading } from '../../types'
 
 export type GoogleFont = {
     name: string
@@ -21,21 +15,16 @@ export type TokenBreakpoints = {
 export type ResponsiveTokens = {
     [designToken in keyof Omit<
         RawDesignTokens,
-        | 'responsiveTokens'
-        | 'fonts'
-        | 'cursors'
-        | 'breakpoints'
-        | 'colors'
-        | 'backgrounds'
+        'backgrounds' | 'breakpoints' | 'colors' | 'cursors' | 'fonts' | 'responsiveTokens'
     >]?: RawDesignTokens[designToken]
 }
 
 export type TokenFonts = {
-    [key: 'heading' | 'body' | string]: string | GoogleFont
+    [key: 'body' | 'heading' | string]: GoogleFont | string
 }
 
 export type TokenFontWeights = {
-    [key: 'default' | 'bold' | Heading | string]: number
+    [key: 'bold' | 'default' | Heading | string]: number
 }
 
 type TokenSpacings = {
@@ -49,7 +38,7 @@ type TokenSpacings = {
 }
 
 type TokenFontSizes = {
-    [key: FontSize | Heading | string]: string | number | number[]
+    [key: FontSize | Heading | string]: number[] | number | string
 }
 
 type TokenLineHeights = {
@@ -123,20 +112,20 @@ export type DesignTokens = {
     cursors: {
         [key: 'disabled' | string]: string
     }
+    fonts: TokenFonts
     fontSizes: TokenFontSizes
     fontWeights: TokenFontWeights
-    fonts: TokenFonts
-    letterSpacings: TokenLetterSpacings | Pixels<TokenLetterSpacings>
-    lineHeights: TokenLineHeights | Stringify<TokenLineHeights>
+    letterSpacings: Pixels<TokenLetterSpacings> | TokenLetterSpacings
+    lineHeights: Stringify<TokenLineHeights> | TokenLineHeights
     motion: TokenMotion
     opacity: {
         [key: 'disabled' | string]: number
     }
-    radii: TokenRadii | Pixels<TokenRadii>
+    radii: Pixels<TokenRadii> | TokenRadii
     shadows: {
         [key: 'default' | string]: string
     }
-    spacings: TokenSpacings | Pixels<TokenSpacings>
+    spacings: Pixels<TokenSpacings> | TokenSpacings
     components?: TokenComponents
     responsiveTokens?: TokenResponsiveTokens
 }
@@ -160,14 +149,14 @@ export const SYSTEM_FONTS_FALLBACK =
 
 const coreTokens: RawDesignTokens = {
     backgrounds: {
-        default: '#ffffff'
+        default: '#ffffff',
     },
     borders: {
         default: {
             color: 'transparent',
             style: 'solid',
-            width: '0px'
-        }
+            width: '0px',
+        },
     },
     breakpoints: {
         desktopL: '1600px',
@@ -177,7 +166,7 @@ const coreTokens: RawDesignTokens = {
         mobileLandscape: '480px',
         mobilePortrait: '320px',
         tabletLandscape: '740px',
-        tabletPortrait: '610px'
+        tabletPortrait: '610px',
     },
     colors: {
         black: '#2b2b2b',
@@ -188,10 +177,14 @@ const coreTokens: RawDesignTokens = {
         secondary: '#6a94a0',
         secondaryHover: 'var(--colors-secondary-dark-20)',
         success: '#10dc60',
-        white: '#ffffff'
+        white: '#ffffff',
     },
     cursors: {
-        disabled: 'not-allowed'
+        disabled: 'not-allowed',
+    },
+    fonts: {
+        body: SYSTEM_FONTS_FALLBACK,
+        heading: SYSTEM_FONTS_FALLBACK,
     },
     fontSizes: {
         default: 3,
@@ -203,7 +196,7 @@ const coreTokens: RawDesignTokens = {
         large: 4,
         medium: 3.33333,
         small: 2.5,
-        tiny: 2
+        tiny: 2,
     },
     fontWeights: {
         bold: 600,
@@ -212,11 +205,7 @@ const coreTokens: RawDesignTokens = {
         h2: 600,
         h3: 600,
         h4: 400,
-        h5: 400
-    },
-    fonts: {
-        body: SYSTEM_FONTS_FALLBACK,
-        heading: SYSTEM_FONTS_FALLBACK
+        h5: 400,
     },
     letterSpacings: {
         default: 0,
@@ -224,30 +213,30 @@ const coreTokens: RawDesignTokens = {
         h2: -1,
         h3: -1,
         h4: 0,
-        h5: 0
+        h5: 0,
     },
     lineHeights: {
         default: 1.5,
         large: 1.3,
         medium: 1.4,
         small: 1.6,
-        tiny: 1.7
+        tiny: 1.7,
     },
     motion: {
         default: {
             duration: '.2s',
-            function: 'ease-in-out'
-        }
+            function: 'ease-in-out',
+        },
     },
     opacity: {
-        disabled: 0.8
+        disabled: 0.8,
     },
     radii: {
-        default: 0
+        default: 0,
     },
     shadows: {
         default: '0px 1px 5px rgba(0, 0, 0, 0.16)',
-        mui: 'var(--shadows-default)'
+        mui: 'var(--shadows-default)',
     },
     spacings: {
         baseline: 6,
@@ -256,8 +245,8 @@ const coreTokens: RawDesignTokens = {
         large: 8,
         medium: 3,
         small: 2,
-        tiny: 1
-    }
+        tiny: 1,
+    },
 }
 
 const buildFontSizeClamp = ([min, max, value]: number[]) =>
@@ -270,9 +259,7 @@ const generateSpacings = (spacings: TokenSpacings): Pixels<TokenSpacings> =>
     Object.fromEntries(
         Object.entries(spacings).map(([tokenName, tokenValue]) => [
             tokenName,
-            `${
-                (tokenName === 'baseline' ? 1 : spacings.baseline) * tokenValue
-            }px`
+            `${(tokenName === 'baseline' ? 1 : spacings.baseline) * tokenValue}px`,
         ])
     ) as Pixels<TokenSpacings>
 
@@ -282,7 +269,7 @@ const generateFontSizes = (fontSizes: TokenFontSizes = {}): TokenFontSizes =>
             tokenName,
             Array.isArray(value)
                 ? buildFontSizeClamp(value)
-                : `calc(var(--spacings-baseline) * ${value})`
+                : `calc(var(--spacings-baseline) * ${value})`,
         ])
     )
 
@@ -290,10 +277,7 @@ const generateClampLineHeights = (fontSizes: TokenFontSizes = {}) =>
     Object.fromEntries(
         Object.entries(fontSizes)
             .filter(([, value]) => Array.isArray(value))
-            .map(([tokenName, value]) => [
-                tokenName,
-                buildLineHeightClamp(value as number[])
-            ])
+            .map(([tokenName, value]) => [tokenName, buildLineHeightClamp(value as number[])])
     )
 
 const defaultLineHeights = ['tiny', 'small', 'default', 'medium', 'large']
@@ -305,13 +289,8 @@ const generateRegularLineHeights = (
 ) =>
     Object.fromEntries(
         Object.entries(fontSizes)
-            .filter(([tokenName]) =>
-                (tokenNames || defaultLineHeights).includes(tokenName)
-            )
-            .map(([tokenName, value]) => [
-                tokenName,
-                `calc(${value} * ${lineHeights[tokenName]})`
-            ])
+            .filter(([tokenName]) => (tokenNames || defaultLineHeights).includes(tokenName))
+            .map(([tokenName, value]) => [tokenName, `calc(${value} * ${lineHeights[tokenName]})`])
     )
 
 const generateFonts = (fonts: TokenFonts): TokenFonts => ({
@@ -321,50 +300,43 @@ const generateFonts = (fonts: TokenFonts): TokenFonts => ({
             tokenName,
             typeof value === 'string'
                 ? value
-                : `'${value.name}',${value.fallback || SYSTEM_FONTS_FALLBACK}`
+                : `'${value.name}',${value.fallback || SYSTEM_FONTS_FALLBACK}`,
         ])
-    )
+    ),
 })
 
-type ThemeMode = 'light' | 'dark'
+type ThemeMode = 'dark' | 'light'
 
-const colorPercentage = [
-    10, 15, 20, 25, 30, 35, 40, 45, 50, 55, 60, 65, 70, 75, 80, 85, 90, 95
-]
+const colorPercentage = [10, 15, 20, 25, 30, 35, 40, 45, 50, 55, 60, 65, 70, 75, 80, 85, 90, 95]
 
 const generateColors = (colors: TokenColors, mode: ThemeMode): TokenColors => ({
     ...colors,
     ...Object.fromEntries([
         ...colorPercentage.map((percent) => [
             `primary-light-${percent}`,
-            new Color(colors.primary).lighten(percent / 100).hex()
+            new Color(colors.primary).lighten(percent / 100).hex(),
         ]),
         ...colorPercentage.map((percent) => [
             `primary-dark-${percent}`,
-            new Color(colors.primary).darken(percent / 100).hex()
+            new Color(colors.primary).darken(percent / 100).hex(),
         ]),
         ...colorPercentage.map((percent) => [
             `secondary-light-${percent}`,
-            new Color(colors.secondary).lighten(percent / 100).hex()
+            new Color(colors.secondary).lighten(percent / 100).hex(),
         ]),
         ...colorPercentage.map((percent) => [
             `secondary-dark-${percent}`,
-            new Color(colors.secondary).darken(percent / 100).hex()
+            new Color(colors.secondary).darken(percent / 100).hex(),
         ]),
         ...colorPercentage.map((percent) => [
             `gray-${mode === 'dark' ? 100 - percent : percent}`,
-            new Color(mode === 'dark' ? colors.white : colors.black)
-                .lightness(percent)
-                .hex()
-        ])
-    ])
+            new Color(mode === 'dark' ? colors.white : colors.black).lightness(percent).hex(),
+        ]),
+    ]),
 })
 
 const generateStyleProperties = (namespace: string, props: any) =>
-    Object.entries(props).map(([propName, value]) => [
-        `${namespace}-${propName}`,
-        value
-    ])
+    Object.entries(props).map(([propName, value]) => [`${namespace}-${propName}`, value])
 
 const generateMotion = (motion: TokenMotion = {}): TokenMotion =>
     Object.fromEntries(
@@ -373,7 +345,7 @@ const generateMotion = (motion: TokenMotion = {}): TokenMotion =>
                 ? [[namespace, value]]
                 : [
                       [namespace, `${value.duration} ${value.function}`],
-                      ...generateStyleProperties(namespace, value)
+                      ...generateStyleProperties(namespace, value),
                   ]
         )
     )
@@ -384,11 +356,8 @@ const generateBorders = (borders: TokenBorders = {}): TokenBorders =>
             typeof border === 'string'
                 ? [[namespace, border]]
                 : [
-                      [
-                          namespace,
-                          `${border.width} ${border.color} ${border.style}`
-                      ],
-                      ...generateStyleProperties(namespace, border)
+                      [namespace, `${border.width} ${border.color} ${border.style}`],
+                      ...generateStyleProperties(namespace, border),
                   ]
         )
     )
@@ -409,24 +378,20 @@ const generateResponsiveTokens = (
                 letterSpacings: generatePixelBasedValues(tokens.letterSpacings),
                 lineHeights: {
                     ...generateRegularLineHeights(
-                        generateFontSizes(
-                            merge({}, originalFontSizes, tokens.fontSizes)
-                        ),
+                        generateFontSizes(merge({}, originalFontSizes, tokens.fontSizes)),
                         merge({}, originalLineHeights, tokens.lineHeights),
                         [
                             ...Object.keys(tokens.fontSizes ?? {}),
-                            ...Object.keys(tokens.lineHeights ?? {})
+                            ...Object.keys(tokens.lineHeights ?? {}),
                         ]
-                    )
+                    ),
                 },
                 motion: generateMotion(tokens.motion),
                 radii: generatePixelBasedValues(tokens.radii),
                 spacings: tokens.spacings
-                    ? generateSpacings(
-                          merge({}, originalSpacings, tokens.spacings)
-                      )
-                    : {}
-            }
+                    ? generateSpacings(merge({}, originalSpacings, tokens.spacings))
+                    : {},
+            },
         ])
     )
 
@@ -434,10 +399,7 @@ const generatePixelBasedValues = <T extends { [key: string]: number }>(
     tokens: T = <T>{}
 ): Pixels<T> =>
     Object.fromEntries(
-        Object.entries(tokens).map(([tokenName, value]) => [
-            tokenName,
-            value + 'px'
-        ])
+        Object.entries(tokens).map(([tokenName, value]) => [tokenName, value + 'px'])
     ) as Pixels<T>
 
 // TODO: Generate on build for memoization
@@ -450,15 +412,15 @@ export const generateDesignTokens = (
     const generatedFontSizes = generateFontSizes(settings.fontSizes)
     const generatedLineHeights = {
         ...generateClampLineHeights(settings.fontSizes),
-        ...generateRegularLineHeights(generatedFontSizes, settings.lineHeights)
+        ...generateRegularLineHeights(generatedFontSizes, settings.lineHeights),
     }
 
     const generatedDesignTokens: GeneratedDesignTokens = {
         ...settings,
         borders: generateBorders(settings.borders),
         colors: generateColors(settings.colors, mode),
-        fontSizes: generatedFontSizes,
         fonts: generateFonts(settings.fonts),
+        fontSizes: generatedFontSizes,
         letterSpacings: generatePixelBasedValues(settings.letterSpacings),
         lineHeights: generatedLineHeights,
         motion: generateMotion(settings.motion),
@@ -469,7 +431,7 @@ export const generateDesignTokens = (
             settings.fontSizes,
             settings.responsiveTokens || {}
         ),
-        spacings: generateSpacings(settings.spacings)
+        spacings: generateSpacings(settings.spacings),
     }
 
     return generatedDesignTokens

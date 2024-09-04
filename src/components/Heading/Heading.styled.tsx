@@ -3,11 +3,7 @@ import styled from '@emotion/styled'
 import type { HeadingProps } from './Heading'
 
 export const Element = styled(
-    ({
-        as: ComponentOverride,
-        displayAs: Component,
-        ...rest
-    }: HeadingProps) => {
+    ({ as: ComponentOverride, displayAs: Component, ...rest }: HeadingProps) => {
         if (ComponentOverride) {
             return <ComponentOverride {...rest} />
         }
@@ -15,14 +11,10 @@ export const Element = styled(
     }
 )`
     font-family: var(--fonts-heading);
-    font-size: ${({ displayAs }) =>
-        displayAs ? `var(--fontSizes-${displayAs}) ` : undefined};
+    font-size: ${({ displayAs }) => (displayAs ? `var(--fontSizes-${displayAs}) ` : undefined)};
     font-weight: ${({ displayAs }) =>
-        displayAs
-            ? `var(--fontWeights-${displayAs}) `
-            : 'var(--fontWeights-600)'};
+        displayAs ? `var(--fontWeights-${displayAs}) ` : 'var(--fontWeights-600)'};
 
     letter-spacing: ${({ displayAs }) => `var(--letterSpacings-${displayAs}) `};
-    line-height: ${({ displayAs }) =>
-        displayAs ? `var(--lineHeights-${displayAs}) ` : undefined};
+    line-height: ${({ displayAs }) => (displayAs ? `var(--lineHeights-${displayAs}) ` : undefined)};
 `

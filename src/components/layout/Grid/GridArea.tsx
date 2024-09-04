@@ -1,12 +1,13 @@
 import * as Styled from './GridArea.styled'
 
-import type { Spacing } from '../../../types'
 import type { ComponentType, FC, HTMLAttributes } from 'react'
+
+import type { Spacing } from '../../../types'
 
 export interface GridAreaProps extends Partial<HTMLAttributes<HTMLDivElement>> {
     areas: number[][]
     items: any[]
-    as?: string | ComponentType<any>
+    as?: ComponentType<any> | string
     gap?: Spacing
     gapX?: Spacing
     gapY?: Spacing

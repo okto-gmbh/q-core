@@ -14,10 +14,7 @@ const mapChildren = (children: any[]) =>
 
 const mapAreas = (areas: Array<number[]>): string =>
     areas
-        .reduce(
-            (acc, currentValue) => acc.concat(`'a${currentValue.join(' a')}'`),
-            [] as string[]
-        )
+        .reduce((acc, currentValue) => acc.concat(`'a${currentValue.join(' a')}'`), [] as string[])
         .join(' ')
 
 export const Grid = styled(

@@ -5,15 +5,10 @@ import { Controller } from 'react-hook-form'
 import Paper from '../../Paper'
 import TextInput from '../TextInput'
 
-import type { FC } from 'react'
-import type {
-    Control,
-    ControllerRenderProps,
-    FieldValues
-} from 'react-hook-form'
-
 import type { TextFieldProps } from '@mui/material'
 import type { DatePickerProps as MuiDatePickerProps } from '@mui/x-date-pickers-pro'
+import type { FC } from 'react'
+import type { Control, ControllerRenderProps, FieldValues } from 'react-hook-form'
 
 type DatePickerProps = Omit<MuiDatePickerProps<Date>, 'renderInput'> & {
     control?: Control<FieldValues>
@@ -33,44 +28,33 @@ const DatePicker: FC<DatePickerProps> = ({
     value,
     ...props
 }) => {
-    const handleChange = (
-        date: Date | null,
-        field: ControllerRenderProps<FieldValues, string>
-    ) => {
+    const handleChange = (date: Date | null, field: ControllerRenderProps<FieldValues, string>) => {
         field.onChange(date)
 
         if (control && onChange) {
             ;(onChange as any)(field.name, date, {
                 shouldDirty: true,
-                shouldValidate: true
+                shouldValidate: true,
             })
         }
     }
 
-    const renderPicker = (
-        field: ControllerRenderProps<FieldValues, string>
-    ) => (
+    const renderPicker = (field: ControllerRenderProps<FieldValues, string>) => (
         <div>
             <MuiDatePicker
-                value={field.value ? new Date(field.value) : null}
-                label={label}
                 format="dd.MM.yyyy"
+                label={label}
                 slots={{
                     desktopPaper: Paper,
-                    textField: forwardRef(function TextField(
-                        inputProps: TextFieldProps,
-                        ref: any
-                    ) {
+                    textField: forwardRef(function TextField(inputProps: TextFieldProps, ref: any) {
                         return (
                             <TextInput
                                 {...inputProps}
-                                ref={ref}
-                                style={{ width: '100%' }}
+                                error={error}
+                                helperText={helperText}
                                 onBlur={(e) => {
                                     const value = e.target.value
-                                    const format = (
-                                        props.format || 'DD.MM.YYYY'
-                                    ).toUpperCase()
+                                    const format = (props.format || 'DD.MM.YYYY').toUpperCase()
 
                                     if (value === format) {
                                         return handleChange(null, field)
@@ -85,27 +69,20 @@ const DatePicker: FC<DatePickerProps> = ({
                                     const date = new Date()
                                     handleChange(
                                         new Date(
-                                            parseInt(
-                                                year ||
-                                                    String(date.getFullYear())
-                                            ),
-                                            parseInt(
-                                                month ||
-                                                    String(date.getMonth() + 1)
-                                            ) - 1,
-                                            parseInt(
-                                                day || String(date.getDate())
-                                            )
+                                            parseInt(year || String(date.getFullYear())),
+                                            parseInt(month || String(date.getMonth() + 1)) - 1,
+                                            parseInt(day || String(date.getDate()))
                                         ),
                                         field
                                     )
                                 }}
-                                error={error}
-                                helperText={helperText}
+                                ref={ref}
+                                style={{ width: '100%' }}
                             />
                         )
-                    })
+                    }),
                 }}
+                value={field.value ? new Date(field.value) : null}
                 {...props}
                 onAccept={(date) => handleChange(date, field)}
             />
@@ -115,7 +92,7 @@ const DatePicker: FC<DatePickerProps> = ({
     if (!control) {
         return renderPicker({
             onChange,
-            value
+            value,
         } as ControllerRenderProps<FieldValues, string>)
     }
 

@@ -6,7 +6,7 @@ const mailTransport = createTransport({
     // use TLS
     auth: {
         pass: process.env.EMAIL_PASSWORD,
-        user: process.env.EMAIL_USERNAME
+        user: process.env.EMAIL_USERNAME,
     },
 
     host: process.env.EMAIL_HOST,
@@ -18,8 +18,8 @@ const mailTransport = createTransport({
     tls: {
         ciphers: process.env.EMAIL_CIPHERS,
         // do not fail on invalid certs
-        rejectUnauthorized: false
-    }
+        rejectUnauthorized: false,
+    },
 } as TransportOptions)
 
 export const sendEmail = async (options: SendMailOptions): Promise<any> =>
@@ -48,9 +48,9 @@ export const sendEmail = async (options: SendMailOptions): Promise<any> =>
                         \n\n
                         ${options.text}
                   `,
-                  to: process.env.DEV_EMAIL ?? 'dev@okto.ch'
+                  to: process.env.DEV_EMAIL ?? 'dev@okto.ch',
               }
-            : {})
+            : {}),
     })
 
 export const template = `<html>

@@ -3,11 +3,11 @@ import { createInterface } from 'node:readline/promises'
 
 const rl = createInterface({
     input: process.stdin,
-    output: process.stdout
+    output: process.stdout,
 })
 
 export type Parameters = {
-    [name: string]: string | number | boolean | undefined
+    [name: string]: boolean | number | string | undefined
 }
 
 export type ResolvedParameters<ProvidedParameters extends Parameters> = {
@@ -16,7 +16,6 @@ export type ResolvedParameters<ProvidedParameters extends Parameters> = {
         : string
 }
 
-// eslint-disable-next-line sonarjs/cognitive-complexity
 export async function createScript<ProvidedParameters extends Parameters>(
     confirmationQuestion: string | undefined,
     parameters: ProvidedParameters
@@ -29,13 +28,10 @@ export async function createScript<ProvidedParameters extends Parameters>(
         resolvedParameters[name] = answer || defaultValue
     }
 
-    const parameterVariables = Object.entries(resolvedParameters).reduce(
-        (acc, [name, value]) => {
-            acc += `${EOL}${name}: ${value}`
-            return acc
-        },
-        ''
-    )
+    const parameterVariables = Object.entries(resolvedParameters).reduce((acc, [name, value]) => {
+        acc += `${EOL}${name}: ${value}`
+        return acc
+    }, '')
 
     const confirm = async () =>
         rl.question(
@@ -44,9 +40,7 @@ export async function createScript<ProvidedParameters extends Parameters>(
                 `${EOL}` +
                 parameterVariables +
                 `${EOL}` +
-                `${EOL}${
-                    confirmationQuestion ?? 'Are you sure to run the script?'
-                } (y/n) `
+                `${EOL}${confirmationQuestion ?? 'Are you sure to run the script?'} (y/n) `
         )
 
     let answer = await confirm()

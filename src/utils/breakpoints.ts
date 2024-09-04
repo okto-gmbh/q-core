@@ -8,10 +8,10 @@ export const SIZES: TokenBreakpoints = {
     mobileLandscape: '480px',
     mobilePortrait: '320px',
     tabletLandscape: '740px',
-    tabletPortrait: '610px'
+    tabletPortrait: '610px',
 }
 
-const buildMediaQueries = (direction: 'min' | 'max') =>
+const buildMediaQueries = (direction: 'max' | 'min') =>
     Object.entries(SIZES).reduce((acc, [key, size]) => {
         acc[key] = `(${direction}-width: ${size})`
         return acc

@@ -1,6 +1,6 @@
+import { NextSeo } from 'next-seo'
 import Head from 'next/head'
 import { useRouter } from 'next/router'
-import { NextSeo } from 'next-seo'
 
 import type { NextSeoProps } from 'next-seo'
 import type { FC } from 'react'
@@ -22,7 +22,7 @@ const Meta: FC<MetaProps> = ({
     noindex = false,
     siteName,
     themeColor = '#111111',
-    title = 'q-core'
+    title = 'q-core',
 }) => {
     const { asPath, locale: currentLocale, locales } = useRouter()
 
@@ -35,47 +35,33 @@ const Meta: FC<MetaProps> = ({
                     ?.filter((locale) => locale !== currentLocale)
                     .map((locale) => ({
                         href: `${appBaseUrl}/${locale}${asPath}`,
-                        hrefLang: locale
+                        hrefLang: locale,
                     }))}
+                nofollow={nofollow}
+                noindex={noindex}
                 openGraph={{
                     description,
                     images: [
                         {
-                            url: image
-                        }
+                            url: image,
+                        },
                     ],
                     locale: currentLocale,
                     site_name: siteName,
-                    url: `${appBaseUrl}${asPath}`
+                    url: `${appBaseUrl}${asPath}`,
                 }}
-                noindex={noindex}
-                nofollow={nofollow}
             />
             <Head>
-                <link
-                    rel="manifest"
-                    href={manifest}
-                    crossOrigin="use-credentials"
-                />
-                <meta name="msapplication-TileColor" content={themeColor} />
-                <meta name="theme-color" content={themeColor} />
+                <link crossOrigin="use-credentials" href={manifest} rel="manifest" />
+                <meta content={themeColor} name="msapplication-TileColor" />
+                <meta content={themeColor} name="theme-color" />
                 <meta
-                    name="viewport"
                     content="width=device-width, initial-scale=1, viewport-fit=cover"
+                    name="viewport"
                 />
-                <link
-                    rel="icon"
-                    type="image/png"
-                    sizes="32x32"
-                    href="/favicon-32x32.png"
-                />
-                <link
-                    rel="icon"
-                    type="image/png"
-                    sizes="16x16"
-                    href="/favicon-16x16.png"
-                />
-                <link rel="shortcut icon" href="/favicon.ico" />
+                <link href="/favicon-32x32.png" rel="icon" sizes="32x32" type="image/png" />
+                <link href="/favicon-16x16.png" rel="icon" sizes="16x16" type="image/png" />
+                <link href="/favicon.ico" rel="shortcut icon" />
             </Head>
         </>
     )

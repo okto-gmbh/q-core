@@ -1,7 +1,6 @@
-/* eslint-disable security/detect-child-process */
 /* eslint-disable security/detect-non-literal-fs-filename */
-import { mkdir, writeFile } from 'fs/promises'
-import { dirname } from 'path'
+import { mkdir, writeFile } from 'node:fs/promises'
+import { dirname } from 'node:path'
 
 import * as dotenv from 'dotenv'
 
@@ -19,7 +18,7 @@ type Context = {
 const backup = async (
     type: string,
     name: string,
-    data: Record<string, unknown> | Array<unknown> | Buffer | string,
+    data: Array<unknown> | Buffer | Record<string, unknown> | string,
     basePath: string
 ) => {
     const json = typeof data === 'object' && !Buffer.isBuffer(data)
@@ -48,18 +47,8 @@ const backupStorage = async (ctx: Context) => {
 
         console.log(`Backing up ${file}`)
 
-        await backup(
-            'storage/files',
-            file,
-            await ctx.storage.download(file),
-            ctx.backupPath
-        )
-        await backup(
-            'storage/metadata',
-            file,
-            await ctx.storage.getMetadata(file),
-            ctx.backupPath
-        )
+        await backup('storage/files', file, await ctx.storage.download(file), ctx.backupPath)
+        await backup('storage/metadata', file, await ctx.storage.getMetadata(file), ctx.backupPath)
     }
 }
 
@@ -73,7 +62,7 @@ export default async ({
     env = 'prod',
     firestore = true,
     outputDir,
-    storage: includeStorage = true
+    storage: includeStorage = true,
 }: BackupOptions) => {
     const scope = env === 'dev' ? 'local' : env
     console.log(`Loading .env.${scope}`)
@@ -90,7 +79,7 @@ export default async ({
         backupPath: outputDir,
         db,
         repo,
-        storage
+        storage,
     }
 
     if (firestore) {

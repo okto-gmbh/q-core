@@ -7,24 +7,17 @@ import type {
     DatabaseSchemaTemplate,
     ID,
     Operators,
-    RowTemplate
+    RowTemplate,
 } from '@core/repositories/interface'
 
-async function mapRow<
-    Row extends RowTemplate,
-    Fields extends (keyof Row & string)[] | undefined
->(
+async function mapRow<Row extends RowTemplate, Fields extends (keyof Row & string)[] | undefined>(
     row: admin.firestore.DocumentSnapshot<admin.firestore.DocumentData>,
     fields?: Fields
-): Promise<
-    (Fields extends string[] ? Pick<Row, Fields[number]> : Row) | undefined
-> {
+): Promise<(Fields extends string[] ? Pick<Row, Fields[number]> : Row) | undefined> {
     if (fields && fields.length === 1 && fields.includes('id')) {
         return {
-            id: row.id
-        } as unknown as Fields extends string[]
-            ? Pick<Row, Fields[number]>
-            : Row
+            id: row.id,
+        } as unknown as Fields extends string[] ? Pick<Row, Fields[number]> : Row
     }
 
     const data = row.data() || {}
@@ -52,44 +45,35 @@ async function mapRow<
         if (prop instanceof admin.firestore.GeoPoint) {
             data[propName] = {
                 latitude: prop.latitude,
-                longitude: prop.longitude
+                longitude: prop.longitude,
             }
         }
     }
 
-    return data as unknown as Fields extends string[]
-        ? Pick<Row, Fields[number]>
-        : Row
+    return data as unknown as Fields extends string[] ? Pick<Row, Fields[number]> : Row
 }
 
-async function mapRows<
-    Row extends RowTemplate,
-    Fields extends (keyof Row & string)[]
->(
+async function mapRows<Row extends RowTemplate, Fields extends (keyof Row & string)[]>(
     rows: admin.firestore.DocumentSnapshot<admin.firestore.DocumentData>[],
     fields?: Fields
 ) {
-    return await Promise.all(rows.map(async (row) => await mapRow(row, fields)))
+    return await Promise.all(rows.map((row) => mapRow(row, fields)))
 }
 
 export type FirebaseEntity = RowTemplate
 
-export interface FirebaseConstraints<Row extends RowTemplate>
-    extends Constraints<Row> {
+export interface FirebaseConstraints<Row extends RowTemplate> extends Constraints<Row> {
     orderBy?: {
         [key in keyof (Row & { __name__: string })]?: 'asc' | 'desc'
     }
     where?: [keyof (Row & { __name__: string }), Operators, any][]
 }
 
-export interface FirebaseRepository<
-    DatabaseSchema extends DatabaseSchemaTemplate
-> extends RepositoryWithEvents<DatabaseSchema> {
+export interface FirebaseRepository<DatabaseSchema extends DatabaseSchemaTemplate>
+    extends RepositoryWithEvents<DatabaseSchema> {
     query: <
         Table extends keyof DatabaseSchema & string,
-        Fields extends
-            | (keyof DatabaseSchema[Table]['all'] & string)[]
-            | undefined
+        Fields extends (keyof DatabaseSchema[Table]['all'] & string)[] | undefined,
     >(
         table: Table,
         constraints?: FirebaseConstraints<DatabaseSchema[Table]['all']>,
@@ -114,13 +98,11 @@ const getRepository = <DatabaseSchema extends DatabaseSchemaTemplate>(
             const batch = db.batch()
 
             const createdRows = rows.map((row) => {
-                const doc = row.id
-                    ? db.collection(table).doc(row.id)
-                    : db.collection(table).doc()
+                const doc = row.id ? db.collection(table).doc(row.id) : db.collection(table).doc()
                 batch.set(doc, row)
                 return {
                     ...row,
-                    id: doc.id
+                    id: doc.id,
                 }
             })
 
@@ -164,7 +146,7 @@ const getRepository = <DatabaseSchema extends DatabaseSchemaTemplate>(
 
         find: async <
             Table extends keyof DatabaseSchema & string,
-            Row extends DatabaseSchema[Table]['all']
+            Row extends DatabaseSchema[Table]['all'],
         >(
             table: Table,
             id: ID
@@ -186,7 +168,7 @@ const getRepository = <DatabaseSchema extends DatabaseSchemaTemplate>(
         query: async <
             Table extends keyof DatabaseSchema & string,
             Row extends DatabaseSchema[Table]['all'],
-            Fields extends (keyof Row & string)[] | undefined
+            Fields extends (keyof Row & string)[] | undefined,
         >(
             table: Table,
             constraints: FirebaseConstraints<Row> = {},
@@ -201,9 +183,7 @@ const getRepository = <DatabaseSchema extends DatabaseSchemaTemplate>(
                 }
             }
             if (orderBy) {
-                for (const [field, direction = 'asc'] of Object.entries(
-                    orderBy
-                )) {
+                for (const [field, direction = 'asc'] of Object.entries(orderBy)) {
                     query = query.orderBy(field, direction)
                 }
             }
@@ -214,9 +194,7 @@ const getRepository = <DatabaseSchema extends DatabaseSchemaTemplate>(
             const { docs } = await query.get()
             const mappedRows = await mapRows(docs, fields)
 
-            return mappedRows as Fields extends string[]
-                ? Pick<Row, Fields[number]>[]
-                : Row[]
+            return mappedRows as Fields extends string[] ? Pick<Row, Fields[number]>[] : Row[]
         },
 
         queryCount: async (table, constraints = {}) => {
@@ -239,7 +217,7 @@ const getRepository = <DatabaseSchema extends DatabaseSchemaTemplate>(
 
         update: async (table, id, data) => {
             await db.collection(table).doc(id).update(data)
-        }
+        },
     })
 
 export default getRepository

@@ -2,9 +2,8 @@ import ReactDOMServer from 'react-dom/server'
 
 import * as Styled from './Switch.styled'
 
-import type { FC } from 'react'
-
 import type { SwitchProps as MuiSwitchProps } from '@mui/material'
+import type { FC } from 'react'
 
 type SwitchProps = MuiSwitchProps & {
     borderWidth: number
@@ -39,15 +38,13 @@ const Switch: FC<SwitchProps> = ({
         <Styled.Switch
             borderWidth={borderWidth}
             buttonSize={buttonSize}
-            offset={offset}
-            outerWidth={outerWidth}
-            outerHeight={outerHeight}
             leftIcon={ReactDOMServer.renderToStaticMarkup(leftIcon)}
             leftIconActive={ReactDOMServer.renderToStaticMarkup(leftIconActive)}
+            offset={offset}
+            outerHeight={outerHeight}
+            outerWidth={outerWidth}
             rightIcon={ReactDOMServer.renderToStaticMarkup(rightIcon)}
-            rightIconActive={ReactDOMServer.renderToStaticMarkup(
-                rightIconActive
-            )}
+            rightIconActive={ReactDOMServer.renderToStaticMarkup(rightIconActive)}
             {...props}
         />
     )

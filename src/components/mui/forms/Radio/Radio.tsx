@@ -4,14 +4,9 @@ import { Controller } from 'react-hook-form'
 
 import * as Styled from './Radio.styled'
 
-import type { FC } from 'react'
-import type {
-    Control,
-    ControllerRenderProps,
-    FieldValues
-} from 'react-hook-form'
-
 import type { RadioGroupProps as MuiRadioGroupProps } from '@mui/material'
+import type { FC } from 'react'
+import type { Control, ControllerRenderProps, FieldValues } from 'react-hook-form'
 
 type RadioProps = MuiRadioGroupProps & {
     fieldName: string
@@ -34,36 +29,31 @@ const Radio: FC<RadioProps> = ({
     options,
     ...props
 }) => {
-    const handleChange = (
-        value: string,
-        field: ControllerRenderProps<FieldValues, string>
-    ) => {
+    const handleChange = (value: string, field: ControllerRenderProps<FieldValues, string>) => {
         field.onChange(value)
 
         if (control) {
             onChange(field.name, value, {
                 shouldDirty: true,
-                shouldValidate: true
+                shouldValidate: true,
             })
         }
     }
 
-    const renderRadioGroup = (
-        field: ControllerRenderProps<FieldValues, string>
-    ) => (
+    const renderRadioGroup = (field: ControllerRenderProps<FieldValues, string>) => (
         <Styled.Control error={error}>
             <Styled.Group
-                value={field.value}
                 onChange={(e) => {
                     handleChange((e.target as any).value, field)
                 }}
+                value={field.value}
                 {...props}>
                 {options.map((option, index) => (
                     <Styled.Label
-                        key={`${option.key}-${index}`}
-                        value={option.key}
                         control={<MuiRadio />}
+                        key={`${option.key}-${index}`}
                         label={option.value}
+                        value={option.key}
                     />
                 ))}
             </Styled.Group>
@@ -74,16 +64,16 @@ const Radio: FC<RadioProps> = ({
     if (!control) {
         return renderRadioGroup({
             onChange,
-            value: props.value
+            value: props.value,
         } as ControllerRenderProps<FieldValues, string>)
     }
 
     return (
         <Controller
             control={control}
+            defaultValue={defaultValue}
             name={fieldName}
             render={({ field }) => renderRadioGroup(field)}
-            defaultValue={defaultValue}
         />
     )
 }

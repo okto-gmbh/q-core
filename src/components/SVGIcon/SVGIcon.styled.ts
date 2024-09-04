@@ -6,14 +6,8 @@ import { from } from '../../utils/breakpoints'
 import type { SVGIconProps } from './SVGIcon'
 
 export const Container = styled.div<SVGIconProps>`
-    --_width: var(
-        --icon-${({ size }) => size}-width,
-        var(--icon-default-width, 24px)
-    );
-    --_height: var(
-        --icon-${({ size }) => size}-height,
-        var(--icon-default-height, 24px)
-    );
+    --_width: var(--icon-${({ size }) => size}-width, var(--icon-default-width, 24px));
+    --_height: var(--icon-${({ size }) => size}-height, var(--icon-default-height, 24px));
 
     ${({ breakpoints }) => css`
         ${breakpoints &&

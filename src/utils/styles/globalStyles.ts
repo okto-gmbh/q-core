@@ -9,23 +9,16 @@ import type {
     ResponsiveTokens,
     TokenComponents,
     Variant,
-    Variants
+    Variants,
 } from './designTokens'
 
-const renderTokens = (
-    tokens: RawDesignTokens | ResponsiveTokens = {}
-): string =>
+const renderTokens = (tokens: RawDesignTokens | ResponsiveTokens = {}): string =>
     Object.entries(tokens)
         .filter(
-            ([namespace]) =>
-                !['breakpoints', 'responsiveTokens', 'components'].includes(
-                    namespace
-                )
+            ([namespace]) => !['breakpoints', 'components', 'responsiveTokens'].includes(namespace)
         )
         .map(([namespace, token]) =>
-            Object.entries(token).map(
-                ([name, value]) => `--${namespace}-${name}: ${value};`
-            )
+            Object.entries(token).map(([name, value]) => `--${namespace}-${name}: ${value};`)
         )
         .flat()
         .join('\n')
@@ -36,17 +29,13 @@ const IDENTIFIER_STATES = '$states'
 const generateVariants = (
     componentName: string,
     variantName: string,
-    variants: Variants | Variant
-): string | string[] =>
+    variants: Variant | Variants
+): string[] | string =>
     Object.entries(variants).flatMap(([propName, valueOrStates]) =>
         propName === IDENTIFIER_STATES
             ? Object.entries(valueOrStates).flatMap(([stateName, props]) =>
                   generateVariants(
-                      `${componentName}${
-                          variantName !== IDENTIFIER_BASE
-                              ? `-${variantName}`
-                              : ''
-                      }`,
+                      `${componentName}${variantName !== IDENTIFIER_BASE ? `-${variantName}` : ''}`,
                       stateName,
                       props as Variant
                   )
@@ -68,7 +57,7 @@ const renderComponentTokens = (tokens: TokenComponents = {}): string =>
 export const generateGlobalStyles = ({
     customReset,
     customVariables,
-    designTokens
+    designTokens,
 }: {
     customReset: SerializedStyles
     customVariables: SerializedStyles
@@ -92,21 +81,12 @@ export const generateGlobalStyles = ({
             var(--colors-primary, black)
         );
         --_selection-color: var(--selection-color, var(--colors-white, white));
-        --_placeholder-color: var(
-            --placeholder-color,
-            var(--colors-gray-60, grey)
-        );
+        --_placeholder-color: var(--placeholder-color, var(--colors-gray-60, grey));
         --_link-color: var(--link-color, var(--colors-primary, black));
         --_link-textDecoration: var(--link-textDecoration, none);
         --_link-outline: var(--link-outline, none);
-        --_link-transition: var(
-            --link-transition,
-            color var(--motion-default, 0.2s ease-in-out)
-        );
-        --_link-colorHover: var(
-            --link-hover-color,
-            var(--colors-primaryHover, black)
-        );
+        --_link-transition: var(--link-transition, color var(--motion-default, 0.2s ease-in-out));
+        --_link-colorHover: var(--link-hover-color, var(--colors-primaryHover, black));
 
         ${renderTokens(designTokens)}
 

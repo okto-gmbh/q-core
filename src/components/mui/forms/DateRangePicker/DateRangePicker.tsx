@@ -5,24 +5,16 @@ import { Controller } from 'react-hook-form'
 import Paper from '../../Paper'
 import TextInput from '../TextInput'
 
-import type { FC } from 'react'
-import type {
-    Control,
-    ControllerRenderProps,
-    FieldValues
-} from 'react-hook-form'
-
 import type { TextFieldProps } from '@mui/material'
 import type {
     DateRange,
     DateRangePickerProps as MuiDateRangePickerProps,
-    PickersShortcutsItem
+    PickersShortcutsItem,
 } from '@mui/x-date-pickers-pro'
+import type { FC } from 'react'
+import type { Control, ControllerRenderProps, FieldValues } from 'react-hook-form'
 
-type DateRangePickerProps = Omit<
-    MuiDateRangePickerProps<Date>,
-    'renderInput'
-> & {
+type DateRangePickerProps = Omit<MuiDateRangePickerProps<Date>, 'renderInput'> & {
     fieldName: string
     control?: Control<FieldValues>
     error?: boolean
@@ -40,27 +32,17 @@ const DateRangePicker: FC<DateRangePickerProps> = ({
     label,
     onChange,
     shortcuts,
+    slots,
     ...props
 }) => {
-    let disabled = false
-    if (
-        !props.minDate ||
-        props.minDate.getTime() === props.maxDate?.getTime()
-    ) {
-        disabled = true
-    }
-
-    const handleChange = (
-        range: any[],
-        field: ControllerRenderProps<FieldValues, string>
-    ) => {
+    const handleChange = (range: any[], field: ControllerRenderProps<FieldValues, string>) => {
         try {
             field.onChange(range)
 
             if (control && onChange) {
                 ;(onChange as any)(field.name, range, {
                     shouldDirty: true,
-                    shouldValidate: true
+                    shouldValidate: true,
                 })
             }
         } catch (e) {
@@ -72,19 +54,16 @@ const DateRangePicker: FC<DateRangePickerProps> = ({
     if (shortcuts) {
         slotProps = {
             shortcuts: {
-                items: shortcuts
-            }
+                items: shortcuts,
+            },
         }
     }
 
-    const renderPicker = (
-        field: ControllerRenderProps<FieldValues, string>
-    ) => (
+    const renderPicker = (field: ControllerRenderProps<FieldValues, string>) => (
         <DateRangePickerMui
             localeText={{ end: '', start: label }}
             onAccept={(range) => handleChange(range, field)}
             slotProps={slotProps}
-            disabled={disabled}
             slots={{
                 desktopPaper: Paper,
                 /*
@@ -93,19 +72,10 @@ const DateRangePicker: FC<DateRangePickerProps> = ({
                 }),
                 */
                 fieldSeparator: () => null,
-                textField: forwardRef(function TextField(
-                    props: TextFieldProps,
-                    ref: any
-                ) {
-                    return (
-                        <TextInput
-                            {...props}
-                            ref={ref}
-                            error={error}
-                            helperText={helperText}
-                        />
-                    )
-                })
+                textField: forwardRef(function TextField(props: TextFieldProps, ref: any) {
+                    return <TextInput {...props} error={error} helperText={helperText} ref={ref} />
+                }),
+                ...(slots ?? {}),
             }}
             {...props}
         />
@@ -114,7 +84,7 @@ const DateRangePicker: FC<DateRangePickerProps> = ({
     if (!control) {
         return renderPicker({
             onChange,
-            value: props.value
+            value: props.value,
         } as ControllerRenderProps<FieldValues, string>)
     }
 

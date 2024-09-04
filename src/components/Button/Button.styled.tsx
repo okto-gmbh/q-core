@@ -3,11 +3,7 @@ import styled from '@emotion/styled'
 
 import type { ButtonProps, ButtonVariant } from './Button'
 
-export const composeButtonVariants = ({
-    variant = 'primary'
-}: {
-    variant: ButtonVariant
-}) => {
+export const composeButtonVariants = ({ variant = 'primary' }: { variant: ButtonVariant }) => {
     const namespace = '--button'
     const namespaceWithVariant = `${namespace}-${variant}`
     const isPrimary = variant === 'primary'
@@ -40,17 +36,11 @@ export const composeButtonVariants = ({
             )
             var(
                 ${namespaceWithVariant}-borderColor,
-                var(
-                    ${namespace}-borderColor,
-                    var(--colors-${variant}, ${color})
-                )
+                var(${namespace}-borderColor, var(--colors-${variant}, ${color}))
             )
             var(
                 ${namespaceWithVariant}-borderStyle,
-                var(
-                    ${namespace}-borderStyle,
-                    var(--borders-default-style, solid)
-                )
+                var(${namespace}-borderStyle, var(--borders-default-style, solid))
             );
         --_color: var(
             ${namespaceWithVariant}-color,
@@ -70,38 +60,23 @@ export const composeButtonVariants = ({
         );
         --_backgroundColor: var(
             ${namespaceWithVariant}-backgroundColor,
-            var(
-                ${namespace}-backgroundColor,
-                var(--colors-${variant}, ${color})
-            )
+            var(${namespace}-backgroundColor, var(--colors-${variant}, ${color}))
         );
         --_backgroundColorHover: var(
             ${namespaceWithVariant}-hover-backgroundColor,
-            var(
-                ${namespace}-hover-backgroundColor,
-                var(--colors-${variant}Hover, ${color})
-            )
+            var(${namespace}-hover-backgroundColor, var(--colors-${variant}Hover, ${color}))
         );
         --_borderWidthHover: var(
             ${namespaceWithVariant}-hover-borderWidth,
-            var(
-                ${namespace}-hover-borderWidth,
-                var(--borders-${variant}-widthHover, 0)
-            )
+            var(${namespace}-hover-borderWidth, var(--borders-${variant}-widthHover, 0))
         );
         --_borderColorHover: var(
             ${namespaceWithVariant}-hover-borderColor,
-            var(
-                ${namespace}-hover-borderColor,
-                var(--colors-${variant}Hover, ${color})
-            )
+            var(${namespace}-hover-borderColor, var(--colors-${variant}Hover, ${color}))
         );
         --_transition: var(
             ${namespaceWithVariant}-transition,
-            var(
-                ${namespace}-transition,
-                all var(--motion-default, 0.2s ease-in-out)
-            )
+            var(${namespace}-transition, all var(--motion-default, 0.2s ease-in-out))
         );
         --_boxShadow: var(
             ${namespaceWithVariant}-boxShadow,
@@ -114,11 +89,9 @@ export const composeButtonVariants = ({
     `
 }
 
-export const Button = styled(
-    ({ height: _height, width: _width, ...rest }: ButtonProps) => (
-        <button {...rest} />
-    )
-)`
+export const Button = styled(({ height: _height, width: _width, ...rest }: ButtonProps) => (
+    <button {...rest} />
+))`
     ${composeButtonVariants}
     width: ${({ width }) => (width ? width : undefined)};
     height: ${({ height }) => (height ? height : undefined)};

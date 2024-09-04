@@ -10,13 +10,10 @@ export interface ImageOptimizerOptions {
 const imageContentTypes = {
     avif: 'image/avif',
     svg: 'image/svg+xml',
-    webp: 'image/webp'
+    webp: 'image/webp',
 }
 
-const getImageType = (
-    src: string,
-    accept?: string
-): keyof typeof imageContentTypes => {
+const getImageType = (src: string, accept?: string): keyof typeof imageContentTypes => {
     const supportsAvif = accept?.includes('image/avif')
     const isSvg = src.endsWith('.svg')
 
@@ -37,9 +34,7 @@ export const imageOptimizer =
                 typeof req.query.w !== 'string' ||
                 typeof req.query.q !== 'string'
             ) {
-                res.status(400).send(
-                    '400 Bad request: Required parameters missing'
-                )
+                res.status(400).send('400 Bad request: Required parameters missing')
                 return
             }
 
@@ -53,18 +48,12 @@ export const imageOptimizer =
                 return
             }
 
-            const response = await fetch(
-                src.startsWith('http') ? src : `${baseUrl}/${src}`,
-                {
-                    credentials:
-                        process.env.VERCEL_ENV === 'preview'
-                            ? 'include'
-                            : 'same-origin',
-                    headers: {
-                        cookie: req.headers.cookie!
-                    }
-                }
-            )
+            const response = await fetch(src.startsWith('http') ? src : `${baseUrl}/${src}`, {
+                credentials: process.env.VERCEL_ENV === 'preview' ? 'include' : 'same-origin',
+                headers: {
+                    cookie: req.headers.cookie!,
+                },
+            })
             const originalImage = await response.arrayBuffer()
 
             let optimizedImage = Buffer.from(originalImage)
@@ -72,16 +61,13 @@ export const imageOptimizer =
                 optimizedImage = await sharp(originalImage)
                     .resize({
                         width,
-                        withoutEnlargement: true
+                        withoutEnlargement: true,
                     })
                     [imageType]({ quality })
                     .toBuffer()
             }
 
-            res.setHeader(
-                'Cache-Control',
-                `public, max-age=${maxAge}, must-revalidate`
-            )
+            res.setHeader('Cache-Control', `public, max-age=${maxAge}, must-revalidate`)
             res.setHeader('content-type', imageContentTypes[imageType])
             res.status(200).send(optimizedImage)
         } catch (e) {

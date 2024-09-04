@@ -19,8 +19,8 @@ const renewPassword = async ({ password, token, userId }: Input) => {
         where: [
             ['user', OP_EQUALS, userId],
             ['expiresAt', OP_GT, new Date()],
-            ['type', OP_EQUALS, 'RESET_PASSWORD']
-        ]
+            ['type', OP_EQUALS, 'RESET_PASSWORD'],
+        ],
     })
 
     if (validToken?.hashedToken !== hash256(token)) {
@@ -42,7 +42,7 @@ const renewPassword = async ({ password, token, userId }: Input) => {
         firebasePasswordHash: deleteField(),
         firebasePasswordSalt: deleteField(),
         hashedPassword,
-        role: user.role
+        role: user.role,
     })
 
     await repo.remove('tokens', validToken.id)

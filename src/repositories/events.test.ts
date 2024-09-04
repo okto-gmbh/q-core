@@ -5,7 +5,7 @@ import {
     getMockDB,
     resetMockRepository,
     seedMockRepository,
-    verifyMock
+    verifyMock,
 } from '@core/repositories/firestore/mock'
 
 type TestRepository = {
@@ -52,7 +52,7 @@ describe('firestore', () => {
             const repo = getRepository<TestRepository>(db)
 
             const memberListener = {
-                callback: async () => {}
+                callback: async () => {},
             }
 
             const memberSpy = vi.spyOn(memberListener, 'callback')
@@ -64,7 +64,7 @@ describe('firestore', () => {
             expect(memberSpy).toHaveBeenCalledTimes(1)
             expect(memberSpy).toHaveBeenCalledWith({
                 id: '0',
-                name: 'John'
+                name: 'John',
             })
 
             await repo.create('members', { age: 20, name: 'Jane' })
@@ -73,7 +73,7 @@ describe('firestore', () => {
             expect(memberSpy).toHaveBeenCalledWith({
                 age: 20,
                 id: '1',
-                name: 'Jane'
+                name: 'Jane',
             })
         })
 
@@ -81,13 +81,9 @@ describe('firestore', () => {
             const db = getMockDB()
             const repo = getRepository<TestRepository>(db)
 
-            seedMockRepository('members', [
-                { name: 'John' },
-                { name: 'Jane' },
-                { name: 'Jack' }
-            ])
+            seedMockRepository('members', [{ name: 'John' }, { name: 'Jane' }, { name: 'Jack' }])
             const memberListener = {
-                callback: async () => {}
+                callback: async () => {},
             }
 
             const memberSpy = vi.spyOn(memberListener, 'callback')
@@ -99,7 +95,7 @@ describe('firestore', () => {
             expect(memberSpy).toHaveBeenCalledTimes(1)
             expect(memberSpy).toHaveBeenCalledWith({
                 id: '1',
-                name: 'Jill'
+                name: 'Jill',
             })
 
             await repo.update('members', '1', { age: 20, name: 'Jill' })
@@ -108,7 +104,7 @@ describe('firestore', () => {
             expect(memberSpy).toHaveBeenCalledWith({
                 age: 20,
                 id: '1',
-                name: 'Jill'
+                name: 'Jill',
             })
         })
 
@@ -116,13 +112,9 @@ describe('firestore', () => {
             const db = getMockDB()
             const repo = getRepository<TestRepository>(db)
 
-            seedMockRepository('members', [
-                { name: 'John' },
-                { name: 'Jane' },
-                { name: 'Jack' }
-            ])
+            seedMockRepository('members', [{ name: 'John' }, { name: 'Jane' }, { name: 'Jack' }])
             const memberListener = {
-                callback: async () => {}
+                callback: async () => {},
             }
 
             const memberSpy = vi.spyOn(memberListener, 'callback')
@@ -138,7 +130,7 @@ describe('firestore', () => {
 
             expect(memberSpy).toHaveBeenCalledTimes(2)
             expect(memberSpy).toHaveBeenCalledWith({
-                id: '2'
+                id: '2',
             })
         })
 
@@ -149,7 +141,7 @@ describe('firestore', () => {
             const memberListener = {
                 createCallback: async () => {},
                 removeCallback: async () => {},
-                updateCallback: async () => {}
+                updateCallback: async () => {},
             }
 
             const createSpy = vi.spyOn(memberListener, 'createCallback')
@@ -187,11 +179,11 @@ describe('firestore', () => {
             seedMockRepository('users', [{ name: 'John' }])
 
             const memberListener = {
-                callback: async () => {}
+                callback: async () => {},
             }
 
             const userListener = {
-                callback: async () => {}
+                callback: async () => {},
             }
 
             const memberSpy = vi.spyOn(memberListener, 'callback')
@@ -212,7 +204,7 @@ describe('firestore', () => {
             const memberListener = {
                 callback: async () => {
                     throw new Error('Error in listener')
-                }
+                },
             }
 
             const memberSpy = vi.spyOn(memberListener, 'callback')
@@ -231,10 +223,10 @@ describe('firestore', () => {
 
             seedMockRepository('members', [{ name: 'John' }])
             const memberListener1 = {
-                callback: async () => {}
+                callback: async () => {},
             }
             const memberListener2 = {
-                callback: async () => {}
+                callback: async () => {},
             }
 
             const memberSpy1 = vi.spyOn(memberListener1, 'callback')
@@ -255,10 +247,10 @@ describe('firestore', () => {
 
             seedMockRepository('members', [{ name: 'John' }])
             const memberListener1 = {
-                callback: async () => {}
+                callback: async () => {},
             }
             const memberListener2 = {
-                callback: async () => {}
+                callback: async () => {},
             }
 
             const memberSpy1 = vi.spyOn(memberListener1, 'callback')
@@ -292,10 +284,10 @@ describe('firestore', () => {
             seedMockRepository('members', [{ name: 'John' }])
 
             const memberListener1 = {
-                callback: async () => {}
+                callback: async () => {},
             }
             const memberListener2 = {
-                callback: async () => {}
+                callback: async () => {},
             }
 
             const memberSpy1 = vi.spyOn(memberListener1, 'callback')
@@ -322,26 +314,23 @@ describe('firestore', () => {
             const repo = getRepository<TestRepository>(db)
 
             const memberListener = {
-                callback: async () => {}
+                callback: async () => {},
             }
 
             const memberSpy = vi.spyOn(memberListener, 'callback')
 
             repo.on('create', 'members', memberListener.callback)
 
-            await repo.bulkCreate('members', [
-                { name: 'John' },
-                { name: 'Jane' }
-            ])
+            await repo.bulkCreate('members', [{ name: 'John' }, { name: 'Jane' }])
 
             expect(memberSpy).toHaveBeenCalledTimes(2)
             expect(memberSpy).toHaveBeenNthCalledWith(1, {
                 id: '0',
-                name: 'John'
+                name: 'John',
             })
             expect(memberSpy).toHaveBeenNthCalledWith(2, {
                 id: '1',
-                name: 'Jane'
+                name: 'Jane',
             })
         })
 
@@ -349,14 +338,10 @@ describe('firestore', () => {
             const db = getMockDB()
             const repo = getRepository<TestRepository>(db)
 
-            seedMockRepository('members', [
-                { name: 'John' },
-                { name: 'Jane' },
-                { name: 'Jack' }
-            ])
+            seedMockRepository('members', [{ name: 'John' }, { name: 'Jane' }, { name: 'Jack' }])
 
             const memberListener = {
-                callback: async () => {}
+                callback: async () => {},
             }
 
             const memberSpy = vi.spyOn(memberListener, 'callback')
@@ -365,17 +350,17 @@ describe('firestore', () => {
 
             await repo.bulkUpdate('members', [
                 { id: '0', name: 'Jill' },
-                { id: '1', name: 'James' }
+                { id: '1', name: 'James' },
             ])
 
             expect(memberSpy).toHaveBeenCalledTimes(2)
             expect(memberSpy).toHaveBeenNthCalledWith(1, {
                 id: '0',
-                name: 'Jill'
+                name: 'Jill',
             })
             expect(memberSpy).toHaveBeenNthCalledWith(2, {
                 id: '1',
-                name: 'James'
+                name: 'James',
             })
         })
 
@@ -383,14 +368,10 @@ describe('firestore', () => {
             const db = getMockDB()
             const repo = getRepository<TestRepository>(db)
 
-            seedMockRepository('members', [
-                { name: 'John' },
-                { name: 'Jane' },
-                { name: 'Jack' }
-            ])
+            seedMockRepository('members', [{ name: 'John' }, { name: 'Jane' }, { name: 'Jack' }])
 
             const memberListener = {
-                callback: async () => {}
+                callback: async () => {},
             }
 
             const memberSpy = vi.spyOn(memberListener, 'callback')
@@ -411,7 +392,7 @@ describe('firestore', () => {
             const memberListener = {
                 callback: async () => {
                     throw new Error('Error in listener')
-                }
+                },
             }
 
             const memberSpy = vi.spyOn(memberListener, 'callback')
@@ -421,23 +402,23 @@ describe('firestore', () => {
             const createdIds = await repo.bulkCreate('members', [
                 { name: 'John' },
                 { name: 'Jane' },
-                { name: 'Jack' }
+                { name: 'Jack' },
             ])
 
             expect(memberSpy).toHaveBeenCalledTimes(3)
             expect(createdIds).toEqual([
                 {
                     id: '0',
-                    name: 'John'
+                    name: 'John',
                 },
                 {
                     id: '1',
-                    name: 'Jane'
+                    name: 'Jane',
                 },
                 {
                     id: '2',
-                    name: 'Jack'
-                }
+                    name: 'Jack',
+                },
             ])
         })
     })
