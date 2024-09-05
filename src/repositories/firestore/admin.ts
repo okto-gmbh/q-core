@@ -10,54 +10,109 @@ import type {
     RowTemplate,
 } from '@core/repositories/interface'
 
-async function mapRow<Row extends RowTemplate, Fields extends (keyof Row & string)[] | undefined>(
-    row: admin.firestore.DocumentSnapshot<admin.firestore.DocumentData>,
-    fields?: Fields
-): Promise<(Fields extends string[] ? Pick<Row, Fields[number]> : Row) | undefined> {
-    if (fields && fields.length === 1 && fields.includes('id')) {
-        return {
-            id: row.id,
-        } as unknown as Fields extends string[] ? Pick<Row, Fields[number]> : Row
+const enum COLUMN_TYPE {
+    REFERENCE,
+    TIMESTAMP,
+    GEOPOINT,
+    OTHER,
+}
+
+function getFieldType(prop: admin.firestore.DocumentData[string]): COLUMN_TYPE | undefined {
+    if (prop === null) {
+        return
     }
+    if (prop instanceof admin.firestore.DocumentReference) {
+        return COLUMN_TYPE.REFERENCE
+    } else if (prop instanceof admin.firestore.Timestamp) {
+        return COLUMN_TYPE.TIMESTAMP
+    } else if (prop instanceof admin.firestore.GeoPoint) {
+        return COLUMN_TYPE.GEOPOINT
+    } else {
+        return COLUMN_TYPE.OTHER
+    }
+}
 
-    const data = row.data() || {}
-    data.id = row.id
-
-    if (Object.keys(data).length === 1) {
+async function mapRow(
+    row: admin.firestore.DocumentSnapshot<admin.firestore.DocumentData> | undefined,
+    fields?: string[],
+    fieldTypes: Record<string, COLUMN_TYPE> = {}
+): Promise<Record<string, any> | undefined> {
+    if (!row) {
         return
     }
 
-    for (const propName in data) {
-        // Exclude fields
-        if (fields && !fields.includes(propName as keyof Row & string)) {
-            delete data[propName]
-            continue
-        }
+    const data = row.data()
 
-        // Map types
-        const prop = data[propName]
-        if (prop instanceof admin.firestore.DocumentReference) {
-            data[propName] = await mapRow(await prop.get())
-        }
-        if (prop instanceof admin.firestore.Timestamp) {
-            data[propName] = prop.toDate()
-        }
-        if (prop instanceof admin.firestore.GeoPoint) {
-            data[propName] = {
-                latitude: prop.latitude,
-                longitude: prop.longitude,
+    const newData: Record<string, any> = {
+        id: row.id,
+    }
+
+    for (const propName in data) {
+        if (!fields || fields.includes(propName)) {
+            const prop = data[propName]
+
+            if (prop === null || prop === undefined) {
+                newData[propName] = prop
+                continue
+            }
+
+            let fieldType = fieldTypes[propName]
+
+            if (!fieldType || (fieldType === COLUMN_TYPE.OTHER && typeof prop === 'object')) {
+                const type = getFieldType(prop)
+                if (type) {
+                    fieldTypes[propName] = type
+                    fieldType = type
+                }
+            }
+
+            if (fieldType === COLUMN_TYPE.REFERENCE) {
+                newData[propName] = await mapRow(await prop.get())
+            } else if (fieldType === COLUMN_TYPE.TIMESTAMP) {
+                newData[propName] = prop.toDate()
+            } else if (fieldType === COLUMN_TYPE.GEOPOINT) {
+                newData[propName] = {
+                    latitude: prop.latitude,
+                    longitude: prop.longitude,
+                }
+            } else {
+                newData[propName] = prop
             }
         }
     }
 
-    return data as unknown as Fields extends string[] ? Pick<Row, Fields[number]> : Row
+    if (Object.keys(newData).length === 1) {
+        return
+    }
+
+    return newData
 }
 
-async function mapRows<Row extends RowTemplate, Fields extends (keyof Row & string)[]>(
+async function mapRows(
     rows: admin.firestore.DocumentSnapshot<admin.firestore.DocumentData>[],
-    fields?: Fields
+    fields?: string[]
 ) {
-    return await Promise.all(rows.map((row) => mapRow(row, fields)))
+    if (rows.length === 0) {
+        return []
+    }
+
+    if (fields && fields.length === 1 && fields.includes('id')) {
+        const mappedRows: RowTemplate[] = []
+        for (const row of rows) {
+            mappedRows.push({ id: row.id })
+        }
+        return mappedRows
+    }
+
+    const fieldTypes: Record<string, COLUMN_TYPE> = {}
+
+    const mappedRows: (Record<string, any> | undefined)[] = []
+
+    for (const row of rows) {
+        mappedRows.push(mapRow(row, fields, fieldTypes))
+    }
+
+    return await Promise.all(mappedRows)
 }
 
 export type FirebaseEntity = RowTemplate
@@ -160,9 +215,7 @@ const getRepository = <DatabaseSchema extends DatabaseSchemaTemplate>(
                 return
             }
 
-            const mappedRows = await mapRow(doc)
-
-            return mappedRows as Row
+            return (await mapRow(doc)) as Row
         },
 
         query: async <
@@ -192,6 +245,7 @@ const getRepository = <DatabaseSchema extends DatabaseSchemaTemplate>(
             }
 
             const { docs } = await query.get()
+
             const mappedRows = await mapRows(docs, fields)
 
             return mappedRows as Fields extends string[] ? Pick<Row, Fields[number]>[] : Row[]
