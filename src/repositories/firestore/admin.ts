@@ -230,7 +230,6 @@ const getRepository = <DatabaseSchema extends DatabaseSchemaTemplate>(
             constraints: FirebaseConstraints<Row> = {},
             fields?: Fields
         ) => {
-            console.time('query' + table + JSON.stringify(constraints, fields))
             const { limit, orderBy, where } = constraints
             let query: admin.firestore.Query<RowTemplate> = db.collection(table)
 
@@ -248,15 +247,9 @@ const getRepository = <DatabaseSchema extends DatabaseSchemaTemplate>(
                 query = query.limit(limit)
             }
 
-            console.timeEnd('query' + table + JSON.stringify(constraints, fields))
-
-            const timestamp = Date.now()
-
             const { docs } = await query.get()
 
-            console.time('mapRows ' + table + timestamp)
             const mappedRows = await mapRows(docs, fields)
-            console.timeEnd('mapRows ' + table + timestamp)
 
             return mappedRows as Fields extends string[] ? Pick<Row, Fields[number]>[] : Row[]
         },
