@@ -210,11 +210,7 @@ const getRepository = <DatabaseSchema extends DatabaseSchemaTemplate>(
                 return
             }
 
-            const mappedRow = await mapRow(doc)
-
-            // console.log('mappedRow', mappedRow)
-
-            return mappedRow as Row
+            return (await mapRow(doc)) as Row
         },
 
         query: async <
