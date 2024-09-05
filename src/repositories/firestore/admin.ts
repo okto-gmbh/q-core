@@ -10,27 +10,32 @@ import type {
     RowTemplate,
 } from '@core/repositories/interface'
 
-type ColumnType = 'geopoint' | 'other' | 'reference' | 'timestamp'
+const enum COLUMN_TYPE {
+    REFERENCE,
+    TIMESTAMP,
+    GEOPOINT,
+    OTHER,
+}
 
-function getFieldType(prop: admin.firestore.DocumentData[string]): ColumnType | undefined {
+function getFieldType(prop: admin.firestore.DocumentData[string]): COLUMN_TYPE | undefined {
     if (prop === null) {
         return
     }
     if (prop instanceof admin.firestore.DocumentReference) {
-        return 'reference'
+        return COLUMN_TYPE.REFERENCE
     } else if (prop instanceof admin.firestore.Timestamp) {
-        return 'timestamp'
+        return COLUMN_TYPE.TIMESTAMP
     } else if (prop instanceof admin.firestore.GeoPoint) {
-        return 'geopoint'
+        return COLUMN_TYPE.GEOPOINT
     } else {
-        return 'other'
+        return COLUMN_TYPE.OTHER
     }
 }
 
 async function mapRow(
     row: admin.firestore.DocumentSnapshot<admin.firestore.DocumentData> | undefined,
     fields?: string[],
-    fieldTypes: Record<string, ColumnType> = {}
+    fieldTypes: Record<string, COLUMN_TYPE> = {}
 ): Promise<Record<string, any> | undefined> {
     if (!row) {
         return
@@ -53,7 +58,7 @@ async function mapRow(
 
             let fieldType = fieldTypes[propName]
 
-            if (!fieldType || (fieldType === 'other' && typeof prop === 'object')) {
+            if (!fieldType || (fieldType === COLUMN_TYPE.OTHER && typeof prop === 'object')) {
                 const type = getFieldType(prop)
                 if (type) {
                     fieldTypes[propName] = type
@@ -61,11 +66,11 @@ async function mapRow(
                 }
             }
 
-            if (fieldType === 'reference') {
+            if (fieldType === COLUMN_TYPE.REFERENCE) {
                 newData[propName] = await mapRow(await prop.get())
-            } else if (fieldType === 'timestamp') {
+            } else if (fieldType === COLUMN_TYPE.TIMESTAMP) {
                 newData[propName] = prop.toDate()
-            } else if (fieldType === 'geopoint') {
+            } else if (fieldType === COLUMN_TYPE.GEOPOINT) {
                 newData[propName] = {
                     latitude: prop.latitude,
                     longitude: prop.longitude,
@@ -99,7 +104,7 @@ async function mapRows(
         return mappedRows
     }
 
-    const fieldTypes: Record<string, ColumnType> = {}
+    const fieldTypes: Record<string, COLUMN_TYPE> = {}
 
     const mappedRows: (Record<string, any> | undefined)[] = []
 
