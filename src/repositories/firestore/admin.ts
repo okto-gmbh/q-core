@@ -66,11 +66,7 @@ async function mapRow(
             if (fieldType === 'reference') {
                 newData[propName] = await mapRow(await prop.get())
             } else if (fieldType === 'timestamp') {
-                // if (typeof prop.toDate !== 'function') {
-                //     console.log('prop', prop)
-                // } else {
                 newData[propName] = prop.toDate()
-                // }
             } else if (fieldType === 'geopoint') {
                 newData[propName] = {
                     latitude: prop.latitude,
@@ -79,10 +75,6 @@ async function mapRow(
             } else {
                 newData[propName] = prop
             }
-
-            // if (typeof newData[propName] === 'object') {
-            //     console.log(propName, fieldType, newData[propName], typeof newData[propName])
-            // }
         }
     }
 
