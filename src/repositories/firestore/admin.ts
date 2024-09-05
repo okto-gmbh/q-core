@@ -26,11 +26,11 @@ function getColumnType(prop: admin.firestore.DocumentData[string]): ColumnType {
     }
 }
 
-function mapRow<Row extends RowTemplate, Fields extends (keyof Row & string)[]>(
+function mapRow(
     row: admin.firestore.DocumentSnapshot<admin.firestore.DocumentData>,
-    fields?: Fields,
+    fields?: string[],
     fieldTypes?: Record<string, ColumnType>
-): Promise<Row> | undefined {
+): Promise<Record<string, any>> | undefined {
     const rowData = row.data()
 
     if (!rowData) {
@@ -65,15 +65,15 @@ function mapRow<Row extends RowTemplate, Fields extends (keyof Row & string)[]>(
                 }
             }
         }
-        return newData as Row
+        return newData
     }
 
     return resolveFields()
 }
 
-async function mapRows<Row extends RowTemplate, Fields extends (keyof Row & string)[]>(
+async function mapRows(
     rows: admin.firestore.DocumentSnapshot<admin.firestore.DocumentData>[],
-    fields?: Fields
+    fields?: string[]
 ) {
     if (rows.length === 0) {
         return []
@@ -105,7 +105,7 @@ async function mapRows<Row extends RowTemplate, Fields extends (keyof Row & stri
             break
         }
 
-        const mappedRows: Row[] = []
+        const mappedRows: Record<string, any>[] = []
         for (const row of rows) {
             const mappedRow = mapRow(row, fields, fieldTypes)
             if (mappedRow) {
