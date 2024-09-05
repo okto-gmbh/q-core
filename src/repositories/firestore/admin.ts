@@ -14,7 +14,10 @@ import type {
 
 type ColumnType = 'geopoint' | 'other' | 'reference' | 'timestamp'
 
-function getColumnType(prop: admin.firestore.DocumentData[string]): ColumnType {
+function getFieldType(prop: admin.firestore.DocumentData[string]): ColumnType | undefined {
+    if (prop === null) {
+        return
+    }
     if (prop instanceof admin.firestore.DocumentReference) {
         return 'reference'
     } else if (prop instanceof admin.firestore.Timestamp) {
@@ -26,49 +29,68 @@ function getColumnType(prop: admin.firestore.DocumentData[string]): ColumnType {
     }
 }
 
-function mapRow(
-    row: admin.firestore.DocumentSnapshot<admin.firestore.DocumentData>,
+async function mapRow(
+    row: admin.firestore.DocumentSnapshot<admin.firestore.DocumentData> | undefined,
     fields?: string[],
-    fieldTypes?: Record<string, ColumnType>
-): Promise<Record<string, any>> | undefined {
-    const rowData = row.data()
-
-    if (!rowData) {
+    fieldTypes: Record<string, ColumnType> = {}
+): Promise<Record<string, any> | undefined> {
+    if (!row) {
         return
     }
 
-    const resolveFields = async () => {
-        const newData: Record<string, any> = {
-            id: row.id,
-        }
-        for (const propName in rowData) {
-            const prop = rowData[propName]
+    const data = row.data()
 
-            const fieldType = fieldTypes?.[propName] ?? getColumnType(prop)
-
-            if (!fields || fields.includes(propName)) {
-                if (!prop) {
-                    newData[propName] = prop
-                }
-
-                if (fieldType === 'reference') {
-                    newData[propName] = await mapRow(prop.get(), fields)
-                } else if (fieldType === 'timestamp') {
-                    newData[propName] = prop.toDate()
-                } else if (fieldType === 'geopoint') {
-                    newData[propName] = {
-                        latitude: prop.latitude,
-                        longitude: prop.longitude,
-                    }
-                } else {
-                    newData[propName] = prop
-                }
-            }
-        }
-        return newData
+    const newData: Record<string, any> = {
+        id: row.id,
     }
 
-    return resolveFields()
+    for (const propName in data) {
+        if (!fields || fields.includes(propName)) {
+            const prop = data[propName]
+
+            if (prop === null || prop === undefined) {
+                newData[propName] = prop
+                continue
+            }
+
+            let fieldType = fieldTypes[propName]
+
+            if (!fieldType || (fieldType === 'other' && typeof prop === 'object')) {
+                const type = getFieldType(prop)
+                if (type) {
+                    fieldTypes[propName] = type
+                    fieldType = type
+                }
+            }
+
+            if (fieldType === 'reference') {
+                newData[propName] = await mapRow(await prop.get())
+            } else if (fieldType === 'timestamp') {
+                // if (typeof prop.toDate !== 'function') {
+                //     console.log('prop', prop)
+                // } else {
+                newData[propName] = prop.toDate()
+                // }
+            } else if (fieldType === 'geopoint') {
+                newData[propName] = {
+                    latitude: prop.latitude,
+                    longitude: prop.longitude,
+                }
+            } else {
+                newData[propName] = prop
+            }
+
+            // if (typeof newData[propName] === 'object') {
+            //     console.log(propName, fieldType, newData[propName], typeof newData[propName])
+            // }
+        }
+    }
+
+    if (Object.keys(newData).length === 1) {
+        return
+    }
+
+    return newData
 }
 
 async function mapRows(
@@ -79,43 +101,25 @@ async function mapRows(
         return []
     }
 
-    const onlyId = fields && fields.length === 1 && fields.includes('id')
-
-    if (onlyId) {
+    if (fields && fields.length === 1 && fields.includes('id')) {
         const mappedRows: RowTemplate[] = []
         for (const row of rows) {
             mappedRows.push({ id: row.id })
         }
         return mappedRows
-    } else {
-        const fieldTypes: Record<string, ColumnType> = {}
-
-        for (const row of rows) {
-            const rowData = row.data()
-
-            if (!rowData) {
-                continue
-            }
-
-            for (const propName in rowData) {
-                const prop = rowData[propName]
-                const fieldType = getColumnType(prop)
-                fieldTypes[propName] = fieldType
-            }
-            break
-        }
-
-        const mappedRows: Record<string, any>[] = []
-        for (const row of rows) {
-            const mappedRow = mapRow(row, fields, fieldTypes)
-            if (mappedRow) {
-                mappedRows.push(mappedRow)
-            }
-        }
-
-        return Promise.all(mappedRows)
     }
+
+    const fieldTypes: Record<string, ColumnType> = {}
+
+    const mappedRows: (Record<string, any> | undefined)[] = []
+
+    for (const row of rows) {
+        mappedRows.push(mapRow(row, fields, fieldTypes))
+    }
+
+    return await Promise.all(mappedRows)
 }
+
 export type FirebaseEntity = RowTemplate
 
 export interface FirebaseConstraints<Row extends RowTemplate> extends Constraints<Row> {
@@ -216,9 +220,11 @@ const getRepository = <DatabaseSchema extends DatabaseSchemaTemplate>(
                 return
             }
 
-            const mappedRows = await mapRow(doc)
+            const mappedRow = await mapRow(doc)
 
-            return mappedRows as Row
+            // console.log('mappedRow', mappedRow)
+
+            return mappedRow as Row
         },
 
         query: async <
@@ -269,6 +275,7 @@ const getRepository = <DatabaseSchema extends DatabaseSchemaTemplate>(
         },
 
         remove: async (table, id) => {
+            console.log('remove', table, id)
             await db.collection(table).doc(id).delete()
         },
 
