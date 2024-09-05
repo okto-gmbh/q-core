@@ -1,3 +1,5 @@
+/* eslint-disable no-redeclare */
+
 import admin from 'firebase-admin'
 
 import type { RepositoryWithEvents } from '@core/repositories/events'
@@ -10,56 +12,110 @@ import type {
     RowTemplate,
 } from '@core/repositories/interface'
 
-async function mapRow<Row extends RowTemplate, Fields extends (keyof Row & string)[] | undefined>(
-    row: admin.firestore.DocumentSnapshot<admin.firestore.DocumentData>,
-    fields?: Fields
-): Promise<(Fields extends string[] ? Pick<Row, Fields[number]> : Row) | undefined> {
-    if (fields && fields.length === 1 && fields.includes('id')) {
-        return {
-            id: row.id,
-        } as unknown as Fields extends string[] ? Pick<Row, Fields[number]> : Row
+type ColumnType = 'geopoint' | 'other' | 'reference' | 'timestamp'
+
+function getColumnType(prop: admin.firestore.DocumentData[string]): ColumnType {
+    if (prop instanceof admin.firestore.DocumentReference) {
+        return 'reference'
+    } else if (prop instanceof admin.firestore.Timestamp) {
+        return 'timestamp'
+    } else if (prop instanceof admin.firestore.GeoPoint) {
+        return 'geopoint'
+    } else {
+        return 'other'
     }
+}
 
-    const data = row.data() || {}
-    data.id = row.id
+function mapRow<Row extends RowTemplate, Fields extends (keyof Row & string)[]>(
+    row: admin.firestore.DocumentSnapshot<admin.firestore.DocumentData>,
+    fields?: Fields,
+    fieldTypes?: Record<string, ColumnType>
+): Promise<Row> | undefined {
+    const rowData = row.data()
 
-    if (Object.keys(data).length === 1) {
+    if (!rowData) {
         return
     }
 
-    for (const propName in data) {
-        // Exclude fields
-        if (fields && !fields.includes(propName as keyof Row & string)) {
-            delete data[propName]
-            continue
+    const resolveFields = async () => {
+        const newData: Record<string, any> = {
+            id: row.id,
         }
+        for (const propName in rowData) {
+            const prop = rowData[propName]
 
-        // Map types
-        const prop = data[propName]
-        if (prop instanceof admin.firestore.DocumentReference) {
-            data[propName] = await mapRow(await prop.get())
-        }
-        if (prop instanceof admin.firestore.Timestamp) {
-            data[propName] = prop.toDate()
-        }
-        if (prop instanceof admin.firestore.GeoPoint) {
-            data[propName] = {
-                latitude: prop.latitude,
-                longitude: prop.longitude,
+            const fieldType = fieldTypes?.[propName] ?? getColumnType(prop)
+
+            if (!fields || fields.includes(propName)) {
+                if (!prop) {
+                    newData[propName] = prop
+                }
+
+                if (fieldType === 'reference') {
+                    newData[propName] = await mapRow(prop.get(), fields)
+                } else if (fieldType === 'timestamp') {
+                    newData[propName] = prop.toDate()
+                } else if (fieldType === 'geopoint') {
+                    newData[propName] = {
+                        latitude: prop.latitude,
+                        longitude: prop.longitude,
+                    }
+                } else {
+                    newData[propName] = prop
+                }
             }
         }
+        return newData as Row
     }
 
-    return data as unknown as Fields extends string[] ? Pick<Row, Fields[number]> : Row
+    return resolveFields()
 }
 
 async function mapRows<Row extends RowTemplate, Fields extends (keyof Row & string)[]>(
     rows: admin.firestore.DocumentSnapshot<admin.firestore.DocumentData>[],
     fields?: Fields
 ) {
-    return await Promise.all(rows.map((row) => mapRow(row, fields)))
-}
+    if (rows.length === 0) {
+        return []
+    }
 
+    const onlyId = fields && fields.length === 1 && fields.includes('id')
+
+    if (onlyId) {
+        const mappedRows: RowTemplate[] = []
+        for (const row of rows) {
+            mappedRows.push({ id: row.id })
+        }
+        return mappedRows
+    } else {
+        const fieldTypes: Record<string, ColumnType> = {}
+
+        for (const row of rows) {
+            const rowData = row.data()
+
+            if (!rowData) {
+                continue
+            }
+
+            for (const propName in rowData) {
+                const prop = rowData[propName]
+                const fieldType = getColumnType(prop)
+                fieldTypes[propName] = fieldType
+            }
+            break
+        }
+
+        const mappedRows: Row[] = []
+        for (const row of rows) {
+            const mappedRow = mapRow(row, fields, fieldTypes)
+            if (mappedRow) {
+                mappedRows.push(mappedRow)
+            }
+        }
+
+        return Promise.all(mappedRows)
+    }
+}
 export type FirebaseEntity = RowTemplate
 
 export interface FirebaseConstraints<Row extends RowTemplate> extends Constraints<Row> {
@@ -174,6 +230,7 @@ const getRepository = <DatabaseSchema extends DatabaseSchemaTemplate>(
             constraints: FirebaseConstraints<Row> = {},
             fields?: Fields
         ) => {
+            console.time('query' + table + JSON.stringify(constraints, fields))
             const { limit, orderBy, where } = constraints
             let query: admin.firestore.Query<RowTemplate> = db.collection(table)
 
@@ -191,8 +248,15 @@ const getRepository = <DatabaseSchema extends DatabaseSchemaTemplate>(
                 query = query.limit(limit)
             }
 
+            console.timeEnd('query' + table + JSON.stringify(constraints, fields))
+
+            const timestamp = Date.now()
+
             const { docs } = await query.get()
+
+            console.time('mapRows ' + table + timestamp)
             const mappedRows = await mapRows(docs, fields)
+            console.timeEnd('mapRows ' + table + timestamp)
 
             return mappedRows as Fields extends string[] ? Pick<Row, Fields[number]>[] : Row[]
         },
