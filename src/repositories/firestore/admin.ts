@@ -261,7 +261,6 @@ const getRepository = <DatabaseSchema extends DatabaseSchemaTemplate>(
         },
 
         remove: async (table, id) => {
-            console.log('remove', table, id)
             await db.collection(table).doc(id).delete()
         },
 
