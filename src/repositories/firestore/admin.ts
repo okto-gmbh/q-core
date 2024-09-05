@@ -1,5 +1,3 @@
-/* eslint-disable no-redeclare */
-
 import admin from 'firebase-admin'
 
 import type { RepositoryWithEvents } from '@core/repositories/events'
