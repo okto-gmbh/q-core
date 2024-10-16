@@ -60,14 +60,14 @@ async function mapRow(
 
             if (!fieldType || (fieldType === COLUMN_TYPE.OTHER && typeof prop === 'object')) {
                 const type = getFieldType(prop)
-                if (type) {
+                if (type !== undefined) {
                     fieldTypes[propName] = type
                     fieldType = type
                 }
             }
 
             if (fieldType === COLUMN_TYPE.REFERENCE) {
-                newData[propName] = await mapRow(await prop.get())
+                newData[propName] = async () => await mapRow(await prop.get())
             } else if (fieldType === COLUMN_TYPE.TIMESTAMP) {
                 newData[propName] = prop.toDate()
             } else if (fieldType === COLUMN_TYPE.GEOPOINT) {
