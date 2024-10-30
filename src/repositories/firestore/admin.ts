@@ -34,7 +34,6 @@ function getFieldType(prop: admin.firestore.DocumentData[string]): COLUMN_TYPE |
 
 async function mapRow(
     row: admin.firestore.DocumentSnapshot<admin.firestore.DocumentData> | undefined,
-    fields?: string[],
     fieldTypes: Record<string, COLUMN_TYPE> = {}
 ): Promise<Record<string, any> | undefined> {
     if (!row) {
@@ -48,60 +47,43 @@ async function mapRow(
     }
 
     for (const propName in data) {
-        if (!fields || fields.includes(propName)) {
-            const prop = data[propName]
+        const prop = data[propName]
 
-            if (prop === null || prop === undefined) {
-                newData[propName] = prop
-                continue
-            }
+        if (prop === null || prop === undefined) {
+            newData[propName] = prop
+            continue
+        }
 
-            let fieldType = fieldTypes[propName]
+        let fieldType = fieldTypes[propName]
 
-            if (!fieldType || (fieldType === COLUMN_TYPE.OTHER && typeof prop === 'object')) {
-                const type = getFieldType(prop)
-                if (type !== undefined) {
-                    fieldTypes[propName] = type
-                    fieldType = type
-                }
-            }
-
-            if (fieldType === COLUMN_TYPE.REFERENCE) {
-                newData[propName] = async () => await mapRow(await prop.get())
-            } else if (fieldType === COLUMN_TYPE.TIMESTAMP) {
-                newData[propName] = prop.toDate()
-            } else if (fieldType === COLUMN_TYPE.GEOPOINT) {
-                newData[propName] = {
-                    latitude: prop.latitude,
-                    longitude: prop.longitude,
-                }
-            } else {
-                newData[propName] = prop
+        if (!fieldType || (fieldType === COLUMN_TYPE.OTHER && typeof prop === 'object')) {
+            const type = getFieldType(prop)
+            if (type !== undefined) {
+                fieldTypes[propName] = type
+                fieldType = type
             }
         }
-    }
 
-    if (Object.keys(newData).length === 1) {
-        return
+        if (fieldType === COLUMN_TYPE.REFERENCE) {
+            newData[propName] = async () => await mapRow(await prop.get())
+        } else if (fieldType === COLUMN_TYPE.TIMESTAMP) {
+            newData[propName] = prop.toDate()
+        } else if (fieldType === COLUMN_TYPE.GEOPOINT) {
+            newData[propName] = {
+                latitude: prop.latitude,
+                longitude: prop.longitude,
+            }
+        } else {
+            newData[propName] = prop
+        }
     }
 
     return newData
 }
 
-async function mapRows(
-    rows: admin.firestore.DocumentSnapshot<admin.firestore.DocumentData>[],
-    fields?: string[]
-) {
+async function mapRows(rows: admin.firestore.DocumentSnapshot<admin.firestore.DocumentData>[]) {
     if (rows.length === 0) {
         return []
-    }
-
-    if (fields && fields.length === 1 && fields.includes('id')) {
-        const mappedRows: RowTemplate[] = []
-        for (const row of rows) {
-            mappedRows.push({ id: row.id })
-        }
-        return mappedRows
     }
 
     const fieldTypes: Record<string, COLUMN_TYPE> = {}
@@ -109,7 +91,7 @@ async function mapRows(
     const mappedRows: (Record<string, any> | undefined)[] = []
 
     for (const row of rows) {
-        mappedRows.push(mapRow(row, fields, fieldTypes))
+        mappedRows.push(mapRow(row, fieldTypes))
     }
 
     return await Promise.all(mappedRows)
@@ -240,13 +222,16 @@ const getRepository = <DatabaseSchema extends DatabaseSchemaTemplate>(
                     query = query.orderBy(field, direction)
                 }
             }
+            if (fields) {
+                query = query.select(...fields)
+            }
             if (limit) {
                 query = query.limit(limit)
             }
 
             const { docs } = await query.get()
 
-            const mappedRows = await mapRows(docs, fields)
+            const mappedRows = await mapRows(docs)
 
             return mappedRows as Fields extends string[] ? Pick<Row, Fields[number]>[] : Row[]
         },
