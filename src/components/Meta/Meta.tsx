@@ -56,7 +56,7 @@ const Meta: FC<MetaProps> = ({
                 <meta content={themeColor} name="msapplication-TileColor" />
                 <meta content={themeColor} name="theme-color" />
                 <meta
-                    content="width=device-width, initial-scale=1.0, minimum-scale=1.0, viewport-fit=cover"
+                    content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, viewport-fit=cover user-scalable=no"
                     name="viewport"
                 />
                 <link href="/favicon-32x32.png" rel="icon" sizes="32x32" type="image/png" />
