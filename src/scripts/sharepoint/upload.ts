@@ -81,7 +81,7 @@ async function createUploadSession({
     return await response.json()
 }
 
-const CHUNK_SIZE = 327680
+const CHUNK_SIZE = 60 * 1024 * 1024
 
 function getChunks(size: number) {
     const sep = size < CHUNK_SIZE ? size : CHUNK_SIZE - 1
@@ -147,7 +147,7 @@ export default async function uploadFile({
     const size = stats.size
     const chunks = getChunks(size)
     const stream = createReadStream(sourceFile, {
-        highWaterMark: Math.ceil(size / (chunks.length - 1)),
+        highWaterMark: Math.ceil(size / ((chunks.length - 1) || 1)),
     })
 
     for (const chunk of chunks) {
