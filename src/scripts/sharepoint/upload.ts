@@ -84,7 +84,7 @@ async function createUploadSession({
 const CHUNK_SIZE = 327680
 
 function getChunks(size: number) {
-     const sep = size < CHUNK_SIZE ? size : CHUNK_SIZE
+    const sep = size < CHUNK_SIZE ? size : CHUNK_SIZE - 1
 
     const params: {
         chunkEnd: number
