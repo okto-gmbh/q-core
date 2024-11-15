@@ -81,8 +81,10 @@ async function createUploadSession({
     return await response.json()
 }
 
+const CHUNK_SIZE = 327680
+
 function getChunks(size: number) {
-    const sep = size < 60 * 1024 * 1024 ? size : 60 * 1024 * 1024 - 1
+     const sep = size < CHUNK_SIZE ? size : CHUNK_SIZE
 
     const params: {
         chunkEnd: number
