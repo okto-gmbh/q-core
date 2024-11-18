@@ -1,11 +1,9 @@
+import { inputBaseClasses, outlinedInputClasses } from '@mui/material'
 import { DatePicker as MuiDatePicker } from '@mui/x-date-pickers-pro'
-import { forwardRef } from 'react'
 import { Controller } from 'react-hook-form'
 
 import Paper from '../../Paper'
-import TextInput from '../TextInput'
 
-import type { TextFieldProps } from '@mui/material'
 import type { DatePickerProps as MuiDatePickerProps } from '@mui/x-date-pickers-pro'
 import type { FC } from 'react'
 import type { Control, ControllerRenderProps, FieldValues } from 'react-hook-form'
@@ -44,43 +42,33 @@ const DatePicker: FC<DatePickerProps> = ({
             <MuiDatePicker
                 format="dd.MM.yyyy"
                 label={label}
+                slotProps={{
+                    textField: {
+                        sx: {
+                            [`& .${inputBaseClasses.root}`]: {
+                                '&:hover, &:active, &:focus': {
+                                    [`& .${outlinedInputClasses.notchedOutline}`]: {
+                                        borderColor: 'var(--colors-primary)',
+                                        borderWidth: '1px',
+                                    },
+                                },
+                                backgroundColor: 'var(--colors-white)',
+                                border: 0,
+                                width: '100%',
+                            },
+                            [`& .${outlinedInputClasses.notchedOutline}`]: {
+                                borderColor: 'transparent',
+                                borderWidth: '1px !important',
+                                transition: 'border-color 0.2s ease-in',
+                            },
+                            backgroundColor: 'var(--colors-white)',
+                            width: '100%',
+                        },
+                        variant: 'outlined',
+                    },
+                }}
                 slots={{
                     desktopPaper: Paper,
-                    textField: forwardRef(function TextField(inputProps: TextFieldProps, ref: any) {
-                        return (
-                            <TextInput
-                                {...inputProps}
-                                error={error}
-                                helperText={helperText}
-                                onBlur={(e) => {
-                                    const value = e.target.value
-                                    const format = (props.format || 'DD.MM.YYYY').toUpperCase()
-
-                                    if (value === format) {
-                                        return handleChange(null, field)
-                                    }
-
-                                    const parts = value.split('.')
-                                    if (parts.length !== 3) {
-                                        return handleChange(null, field)
-                                    }
-
-                                    const [day, month, year] = parts
-                                    const date = new Date()
-                                    handleChange(
-                                        new Date(
-                                            parseInt(year || String(date.getFullYear())),
-                                            parseInt(month || String(date.getMonth() + 1)) - 1,
-                                            parseInt(day || String(date.getDate()))
-                                        ),
-                                        field
-                                    )
-                                }}
-                                ref={ref}
-                                style={{ width: '100%' }}
-                            />
-                        )
-                    }),
                 }}
                 value={field.value ? new Date(field.value) : null}
                 {...props}
