@@ -42,9 +42,6 @@ const DatePicker: FC<DatePickerProps> = ({
             <MuiDatePicker
                 format="dd.MM.yyyy"
                 label={label}
-                onChange={(value) => {
-                    handleChange(value, field)
-                }}
                 slotProps={{
                     textField: {
                         sx: {
