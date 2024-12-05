@@ -47,6 +47,8 @@ const DatePicker: FC<DatePickerProps> = ({
                 }}
                 slotProps={{
                     textField: {
+                        error,
+                        helperText,
                         sx: {
                             [`& .${inputBaseClasses.root}`]: {
                                 '&:hover, &:active, &:focus': {
@@ -64,7 +66,6 @@ const DatePicker: FC<DatePickerProps> = ({
                                 borderWidth: '1px !important',
                                 transition: 'border-color 0.2s ease-in',
                             },
-                            backgroundColor: 'var(--colors-white)',
                             width: '100%',
                         },
                         variant: 'outlined',
