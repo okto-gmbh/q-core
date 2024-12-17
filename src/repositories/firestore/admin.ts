@@ -133,7 +133,6 @@ const getRepository = <DatabaseSchema extends DatabaseSchemaTemplate>(
 ) =>
     withEvents<DatabaseSchema>({
         bulkCreate: async (table, rows) => {
-            const createPromises = []
             const createdRows: FirebaseEntity[] = []
             for (let i = 0; i < rows.length; i += 500) {
                 const batch = db.batch()
@@ -151,16 +150,13 @@ const getRepository = <DatabaseSchema extends DatabaseSchemaTemplate>(
                     })
                 )
 
-                createPromises.push(batch.commit())
+                await batch.commit()
             }
-
-            await Promise.all(createPromises)
 
             return createdRows
         },
 
         bulkRemove: async (table, ids) => {
-            const removePromises = []
             for (let i = 0; i < ids.length; i += 500) {
                 const batch = db.batch()
 
@@ -169,14 +165,11 @@ const getRepository = <DatabaseSchema extends DatabaseSchemaTemplate>(
                     batch.delete(doc)
                 }
 
-                removePromises.push(batch.commit())
+                await batch.commit()
             }
-
-            await Promise.all(removePromises)
         },
 
         bulkUpdate: async (table, rows) => {
-            const updatePromises = []
             for (let i = 0; i < rows.length; i += 500) {
                 const batch = db.batch()
 
@@ -185,10 +178,8 @@ const getRepository = <DatabaseSchema extends DatabaseSchemaTemplate>(
                     batch.set(doc, row, { merge: true })
                 }
 
-                updatePromises.push(batch.commit())
+                await batch.commit()
             }
-
-            await Promise.all(updatePromises)
         },
 
         create: async (table, data, createId?) => {
