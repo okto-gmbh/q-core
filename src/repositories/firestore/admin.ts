@@ -1,7 +1,8 @@
 import admin from 'firebase-admin'
 
-import type { RepositoryWithEvents } from '@core/repositories/events'
 import { withEvents } from '@core/repositories/events'
+
+import type { RepositoryWithEvents } from '@core/repositories/events'
 import type {
     Constraints,
     DatabaseSchemaTemplate,
@@ -132,42 +133,62 @@ const getRepository = <DatabaseSchema extends DatabaseSchemaTemplate>(
 ) =>
     withEvents<DatabaseSchema>({
         bulkCreate: async (table, rows) => {
-            const batch = db.batch()
+            const createPromises = []
+            const createdRows: FirebaseEntity[] = []
+            for (let i = 0; i < rows.length; i += 500) {
+                const batch = db.batch()
 
-            const createdRows = rows.map((row) => {
-                const doc = row.id ? db.collection(table).doc(row.id) : db.collection(table).doc()
-                batch.set(doc, row)
-                return {
-                    ...row,
-                    id: doc.id,
-                }
-            })
+                createdRows.push(
+                    ...rows.slice(i, i + 500).map((row) => {
+                        const doc = row.id
+                            ? db.collection(table).doc(row.id)
+                            : db.collection(table).doc()
+                        batch.set(doc, row)
+                        return {
+                            ...row,
+                            id: doc.id,
+                        }
+                    })
+                )
 
-            await batch.commit()
+                createPromises.push(batch.commit())
+            }
+
+            await Promise.all(createPromises)
 
             return createdRows
         },
 
         bulkRemove: async (table, ids) => {
-            const batch = db.batch()
+            const removePromises = []
+            for (let i = 0; i < ids.length; i += 500) {
+                const batch = db.batch()
 
-            for (const id of ids) {
-                const doc = db.collection(table).doc(id)
-                batch.delete(doc)
+                for (const id of ids.slice(i, i + 500)) {
+                    const doc = db.collection(table).doc(id)
+                    batch.delete(doc)
+                }
+
+                removePromises.push(batch.commit())
             }
 
-            await batch.commit()
+            await Promise.all(removePromises)
         },
 
         bulkUpdate: async (table, rows) => {
-            const batch = db.batch()
+            const updatePromises = []
+            for (let i = 0; i < rows.length; i += 500) {
+                const batch = db.batch()
 
-            for (const row of rows) {
-                const doc = db.collection(table).doc(row.id)
-                batch.set(doc, row, { merge: true })
+                for (const row of rows.slice(i, i + 500)) {
+                    const doc = db.collection(table).doc(row.id)
+                    batch.set(doc, row, { merge: true })
+                }
+
+                updatePromises.push(batch.commit())
             }
 
-            await batch.commit()
+            await Promise.all(updatePromises)
         },
 
         create: async (table, data, createId?) => {
