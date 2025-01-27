@@ -1,5 +1,4 @@
 import { DateRangePicker as DateRangePickerMui } from '@mui/x-date-pickers-pro'
-import { forwardRef } from 'react'
 import { Controller } from 'react-hook-form'
 
 import Paper from '../../Paper'
@@ -67,14 +66,14 @@ const DateRangePicker: FC<DateRangePickerProps> = ({
             slots={{
                 desktopPaper: Paper,
                 /*
-                field: forwardRef(function SingleInputDateRange(props, ref) {
-                    return <SingleInputDateRangeField {...props} ref={ref} />
-                }),
+                field: function SingleInputDateRange(props) {
+                    return <SingleInputDateRangeField {...props} />
+                },
                 */
                 fieldSeparator: () => null,
-                textField: forwardRef(function TextField(props: TextFieldProps, ref: any) {
-                    return <TextInput {...props} error={error} helperText={helperText} ref={ref} />
-                }),
+                textField: function TextField(props: TextFieldProps) {
+                    return <TextInput {...props} error={error} helperText={helperText} />
+                },
                 ...(slots ?? {}),
             }}
             {...props}

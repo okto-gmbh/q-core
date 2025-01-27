@@ -1,12 +1,11 @@
 'use client'
 
-import { forwardRef } from 'react'
-
 import * as Styled from './Paper.styled'
 
-import type { ForwardedRef, HTMLAttributes } from 'react'
+import type { HTMLAttributes, Ref } from 'react'
 
 export interface PaperProps extends HTMLAttributes<HTMLDivElement> {
+    ref: Ref<HTMLDivElement>
     borderRadius?: string
     height?: string
     overflow?: string
@@ -14,8 +13,6 @@ export interface PaperProps extends HTMLAttributes<HTMLDivElement> {
     width?: string
 }
 
-const Paper = (props: PaperProps, ref: ForwardedRef<HTMLDivElement>) => (
-    <Styled.Element {...props} ref={ref} />
-)
+const Paper = (props: PaperProps) => <Styled.Element {...props} />
 
-export default forwardRef<HTMLDivElement, PaperProps>(Paper)
+export default Paper

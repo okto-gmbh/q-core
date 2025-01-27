@@ -1,6 +1,5 @@
 'use client'
 
-import { forwardRef } from 'react'
 import { Controller } from 'react-hook-form'
 
 import * as Styled from './TextInput.styled'
@@ -13,23 +12,22 @@ export type TextInputProps = TextFieldProps & {
     control?: Control<FieldValues>
     fieldName?: string
     grow?: 'auto'
+    ref?: Ref<HTMLDivElement | null | undefined>
     round?: boolean
 }
 
-const TextInput = (
-    {
-        control,
-        defaultValue,
-        fieldName,
-        inputRef,
-        onChange,
-        round,
-        type,
-        value,
-        ...props
-    }: TextInputProps,
-    ref: Ref<HTMLDivElement | null | undefined>
-) => {
+const TextInput = ({
+    control,
+    defaultValue,
+    fieldName,
+    inputRef,
+    onChange,
+    ref,
+    round,
+    type,
+    value,
+    ...props
+}: TextInputProps) => {
     const setRef = (r: HTMLInputElement) =>
         [ref, inputRef].forEach((ref) => {
             if (ref) {
@@ -105,4 +103,4 @@ const TextInput = (
     )
 }
 
-export default forwardRef<HTMLDivElement | null | undefined, TextInputProps>(TextInput)
+export default TextInput

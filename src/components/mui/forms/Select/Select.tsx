@@ -3,7 +3,6 @@
 import { createFilterOptions } from '@mui/material/Autocomplete'
 import match from 'autosuggest-highlight/match'
 import parse from 'autosuggest-highlight/parse'
-import { forwardRef } from 'react'
 import { Controller } from 'react-hook-form'
 
 import { vars } from '../../../../utils/string'
@@ -22,6 +21,7 @@ type SelectProps = AutocompleteProps<any, any, any, any> & {
     onCreate: (value: any) => void
     onInputChange: (value: any) => void
     options: Array<{ key: string; value: string }>
+    ref: Ref<HTMLInputElement>
     control?: Control<FieldValues>
     createLabel?: string
     error?: boolean
@@ -31,25 +31,23 @@ type SelectProps = AutocompleteProps<any, any, any, any> & {
     multiple?: boolean
 }
 
-const Select = (
-    {
-        control,
-        createLabel,
-        defaultValue,
-        error,
-        fieldName,
-        helperText,
-        label,
-        limitTags = 2,
-        multiple,
-        onChange,
-        onCreate,
-        onInputChange,
-        options,
-        ...props
-    }: SelectProps,
-    ref: Ref<HTMLInputElement>
-) => {
+const Select = ({
+    control,
+    createLabel,
+    defaultValue,
+    error,
+    fieldName,
+    helperText,
+    label,
+    limitTags = 2,
+    multiple,
+    onChange,
+    onCreate,
+    onInputChange,
+    options,
+    ref,
+    ...props
+}: SelectProps) => {
     const handleChange = (values: any[] | any, field: ControllerRenderProps<FieldValues, any>) => {
         field.onChange(values)
 
@@ -216,4 +214,4 @@ export const objectsToOptions = (
     return objects
 }
 
-export default forwardRef<HTMLInputElement, SelectProps>(Select)
+export default Select
