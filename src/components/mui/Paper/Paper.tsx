@@ -9,10 +9,11 @@ export interface PaperProps extends HTMLAttributes<HTMLDivElement> {
     borderRadius?: string
     height?: string
     overflow?: string
+    ownerState?: unknown
     scroll?: 'all' | 'x' | 'y'
     width?: string
 }
 
-const Paper = (props: PaperProps) => <Styled.Element {...props} />
+const Paper = ({ ownerState: _, ...props }: PaperProps) => <Styled.Element {...props} />
 
 export default Paper
