@@ -1,10 +1,8 @@
 'use client'
 
-import { forwardRef } from 'react'
-
 import * as Styled from './Stack.styled'
 
-import type { ComponentType, ForwardRefRenderFunction, HTMLAttributes } from 'react'
+import type { ComponentType, HTMLAttributes, Ref } from 'react'
 
 import type { AlignItems, Breakpoints, JustifyContent, Spacing } from '../../../types'
 
@@ -16,12 +14,12 @@ export interface StackProps extends HTMLAttributes<HTMLDivElement> {
     breakpoints?: Breakpoints
     direction?: Direction
     justifyContent?: JustifyContent
+    ref?: Ref<HTMLDivElement>
     spacing?: Spacing
 }
 
-const Stack: ForwardRefRenderFunction<HTMLDivElement, StackProps> = (
-    { direction = 'vertical', spacing = 'default', ...props },
-    ref
-) => <Styled.Element direction={direction} ref={ref} spacing={spacing} {...props} />
+const Stack = ({ direction = 'vertical', spacing = 'default', ...props }: StackProps) => (
+    <Styled.Element direction={direction} spacing={spacing} {...props} />
+)
 
-export default forwardRef<HTMLDivElement, StackProps>(Stack)
+export default Stack

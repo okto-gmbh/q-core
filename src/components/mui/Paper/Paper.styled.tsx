@@ -1,23 +1,17 @@
 import styled from '@emotion/styled'
-import { forwardRef } from 'react'
-
-import type { ForwardedRef } from 'react'
 
 import type { PaperProps } from '.'
 
-const StyledPaper = (
-    {
-        borderRadius: _borderRadius,
-        height: _height,
-        overflow: _overflow,
-        scroll: _scroll,
-        width: _width,
-        ...rest
-    }: PaperProps,
-    ref: ForwardedRef<HTMLDivElement>
-) => <div {...rest} ref={ref} />
+const StyledPaper = ({
+    borderRadius: _borderRadius,
+    height: _height,
+    overflow: _overflow,
+    scroll: _scroll,
+    width: _width,
+    ...rest
+}: PaperProps) => <div {...rest} />
 
-export const Element = styled(forwardRef(StyledPaper))`
+export const Element = styled(StyledPaper)`
     position: relative;
     overflow: ${({ overflow }) => (overflow ? overflow : 'hidden')};
     width: ${({ width }) => (width ? width : 'auto')};

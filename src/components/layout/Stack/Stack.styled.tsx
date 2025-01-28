@@ -1,28 +1,23 @@
 import { css } from '@emotion/react'
 import styled from '@emotion/styled'
-import React, { forwardRef } from 'react'
+import React from 'react'
 
 import { from } from '../../../utils/breakpoints'
 import { getDirectionSpacing, getFlexDirection } from '../../../utils/styles'
 
-import type { ForwardRefRenderFunction } from 'react'
-
 import type { StackProps } from './Stack'
 
-const StyledStack: ForwardRefRenderFunction<HTMLDivElement, StackProps> = (
-    {
-        alignItems: _alignItems,
-        as: Component = 'div',
-        children,
-        direction: _direction,
-        justifyContent: _justifyContent,
-        spacing: _spacing,
-        ...rest
-    },
-    ref
-) => React.createElement(Component, { ...rest, ref } as any, children)
+const StyledStack = ({
+    alignItems: _alignItems,
+    as: Component = 'div',
+    children,
+    direction: _direction,
+    justifyContent: _justifyContent,
+    spacing: _spacing,
+    ...rest
+}: StackProps) => React.createElement(Component, rest as any, children)
 
-export const Element = styled(forwardRef<HTMLDivElement, StackProps>(StyledStack))`
+export const Element = styled(StyledStack)`
     width: 100%;
 
     ${({ alignItems, direction, justifyContent }) =>
