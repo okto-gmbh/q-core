@@ -205,7 +205,8 @@ const getRepository = <DatabaseSchema extends DatabaseSchemaTemplate>(
             }
 
             const doc = await db.collection(table).doc(id).get()
-            if (!doc) {
+
+            if (!doc?.exists) {
                 return
             }
 
