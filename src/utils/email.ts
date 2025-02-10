@@ -9,7 +9,9 @@ const mailTransport = createTransport({
         user: process.env.EMAIL_USERNAME,
     },
 
+    debug: true,
     host: process.env.EMAIL_HOST,
+    logger: true,
 
     port: process.env.EMAIL_PORT,
 
