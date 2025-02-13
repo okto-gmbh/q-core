@@ -12,8 +12,11 @@ import type { Control, ControllerRenderProps, FieldValues } from 'react-hook-for
 export type TextInputProps = TextFieldProps & {
     control?: Control<FieldValues>
     fieldName?: string
+    /** @deprecated use `width: 'full'` instead */
+    fullWidth?: boolean
     grow?: 'auto'
     round?: boolean
+    width?: 'auto' | 'full'
 }
 
 const TextInput = (
@@ -82,6 +85,7 @@ const TextInput = (
     const renderInput = (field: ControllerRenderProps<FieldValues, string>) => (
         <Styled.Input
             InputLabelProps={props.multiline ? { sx: Styled.multilineLabelProps } : undefined}
+            fullWidth={props.width === 'full' || props.fullWidth}
             {...props}
             inputRef={setRef}
             onChange={(event: any) => handleChange(event, field)}

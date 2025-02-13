@@ -14,6 +14,7 @@ type DatePickerProps = Omit<MuiDatePickerProps<Date>, 'renderInput'> & {
     fieldName?: string
     helperText?: string
     mask?: string
+    width?: 'auto' | 'full'
 }
 
 const DatePicker: FC<DatePickerProps> = ({
@@ -50,6 +51,9 @@ const DatePicker: FC<DatePickerProps> = ({
                         error,
                         helperText,
                         sx: {
+                            [`& .${inputBaseClasses.input}`]: {
+                                width: props.width === 'full' ? '100%' : 'auto',
+                            },
                             [`& .${inputBaseClasses.root}`]: {
                                 '&:hover, &:active, &:focus': {
                                     [`& .${outlinedInputClasses.notchedOutline}`]: {

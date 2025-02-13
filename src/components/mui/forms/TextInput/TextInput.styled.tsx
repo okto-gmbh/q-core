@@ -14,9 +14,15 @@ export const multilineLabelProps = {
     zIndex: '4 !important',
 }
 
-export const Input = styled(({ grow: _grow, round: _round, ...props }: TextInputProps) => (
-    <TextField {...props} variant="outlined" />
-))(({ grow, round }: { grow?: 'auto'; round?: boolean }) => ({
+export const Input = styled(
+    ({ grow: _grow, round: _round, width: _width, ...props }: TextInputProps) => (
+        <TextField {...props} variant="outlined" />
+    )
+)(({ grow, round, width }: { grow?: 'auto'; round?: boolean; width?: 'auto' | 'full' }) => ({
+    [`& .${inputBaseClasses.input}`]: {
+        ...(width === 'full' ? { width: '100%' } : width === 'auto' ? { width: 'auto' } : {}),
+    },
+
     [`& .${formLabelClasses.root}`]: {
         textShadow: '0 0 3px var(--colors-white)',
         zIndex: 1,
@@ -43,6 +49,7 @@ export const Input = styled(({ grow: _grow, round: _round, ...props }: TextInput
 
         [`& .${inputBaseClasses.input}`]: {
             textOverflow: 'ellipsis',
+            ...(width === 'full' ? { width: '100%' } : width === 'auto' ? { width: 'auto' } : {}),
         },
 
         [`& .${outlinedInputClasses.notchedOutline}`]: {

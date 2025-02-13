@@ -17,7 +17,7 @@ import type { Control, ControllerRenderProps, FieldValues } from 'react-hook-for
 
 const selectFilter = createFilterOptions()
 
-type SelectProps = AutocompleteProps<any, any, any, any> & {
+type SelectProps = Omit<AutocompleteProps<any, any, any, any>, 'fullWidth'> & {
     label: string
     onCreate: (value: any) => void
     onInputChange: (value: any) => void
@@ -26,9 +26,12 @@ type SelectProps = AutocompleteProps<any, any, any, any> & {
     createLabel?: string
     error?: boolean
     fieldName?: string
+    /** @deprecated use `width: 'full'` instead */
+    fullWidth?: boolean
     helperText?: string
     limitTags?: number
     multiple?: boolean
+    width?: 'auto' | 'full'
 }
 
 const Select = (
@@ -142,8 +145,11 @@ const Select = (
             options={options}
             {...props}
             filterOptions={(options, params) => filterOptions(options, params, field)}
+            fullWidth={props.width === 'full' || props.fullWidth}
             getOptionLabel={({ value }) => value}
-            onChange={(_, values) => onSelectChange(values, field)}
+            onChange={(_, values) => {
+                return onSelectChange(values, field)
+            }}
             ref={ref}
             renderInput={(params) => (
                 <TextInput
@@ -153,6 +159,7 @@ const Select = (
                     label={label}
                     onChange={onInputChange}
                     variant="filled"
+                    width={props.width}
                 />
             )}
             renderOption={(props, { key, value }, { inputValue }) => {
