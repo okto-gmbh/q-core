@@ -7,7 +7,7 @@ export const formatNumber = (number?: number, locale: Intl.LocalesArgument = 'de
         style: 'decimal',
     })
 
-export const formatPhone = (phone?: string, locale: CountryCode = 'CH') => {
+export const formatPhone = (phone?: string | null, locale: CountryCode = 'CH') => {
     if (!phone) return ''
 
     // Do not format short numbers like 118
