@@ -64,7 +64,7 @@ const Address: FC<AddressProps> = ({
         () =>
             throttle(
                 (request, callback) => {
-                    void autocompleteService.current!.getPlacePredictions(request, callback)
+                    void autocompleteService.current.getPlacePredictions(request, callback)
                 },
                 150,
                 {
@@ -126,7 +126,7 @@ const Address: FC<AddressProps> = ({
             return
         }
 
-        placesService.current!.getDetails({ placeId: place.place_id }, (result) => {
+        placesService.current.getDetails({ placeId: place.place_id }, (result) => {
             if (!result) {
                 return
             }

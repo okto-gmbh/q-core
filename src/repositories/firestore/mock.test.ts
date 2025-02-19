@@ -9,6 +9,7 @@ import {
     seedMockRepository,
     verifyMock,
 } from '@core/repositories/firestore/mock'
+
 import type { DatabaseSchemaTemplate } from '@core/repositories/interface'
 
 type FirebaseMeta<Repository extends DatabaseSchemaTemplate> = {

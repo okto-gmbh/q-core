@@ -147,7 +147,7 @@ export default async function uploadFile({
     const size = stats.size
     const chunks = getChunks(size)
     const stream = createReadStream(sourceFile, {
-        highWaterMark: Math.ceil(size / ((chunks.length - 1) || 1)),
+        highWaterMark: Math.ceil(size / (chunks.length - 1 || 1)),
     })
 
     for (const chunk of chunks) {

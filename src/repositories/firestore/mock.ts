@@ -1,6 +1,9 @@
 import { FieldValue } from 'firebase-admin/firestore'
 
 import { withEvents } from '@core/repositories/events'
+
+import type { Firestore } from 'firebase-admin/firestore'
+
 import type { FirebaseConstraints } from '@core/repositories/firestore/admin'
 import type {
     DatabaseSchemaTemplate,
@@ -8,8 +11,6 @@ import type {
     Operators,
     RowTemplate,
 } from '@core/repositories/interface'
-
-import type { Firestore } from 'firebase-admin/firestore'
 
 interface Database {
     _currentId: number

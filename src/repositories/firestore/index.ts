@@ -1,9 +1,10 @@
 import { FieldValue } from 'firebase-admin/firestore'
 
-import type { CoreModelTypes } from '@core/models'
 import { getDB } from '@core/services/firebaseAdmin'
 
 import getRepository from './admin'
+
+import type { CoreModelTypes } from '@core/models'
 
 export const deleteField = FieldValue.delete
 const db = getDB()
