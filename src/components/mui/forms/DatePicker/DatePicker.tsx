@@ -52,10 +52,10 @@ const DatePicker: FC<DatePickerProps> = ({
                     textField: {
                         error,
                         helperText,
-                        size,
                         sx: {
                             [`& .${inputBaseClasses.input}`]: {
                                 width: props.width === 'full' ? '100%' : 'auto',
+                                ...(size === 'small' ? { padding: '8.5px 14px' } : {}),
                             },
                             [`& .${inputBaseClasses.root}`]: {
                                 '&:hover, &:active, &:focus': {
