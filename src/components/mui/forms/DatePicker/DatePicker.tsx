@@ -23,6 +23,7 @@ const DatePicker: FC<DatePickerProps> = ({
     helperText,
     label,
     onChange,
+    slotProps,
     value,
     ...props
 }) => {
@@ -46,6 +47,7 @@ const DatePicker: FC<DatePickerProps> = ({
                     handleChange(value, field)
                 }}
                 slotProps={{
+                    ...slotProps,
                     textField: {
                         error,
                         helperText,
@@ -69,6 +71,7 @@ const DatePicker: FC<DatePickerProps> = ({
                             width: '100%',
                         },
                         variant: 'outlined',
+                        ...slotProps?.textField,
                     },
                 }}
                 slots={{
