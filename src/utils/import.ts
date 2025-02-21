@@ -29,11 +29,17 @@ export const parseExcelTable = (text: string): string[][] => {
 export const parseMultiSelectText = (
     text: string,
     entities: Record<string, any>[],
-    column: string,
-    nameField: string = 'name'
+    nameField: string = 'name',
+    creatorFunction?: (name: string) => void
 ): undefined | { id: string; name: string } => {
-    console.log({ column, entities, nameField, text })
-    const matchingEntity = entities.find((entity) => entity[nameField].trim() === text.trim())
+    const name = text.trim()
+    const matchingEntity = entities.find((entity) => entity[nameField].trim() === name)
+
+    if (!matchingEntity && creatorFunction) {
+        creatorFunction(name)
+        return { id: name, name }
+    }
+
     return matchingEntity
         ? {
               id: matchingEntity?.id,
@@ -45,12 +51,11 @@ export const parseMultiSelectText = (
 export const parseMultiArrayText = (
     text: string,
     entities: Record<string, any>[],
-    column: string,
     nameField: string = 'name'
 ) => {
     return text.split(',').reduce<{ id: string[]; name: string[] }>(
         (acc, option) => {
-            const matchingEntity = parseMultiSelectText(option, entities, column, nameField)
+            const matchingEntity = parseMultiSelectText(option, entities, nameField)
 
             if (!matchingEntity || acc.id.find((id) => id === matchingEntity.id)) {
                 return acc
@@ -68,7 +73,6 @@ export const parseMultiArrayText = (
 export const parseDate = (text: string) => {
     try {
         return {
-            column: 'leaving',
             id: new Date(text).toISOString(),
         }
     } catch {
@@ -76,11 +80,19 @@ export const parseDate = (text: string) => {
     }
 }
 
-export const parseText = (text: string, column: string) => {
-    return { column, id: text?.trim() }
+export const parseText = (text: string) => {
+    return { id: text?.trim() }
 }
 
-export const overrideDataWithPastedRows = <Column extends string>({
+export type ColumnMappings<Columns extends string> = {
+    [Column in Columns]?: (
+        text: string,
+        dataRowIndex: number,
+        row: Record<Columns, string>
+    ) => undefined | { id: string; name?: string } | { id: string[]; name?: string[] }
+}
+
+export const overrideDataWithPastedRows = <Columns extends string[]>({
     columns,
     data,
     defaultValues,
@@ -89,23 +101,16 @@ export const overrideDataWithPastedRows = <Column extends string>({
     mappings,
     pastedRows,
 }: {
-    columns: Column[]
-    data: Record<Column, string>[]
+    columns: Columns
+    data: { [Column in keyof Columns]: string }[]
     defaultValues: Record<string, any>
     initialColumnIndex: number
     initialRowIndex: number
-    mappings: Record<
-        Column,
-        (
-            text: string,
-            row: Record<Column, string>
-        ) => undefined | { id: string; name?: string } | { id: string[]; name?: string[] }
-    >
+    mappings: ColumnMappings<Columns[number]>
     pastedRows: string[][]
-}): Record<
-    Column,
-    undefined | { id: string; name?: string } | { id: string[]; name?: string[] }
->[] => {
+}): {
+    [Column in keyof Columns]: string
+}[] => {
     const newData = [...data]
 
     rowLoop: for (
@@ -115,12 +120,12 @@ export const overrideDataWithPastedRows = <Column extends string>({
     ) {
         const pastedRow = pastedRows[pastedRowIndex]
 
-        const row = columns.reduce<Record<Column, string>>(
+        const row = columns.reduce<Record<Columns[number], string>>(
             (acc, column, currentColumnIndex) => ({
                 ...acc,
                 [column]: pastedRow[currentColumnIndex - initialColumnIndex],
             }),
-            {} as Record<Column, string>
+            {} as Record<Columns[number], string>
         )
 
         for (
@@ -128,7 +133,7 @@ export const overrideDataWithPastedRows = <Column extends string>({
             pastedColumnIndex < pastedRow.length;
             pastedColumnIndex++, tableColumnIndex++
         ) {
-            const targetTableColumn = columns[tableColumnIndex]
+            const targetTableColumn = columns[tableColumnIndex] as Columns[number]
             const pastedCell = row[targetTableColumn]
 
             if (!targetTableColumn) {
@@ -136,9 +141,10 @@ export const overrideDataWithPastedRows = <Column extends string>({
             }
 
             // get column name if it was the displayName
-            const column = targetTableColumn.split('_')[0] as Column
+            const column = targetTableColumn.split('_')[0] as Columns[number]
 
-            const value = mappings[column]?.(pastedCell, row) ?? parseText(pastedCell, column)
+            const value =
+                mappings[column]?.(pastedCell, tableRowIndex, row) ?? parseText(pastedCell, column)
 
             if (!value) {
                 continue
