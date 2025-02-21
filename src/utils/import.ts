@@ -33,7 +33,7 @@ export const parseMultiSelectText = (
     creatorFunction?: (name: string) => void
 ): undefined | { id: string; name: string } => {
     const name = text.trim()
-    const matchingEntity = entities.find((entity) => entity[nameField].trim() === name)
+    const matchingEntity = entities.find((entity) => entity[nameField]?.trim() === name)
 
     if (!matchingEntity && creatorFunction) {
         creatorFunction(name)
