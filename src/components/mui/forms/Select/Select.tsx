@@ -17,7 +17,7 @@ import type { Control, ControllerRenderProps, FieldValues } from 'react-hook-for
 
 const selectFilter = createFilterOptions()
 
-type SelectProps = AutocompleteProps<any, any, any, any> & {
+export type SelectProps = AutocompleteProps<any, any, any, any> & {
     label: string
     onCreate: (value: any) => void
     onInputChange: (value: any) => void
