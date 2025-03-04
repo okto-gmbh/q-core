@@ -76,7 +76,7 @@ export const parseDate = (text: string) => {
             id: new Date(text).toISOString(),
         }
     } catch {
-        return undefined
+        return null
     }
 }
 
@@ -111,7 +111,8 @@ export const overrideDataWithPastedRows = <Columns extends string[]>({
 }): {
     [Column in keyof Columns]: string
 }[] => {
-    const newData = [...data]
+    const newData = structuredClone(data)
+    const defaults = structuredClone(defaultValues)
 
     rowLoop: for (
         let pastedRowIndex = 0, tableRowIndex = initialRowIndex;
@@ -144,14 +145,16 @@ export const overrideDataWithPastedRows = <Columns extends string[]>({
             const column = targetTableColumn.split('_')[0] as Columns[number]
 
             const value =
-                mappings[column]?.(pastedCell, tableRowIndex, row) ?? parseText(pastedCell, column)
+                column in mappings
+                    ? mappings[column]?.(pastedCell, tableRowIndex, row)
+                    : parseText(pastedCell)
 
             if (!value) {
                 continue
             }
 
             // @ts-expect-error: Improve types
-            newData[tableRowIndex] ??= { ...defaultValues }
+            newData[tableRowIndex] ??= defaults
             newData[tableRowIndex][column] = value.id
 
             if ('name' in value) {
