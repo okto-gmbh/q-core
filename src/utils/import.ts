@@ -112,7 +112,6 @@ export const overrideDataWithPastedRows = <Columns extends string[]>({
     [Column in keyof Columns]: string
 }[] => {
     const newData = structuredClone(data)
-    const defaults = structuredClone(defaultValues)
 
     rowLoop: for (
         let pastedRowIndex = 0, tableRowIndex = initialRowIndex;
@@ -154,7 +153,7 @@ export const overrideDataWithPastedRows = <Columns extends string[]>({
             }
 
             // @ts-expect-error: Improve types
-            newData[tableRowIndex] ??= defaults
+            newData[tableRowIndex] ??= structuredClone(defaultValues)
             newData[tableRowIndex][column] = value.id
 
             if ('name' in value) {
