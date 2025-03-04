@@ -1,3 +1,5 @@
+import { parseDateString } from '@core/utils/date'
+
 const preParse = (text: string) =>
     text.replaceAll('\r', '').replace(/"([^"]*)\n([^"]*)"/g, '"$1\\n$2"')
 
@@ -73,7 +75,7 @@ export const parseMultiArrayText = (
 export const parseDate = (text: string) => {
     try {
         return {
-            id: new Date(text).toISOString(),
+            id: parseDateString(text) ?? null,
         }
     } catch {
         return null
