@@ -89,7 +89,7 @@ export type ColumnMappings<Columns extends string> = {
         text: string,
         dataRowIndex: number,
         row: Record<Columns, string>
-    ) => undefined | { id: string; name?: string } | { id: string[]; name?: string[] }
+    ) => null | undefined | { id: string; name?: string } | { id: string[]; name?: string[] }
 }
 
 export const overrideDataWithPastedRows = <Columns extends string[]>({

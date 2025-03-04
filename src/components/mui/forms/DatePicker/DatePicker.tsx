@@ -9,7 +9,7 @@ import type { DatePickerProps as MuiDatePickerProps } from '@mui/x-date-pickers-
 import type { FC } from 'react'
 import type { Control, ControllerRenderProps, FieldValues } from 'react-hook-form'
 
-type DatePickerProps = Omit<MuiDatePickerProps<Date>, 'renderInput' | 'slotProps'> & {
+export type DatePickerProps = Omit<MuiDatePickerProps<Date>, 'renderInput' | 'slotProps'> & {
     control?: Control<FieldValues>
     error?: boolean
     fieldName?: string
