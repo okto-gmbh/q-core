@@ -4,20 +4,16 @@ import { Controller } from 'react-hook-form'
 
 import Paper from '../../Paper'
 
-import type { TextFieldProps } from '@mui/material'
 import type { DatePickerProps as MuiDatePickerProps } from '@mui/x-date-pickers-pro'
 import type { FC } from 'react'
 import type { Control, ControllerRenderProps, FieldValues } from 'react-hook-form'
 
-export type DatePickerProps = Omit<MuiDatePickerProps<Date>, 'renderInput' | 'slotProps'> & {
+export type DatePickerProps = Omit<MuiDatePickerProps<Date>, 'renderInput'> & {
     control?: Control<FieldValues>
     error?: boolean
     fieldName?: string
     helperText?: string
     mask?: string
-    slotProps?: MuiDatePickerProps<Date> & {
-        textField?: TextFieldProps
-    }
 }
 
 const DatePicker: FC<DatePickerProps> = ({
