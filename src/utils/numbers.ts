@@ -13,7 +13,7 @@ export const formatPhone = (phone?: string | null, locale: CountryCode = 'CH') =
     // Do not format short numbers like 118
     if (phone.length < 10) return phone
 
-    const phoneParser = parsePhoneNumber(phone, locale)
+    const phoneParser = parsePhoneNumber(String(phone), locale)
 
     if (!phoneParser) return phone
 
