@@ -8,7 +8,7 @@ import type { DatePickerProps as MuiDatePickerProps } from '@mui/x-date-pickers-
 import type { FC } from 'react'
 import type { Control, ControllerRenderProps, FieldValues } from 'react-hook-form'
 
-type DatePickerProps = Omit<MuiDatePickerProps<Date>, 'renderInput'> & {
+export type DatePickerProps = Omit<MuiDatePickerProps<Date>, 'renderInput'> & {
     control?: Control<FieldValues>
     error?: boolean
     fieldName?: string
@@ -23,6 +23,7 @@ const DatePicker: FC<DatePickerProps> = ({
     helperText,
     label,
     onChange,
+    slotProps,
     value,
     ...props
 }) => {
@@ -46,6 +47,7 @@ const DatePicker: FC<DatePickerProps> = ({
                     handleChange(value, field)
                 }}
                 slotProps={{
+                    ...slotProps,
                     textField: {
                         error,
                         helperText,
@@ -69,6 +71,7 @@ const DatePicker: FC<DatePickerProps> = ({
                             width: '100%',
                         },
                         variant: 'outlined',
+                        ...slotProps?.textField,
                     },
                 }}
                 slots={{

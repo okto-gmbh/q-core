@@ -106,3 +106,28 @@ export function getRelativeTime(date: Date | number, lang = 'de'): string {
     const rtf = new Intl.RelativeTimeFormat(lang, { numeric: 'auto' })
     return rtf.format(Math.floor(deltaSeconds / divisor), units[unitIndex])
 }
+
+/**
+ *  Parses a date string in the format "DD.MM.YYYY" and returns a Date object.
+ * @param dateString String in the format "DD.MM.YYYY"
+ * @returns Date object or undefined if the string is not in the correct format
+ */
+export function parseDateString(dateString: string): Date | undefined {
+    const match = dateString.match(/^(\d{2})\.(\d{2})\.(\d{4})$/)
+
+    if (match) {
+        const day = parseInt(match[1], 10)
+        const month = parseInt(match[2], 10) - 1 // Month is 0-based in JavaScript (0 = January, 11 = December)
+        const year = parseInt(match[3], 10)
+
+        const parsedDate = new Date(year, month, day)
+
+        if (
+            parsedDate.getDate() === day &&
+            parsedDate.getMonth() === month &&
+            parsedDate.getFullYear() === year
+        ) {
+            return parsedDate
+        }
+    }
+}

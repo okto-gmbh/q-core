@@ -10,13 +10,13 @@ import Paper from '../../Paper'
 import Autocomplete, { Option } from '../Autocomplete'
 import TextInput from '../TextInput'
 
-import type { AutocompleteProps, FilterOptionsState } from '@mui/material'
+import type { AutocompleteProps, FilterOptionsState, TextFieldProps } from '@mui/material'
 import type { Ref } from 'react'
 import type { Control, ControllerRenderProps, FieldValues } from 'react-hook-form'
 
 const selectFilter = createFilterOptions()
 
-type SelectProps = AutocompleteProps<any, any, any, any> & {
+export type SelectProps = AutocompleteProps<any, any, any, any> & {
     label: string
     onCreate: (value: any) => void
     onInputChange: (value: any) => void
@@ -29,6 +29,9 @@ type SelectProps = AutocompleteProps<any, any, any, any> & {
     helperText?: string
     limitTags?: number
     multiple?: boolean
+    slotProps?: AutocompleteProps<any, any, any, any>['slotProps'] & {
+        textField: TextFieldProps['slotProps']
+    }
 }
 
 const Select = ({
@@ -150,6 +153,16 @@ const Select = ({
                     helperText={helperText}
                     label={label}
                     onChange={onInputChange}
+                    slotProps={{
+                        // https://github.com/mui/material-ui/issues/43573#issuecomment-2364189702
+                        ...props.slotProps?.textField,
+                        htmlInput: {
+                            ...params.inputProps,
+                            ...props.slotProps?.textField?.htmlInput,
+                        },
+                        input: params.InputProps,
+                        inputLabel: params.InputLabelProps,
+                    }}
                     variant="filled"
                 />
             )}
