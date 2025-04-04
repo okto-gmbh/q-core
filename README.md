@@ -37,8 +37,12 @@ yarn q:add
 
 ## Update to current version and rebuild
 
-`yarn q:update`
+```bash
+yarn q:update
+```
 
 ## Upgrade to latest version and rebuild
 
-`yarn q:upgrade`
+```bash
+yarn q:upgrade
+```
