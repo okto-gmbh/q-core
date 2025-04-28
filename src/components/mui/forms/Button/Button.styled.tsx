@@ -51,17 +51,17 @@ export const Element = styled(({ look: _look, variant, ...rest }: ButtonProps) =
         css`
             && {
                 display: flex;
-                width: 50px;
-                min-width: 50px;
-                max-width: 50px;
-                height: 50px;
-                min-height: 50px;
-                max-height: 50px;
+                width: 42px;
+                min-width: 42px;
+                max-width: 42px;
+                height: 42px;
+                min-height: 42px;
+                max-height: 42px;
                 box-sizing: border-box;
                 align-items: center;
                 justify-content: center;
                 padding: 0;
-                border-radius: 50;
+                border-radius: 42px;
             }
         `}
 `
