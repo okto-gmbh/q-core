@@ -142,6 +142,7 @@ const Select = ({
             multiple={multiple}
             options={options}
             {...props}
+            clearOnBlur={!!props.blurOnSelect}
             filterOptions={(options, params) => filterOptions(options, params, field)}
             getOptionLabel={({ value }) => value}
             onChange={(_, values) => onSelectChange(values, field)}
