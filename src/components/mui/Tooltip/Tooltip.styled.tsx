@@ -13,5 +13,7 @@ export const Element = styled(({ className, ...props }: TooltipProps) => (
         backgroundColor: 'var(--colors-white)',
         boxShadow: 'var(--shadows-mui)',
         color: 'var(--colors-black)',
+        fontSize: '1rem',
+        padding: 'var(--spacings-medium)',
     },
 }))
