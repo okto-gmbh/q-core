@@ -87,6 +87,8 @@ const Select = ({
             filtered.push({
                 create: true,
                 key: params.inputValue,
+                // createLabel does not work in dev-env, as next-intl throws an error for the missing variable {label}
+                // on prod, no error is thrown and the label can get replaced with its value
                 value: vars(createLabel!, {
                     label: params.inputValue,
                 }),
