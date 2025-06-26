@@ -1,4 +1,5 @@
 import * as dotenv from 'dotenv'
+import { PrismaClient } from 'prisma/generated/prisma'
 
 import type { Repository } from '@core/repositories/interface'
 import type { BaseOptions } from '@core/scripts/common'
@@ -18,6 +19,7 @@ export interface MigrationOptions extends BaseOptions {
 export type MigrationContext = {
     db: FirebaseFirestore.Firestore
     deleteField: () => FirebaseFirestore.FieldValue
+    prisma: PrismaClient
     repo: Repository<any>
     storage: Storage
     tenantId: string
@@ -62,6 +64,7 @@ export default async ({ env = 'dev', migrations, tenant = ALL_TENANTS }: Migrati
 
     const { getBucket } = await import('@core/services/firebaseAdmin')
     const { getStorage } = await import('@core/storage/firebase/admin')
+    const { db: prisma } = await import('~db/services/prisma')
 
     const storage = getStorage(getBucket())
 
@@ -70,6 +73,7 @@ export default async ({ env = 'dev', migrations, tenant = ALL_TENANTS }: Migrati
     const ctx: MigrationContext = {
         db,
         deleteField,
+        prisma,
         repo,
         storage,
         tenantId: tenant,
