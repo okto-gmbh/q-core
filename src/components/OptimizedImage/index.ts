@@ -1,3 +1,5 @@
+'use client'
+
 import Image from './Image'
 import LegacyImage from './LegacyImage'
 
