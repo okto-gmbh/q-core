@@ -54,7 +54,6 @@ const singularTableNames = {
     workplaces: 'workplace',
 }
 
-// Map Firebase constraints to Prisma where clauses based on operators
 const mapWhere = ([field, operation, value]) => {
     switch (operation) {
         case OP_CONTAINS:
@@ -204,7 +203,9 @@ const getRepository = (db: PrismaClient) =>
                       )
                     : undefined,
                 take: limit,
-                where: where.map(mapWhere),
+                where: where.map(mapWhere).reduce((acc, condition) => {
+                    return { ...acc, ...condition }
+                }, {}),
             })
         },
 
@@ -212,7 +213,11 @@ const getRepository = (db: PrismaClient) =>
             const { where } = constraints
 
             return await db[singularTableNames[table]].count({
-                where: where ? where.map(mapWhere) : undefined,
+                where: where
+                    ? where.map(mapWhere).reduce((acc, condition) => {
+                          return { ...acc, ...condition }
+                      }, {})
+                    : undefined,
             })
         },
 
