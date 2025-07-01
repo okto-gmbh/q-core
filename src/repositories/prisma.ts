@@ -1,6 +1,7 @@
-import { PrismaClient } from 'prisma/generated/prisma'
+import { Prisma, PrismaClient } from 'prisma/generated/prisma'
 
-import { withEvents } from '@core/repositories/events'
+import { RepositoryWithEvents, withEvents } from '@core/repositories/events'
+import { Operators } from '@core/repositories/interface'
 import {
     OP_CONTAINS,
     OP_CONTAINS_ANY,
@@ -14,7 +15,7 @@ import {
     OP_NOT_IN,
 } from '@core/repositories/operators'
 
-const singularTableNames = {
+const singularTableNames: { [tableName: string]: Uncapitalize<Prisma.ModelName> } = {
     budgets: 'budget',
     changes: 'change',
     comments: 'comment',
@@ -54,7 +55,7 @@ const singularTableNames = {
     workplaces: 'workplace',
 }
 
-const mapWhere = ([field, operation, value]) => {
+const mapWhere = ([field, operation, value]: [string, Operators, any]) => {
     switch (operation) {
         case OP_CONTAINS:
             return {
@@ -120,7 +121,7 @@ const mapWhere = ([field, operation, value]) => {
     }
 }
 
-const getRepository = (db: PrismaClient) =>
+const getRepository = (db: PrismaClient): RepositoryWithEvents =>
     withEvents({
         bulkCreate: async (table, rows) => {
             return await db[singularTableNames[table]].createManyAndReturn({
@@ -160,13 +161,7 @@ const getRepository = (db: PrismaClient) =>
             return result.id
         },
 
-        find: async <
-            Table extends keyof DatabaseSchema & string,
-            Row extends DatabaseSchema[Table]['all'],
-        >(
-            table: Table,
-            id: ID
-        ) => {
+        find: async (table, id) => {
             if (!id) {
                 return
             }
@@ -176,36 +171,34 @@ const getRepository = (db: PrismaClient) =>
             })
         },
 
-        query: async <
-            Table extends keyof DatabaseSchema & string,
-            Row extends DatabaseSchema[Table]['all'],
-            Fields extends (keyof Row & string)[] | undefined,
-        >(
-            table: Table,
-            constraints: FirebaseConstraints<Row> = {},
-            fields?: Fields
-        ) => {
-            const { limit, orderBy, where } = constraints
+        query: async (table, constraints = {}, fields?) => {
+            const { limit, orderBy: initialOrderBy, where: initialWhere } = constraints
+
+            const where = initialWhere
+                ? initialWhere.map(mapWhere).reduce((acc, condition) => {
+                      return { ...acc, ...condition }
+                  }, {})
+                : undefined
+            const orderBy = initialOrderBy
+                ? Object.entries(initialOrderBy).map(([field, direction = 'asc']) => ({
+                      [field]: direction,
+                  }))
+                : undefined
+            const select = fields
+                ? fields.reduce(
+                      (acc, field) => {
+                          acc[field as string] = true
+                          return acc
+                      },
+                      {} as Record<string, boolean>
+                  )
+                : undefined
 
             return await db[singularTableNames[table]].findMany({
-                orderBy: orderBy
-                    ? Object.entries(orderBy).map(([field, direction = 'asc']) => ({
-                          [field]: direction,
-                      }))
-                    : undefined,
-                select: fields
-                    ? fields.reduce(
-                          (acc, field) => {
-                              acc[field as string] = true
-                              return acc
-                          },
-                          {} as Record<string, boolean>
-                      )
-                    : undefined,
+                orderBy,
+                select,
                 take: limit,
-                where: where.map(mapWhere).reduce((acc, condition) => {
-                    return { ...acc, ...condition }
-                }, {}),
+                where,
             })
         },
 
