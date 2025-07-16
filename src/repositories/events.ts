@@ -1,23 +1,25 @@
-import type { Repository, tableNameModelMap } from '@core/repositories/interface'
+import { TableName } from '~core/types/entity-types'
+
+import type { Repository } from '@core/repositories/interface'
 
 type RepositoryEvent = 'beforeRemove' | 'create' | 'remove' | 'update'
 
 type RepositoryEventListeners = {
     [Evt in RepositoryEvent]?: {
-        [Table in keyof typeof tableNameModelMap]?: ((data: unknown) => Promise<void>)[]
+        [Table in TableName]?: ((data: unknown) => Promise<void>)[]
     }
 }
 
 export interface RepositoryWithEvents extends Repository {
     off: (
         event: RepositoryEvent,
-        table: keyof typeof tableNameModelMap,
+        table: TableName,
         callback?: (data: unknown) => Promise<void>
     ) => void
 
     on: (
         event: RepositoryEvent,
-        table: keyof typeof tableNameModelMap,
+        table: TableName,
         callback: (data: unknown) => Promise<void>
     ) => void
 }
@@ -25,11 +27,7 @@ export interface RepositoryWithEvents extends Repository {
 export function withEvents(repository: Repository): RepositoryWithEvents {
     const listeners: RepositoryEventListeners = {}
 
-    async function triggerEvent(
-        event: RepositoryEvent,
-        table: keyof typeof tableNameModelMap,
-        data: unknown
-    ) {
+    async function triggerEvent(event: RepositoryEvent, table: TableName, data: unknown) {
         const eventListeners = listeners[event]?.[table]
 
         if (!eventListeners) {

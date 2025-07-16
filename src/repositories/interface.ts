@@ -2,6 +2,8 @@ import { Prisma, PrismaClient } from 'prisma/generated/prisma'
 
 import { Operation } from 'okto-core/db/types/prisma'
 
+import { GetModelByTableName, ModelName, TableName } from '~core/types/entity-types'
+
 import type * as operators from './operators'
 
 export type ID = string
@@ -83,62 +85,48 @@ export const tableNameModelMap = {
 
 export interface Repository {
     bulkCreate: <
-        Table extends keyof typeof tableNameModelMap,
-        Options extends GetModelOperationArgs<
-            (typeof tableNameModelMap)[Table],
-            'createManyAndReturn'
-        >,
+        Table extends TableName,
+        Options extends GetModelOperationArgs<ModelName, 'createManyAndReturn'>,
     >(
         table: Table,
-        rows: GetModelOperationArgs<
-            (typeof tableNameModelMap)[Table],
-            'createManyAndReturn'
-        >['data']
-    ) => GetModelReturnType<(typeof tableNameModelMap)[Table], 'createManyAndReturn', Options>
+        rows: GetModelOperationArgs<ModelName, 'createManyAndReturn'>['data']
+    ) => GetModelReturnType<ModelName, 'createManyAndReturn', Options>
 
-    bulkRemove: <Table extends keyof typeof tableNameModelMap>(
+    bulkRemove: <Table extends TableName>(table: Table, ids: ID[]) => Promise<void>
+
+    bulkUpdate: <Table extends TableName>(
         table: Table,
-        ids: ID[]
+        rows: GetModelOperationArgs<ModelName, 'updateMany'>['data']
     ) => Promise<void>
 
-    bulkUpdate: <Table extends keyof typeof tableNameModelMap>(
+    create: <Table extends TableName>(
         table: Table,
-        rows: GetModelOperationArgs<(typeof tableNameModelMap)[Table], 'updateMany'>['data']
-    ) => Promise<void>
-
-    create: <Table extends keyof typeof tableNameModelMap>(
-        table: Table,
-        data: GetModelOperationArgs<(typeof tableNameModelMap)[Table], 'create'>['data'],
+        data: GetModelOperationArgs<ModelName, 'create'>['data'],
         createId?: ID
     ) => Promise<ID>
 
-    find: <
-        Table extends keyof typeof tableNameModelMap,
-        Options extends GetModelOperationArgs<(typeof tableNameModelMap)[Table], 'findUnique'>,
-    >(
-        table: Table,
-        id: ID
-    ) => GetModelReturnType<(typeof tableNameModelMap)[Table], 'findUnique', Options>
-
-    query: <
-        Table extends keyof typeof tableNameModelMap,
-        Options extends GetModelOperationArgs<(typeof tableNameModelMap)[Table], 'findMany'>,
-    >(
-        table: Table,
-        constraints?: Constraints<(typeof tableNameModelMap)[Table]>,
-        fields?: GetModelFields<(typeof tableNameModelMap)[typeof table]>[]
-    ) => GetModelReturnType<(typeof tableNameModelMap)[Table], 'findMany', Options>
-
-    queryCount: <Table extends keyof typeof tableNameModelMap>(
-        table: Table,
-        constraints?: Constraints<(typeof tableNameModelMap)[Table]>
-    ) => Promise<number>
-
-    remove: <Table extends keyof typeof tableNameModelMap>(table: Table, id: ID) => Promise<void>
-
-    update: <Table extends keyof typeof tableNameModelMap>(
+    find: <Table extends TableName, Options extends GetModelOperationArgs<ModelName, 'findUnique'>>(
         table: Table,
         id: ID,
-        data: GetModelOperationArgs<(typeof tableNameModelMap)[Table], 'update'>['data']
+        include: any
+    ) => GetModelReturnType<ModelName, 'findUnique', Options>
+
+    query: <Table extends TableName, Options extends GetModelOperationArgs<ModelName, 'findMany'>>(
+        table: Table,
+        constraints?: Constraints<ModelName>,
+        fields?: GetModelFields<GetModelByTableName<Table>>[]
+    ) => GetModelReturnType<ModelName, 'findMany', Options>
+
+    queryCount: <Table extends TableName>(
+        table: Table,
+        constraints?: Constraints<ModelName>
+    ) => Promise<number>
+
+    remove: <Table extends TableName>(table: Table, id: ID) => Promise<void>
+
+    update: <Table extends TableName>(
+        table: Table,
+        id: ID,
+        data: GetModelOperationArgs<ModelName, 'update'>['data']
     ) => Promise<void>
 }

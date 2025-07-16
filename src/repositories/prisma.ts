@@ -161,12 +161,13 @@ const getRepository = (db: PrismaClient): RepositoryWithEvents =>
             return result.id
         },
 
-        find: async (table, id) => {
+        find: async (table, id, include) => {
             if (!id) {
                 return
             }
 
             return await db[singularTableNames[table]].findUnique({
+                include,
                 where: { id },
             })
         },
