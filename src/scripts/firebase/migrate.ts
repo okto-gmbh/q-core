@@ -1,5 +1,5 @@
 import * as dotenv from 'dotenv'
-import { PrismaClient } from 'prisma/generated/prisma'
+import { PrismaClient } from '@prisma/client'
 
 import type { Repository } from '@core/repositories/interface'
 import type { BaseOptions } from '@core/scripts/common'

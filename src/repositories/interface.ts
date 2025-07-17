@@ -1,4 +1,4 @@
-import { Prisma, PrismaClient } from 'prisma/generated/prisma'
+import { Prisma, PrismaClient } from '@prisma/client'
 
 import { Operation } from 'okto-core/db/types/prisma'
 

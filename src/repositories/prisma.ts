@@ -1,4 +1,4 @@
-import { Prisma, PrismaClient } from 'prisma/generated/prisma'
+import { Prisma, PrismaClient } from '@prisma/client'
 
 import { RepositoryWithEvents, withEvents } from '@core/repositories/events'
 import { Operators } from '@core/repositories/interface'
