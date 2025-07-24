@@ -12,7 +12,7 @@ export const formatMoney = (
         ...options,
     })
 
-export const formatCHF = (amount: number = 0, options?: Intl.NumberFormatOptions) => {
+export const formatCHF = (amount?: number, options?: Intl.NumberFormatOptions) => {
     return formatMoney(amount, 'de-CH', 'CHF', {
         maximumFractionDigits: 2,
         minimumFractionDigits: 2,
