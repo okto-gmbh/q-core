@@ -11,3 +11,11 @@ export const formatMoney = (
         style: 'currency',
         ...options,
     })
+
+export const formatCHF = (amount: number = 0, options?: Intl.NumberFormatOptions) => {
+    return formatMoney(amount, 'de-CH', 'CHF', {
+        maximumFractionDigits: 2,
+        minimumFractionDigits: 2,
+        ...options,
+    })
+}
