@@ -9,6 +9,7 @@ export const formatMoney = (
         currency: 'CHF',
         maximumFractionDigits: 2,
         minimumFractionDigits: 2,
+        style: 'currency',
         ...options,
     })
 }
