@@ -1,13 +1,14 @@
 export const formatMoney = (
-    amount?: number,
-    locale: Intl.LocalesArgument = 'de-CH',
-    currency = 'CHF',
-    options?: Intl.NumberFormatOptions
-): string =>
-    (amount || 0).toLocaleString(locale, {
-        currency,
-        maximumFractionDigits: 0,
-        minimumFractionDigits: 0,
-        style: 'currency',
+    amount: number = 0,
+    {
+        locale = 'de-CH',
+        ...options
+    }: Intl.NumberFormatOptions & { locale?: Intl.LocalesArgument } = {}
+) => {
+    return amount.toLocaleString(locale, {
+        currency: 'CHF',
+        maximumFractionDigits: 2,
+        minimumFractionDigits: 2,
         ...options,
     })
+}
