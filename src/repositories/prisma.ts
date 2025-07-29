@@ -172,7 +172,7 @@ const getRepository = (db: PrismaClient): RepositoryWithEvents =>
             })
         },
 
-        query: async (table, constraints = {}, fields?) => {
+        query: async (table, constraints = {}, fieldsOrInclude?) => {
             const { limit, orderBy: initialOrderBy, where: initialWhere } = constraints
 
             const where = initialWhere
@@ -185,15 +185,19 @@ const getRepository = (db: PrismaClient): RepositoryWithEvents =>
                       [field]: direction,
                   }))
                 : undefined
-            const select = fields
-                ? fields.reduce(
-                      (acc, field) => {
-                          acc[field as string] = true
-                          return acc
-                      },
-                      {} as Record<string, boolean>
-                  )
-                : undefined
+
+            const select =
+                typeof fieldsOrInclude === 'object' && Array.isArray(fieldsOrInclude)
+                    ? fieldsOrInclude.reduce(
+                          (acc, field) => {
+                              acc[field as string] = true
+                              return acc
+                          },
+                          {} as Record<string, boolean>
+                      )
+                    : typeof fieldsOrInclude === 'object' && !Array.isArray(fieldsOrInclude)
+                      ? fieldsOrInclude
+                      : undefined
 
             return await db[singularTableNames[table]].findMany({
                 orderBy,
@@ -222,6 +226,7 @@ const getRepository = (db: PrismaClient): RepositoryWithEvents =>
         },
 
         update: async (table, id, data) => {
+            console.dir({ action: 'update', data }, { depth: null })
             await db[singularTableNames[table]].update({
                 data,
                 where: { id },
