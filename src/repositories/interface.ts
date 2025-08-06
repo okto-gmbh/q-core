@@ -27,6 +27,15 @@ export interface Constraints<Table extends Prisma.ModelName> {
     where?: [GetModelFields<Table>, Operators, any][]
 }
 
+export type GetIncludesFromFields<
+    Model extends ModelName,
+    Fields extends GetModelFields<Model>[],
+> = {
+    [Field in Fields[number]]: {
+        select: { [Key in Field]: true }
+    }
+}
+
 export type GetModelReturnType<
     Model extends Prisma.ModelName,
     Method extends Operation,
@@ -86,47 +95,64 @@ export const tableNameModelMap = {
 export interface Repository {
     bulkCreate: <
         Table extends TableName,
-        Options extends GetModelOperationArgs<ModelName, 'createManyAndReturn'>,
+        Options extends GetModelOperationArgs<Model, 'createManyAndReturn'>,
+        Model extends ModelName = GetModelByTableName<Table>,
     >(
         table: Table,
-        rows: GetModelOperationArgs<ModelName, 'createManyAndReturn'>['data']
-    ) => GetModelReturnType<ModelName, 'createManyAndReturn', Options>
+        rows: GetModelOperationArgs<Model, 'createManyAndReturn'>['data']
+    ) => Promise<GetModelReturnType<Model, 'createManyAndReturn', Options>>
 
     bulkRemove: <Table extends TableName>(table: Table, ids: ID[]) => Promise<void>
 
-    bulkUpdate: <Table extends TableName>(
+    bulkUpdate: <Table extends TableName, Model extends ModelName = GetModelByTableName<Table>>(
         table: Table,
-        rows: GetModelOperationArgs<ModelName, 'updateMany'>['data']
+        rows: GetModelOperationArgs<Model, 'updateMany'>['data']
     ) => Promise<void>
 
-    create: <Table extends TableName>(
+    create: <Table extends TableName, Model extends ModelName = GetModelByTableName<Table>>(
         table: Table,
-        data: GetModelOperationArgs<ModelName, 'create'>['data'],
+        data: GetModelOperationArgs<Model, 'create'>['data'],
         createId?: ID
     ) => Promise<ID>
 
-    find: <Table extends TableName, Options extends GetModelOperationArgs<ModelName, 'findUnique'>>(
+    find: <
+        const Table extends TableName,
+        const Includes extends GetModelOperationArgs<Model, 'findUnique'>['include'],
+        const Model extends ModelName = GetModelByTableName<Table>,
+    >(
         table: Table,
         id: ID,
-        include: any
-    ) => GetModelReturnType<ModelName, 'findUnique', Options>
+        include: Includes
+    ) => Promise<GetModelReturnType<Model, 'findUnique', { include: Includes }>>
 
-    query: <Table extends TableName, Options extends GetModelOperationArgs<ModelName, 'findMany'>>(
+    query: <
+        Table extends TableName,
+        Includes extends GetModelOperationArgs<Model, 'findUnique'>['include'],
+        Fields extends GetModelFields<Model>[],
+        FieldsOrIncludes extends Fields | Includes,
+        Model extends ModelName = GetModelByTableName<Table>,
+    >(
         table: Table,
-        constraints?: Constraints<ModelName>,
-        fields?: GetModelFields<GetModelByTableName<Table>>[]
-    ) => GetModelReturnType<ModelName, 'findMany', Options>
+        constraints?: Constraints<Model>,
+        fieldsOrInclude?: FieldsOrIncludes
+    ) => Promise<
+        GetModelReturnType<
+            Model,
+            'findMany',
+            { include: Includes extends object ? Includes : GetIncludesFromFields<Model, Fields> }
+        >
+    >
 
-    queryCount: <Table extends TableName>(
+    queryCount: <Table extends TableName, Model extends ModelName = GetModelByTableName<Table>>(
         table: Table,
-        constraints?: Constraints<ModelName>
+        constraints?: Constraints<Model>
     ) => Promise<number>
 
     remove: <Table extends TableName>(table: Table, id: ID) => Promise<void>
 
-    update: <Table extends TableName>(
+    update: <Table extends TableName, Model extends ModelName = GetModelByTableName<Table>>(
         table: Table,
         id: ID,
-        data: GetModelOperationArgs<ModelName, 'update'>['data']
+        data: GetModelOperationArgs<Model, 'update'>['data']
     ) => Promise<void>
 }

@@ -124,9 +124,15 @@ const mapWhere = ([field, operation, value]: [string, Operators, any]) => {
 const getRepository = (db: PrismaClient): RepositoryWithEvents =>
     withEvents({
         bulkCreate: async (table, rows) => {
-            return await db[singularTableNames[table]].createManyAndReturn({
-                data: rows,
-            })
+            // createMany doesn't support relations, so we need to loop through the rows and create
+            const rowArray = Array.isArray(rows) ? rows : [rows]
+            return Promise.all(
+                rowArray.map((row) =>
+                    db[singularTableNames[table]].create({
+                        data: row,
+                    })
+                )
+            )
         },
 
         bulkRemove: async (table, ids) => {
@@ -172,7 +178,7 @@ const getRepository = (db: PrismaClient): RepositoryWithEvents =>
             })
         },
 
-        query: async (table, constraints = {}, fields?) => {
+        query: async (table, constraints = {}, fieldsOrInclude?) => {
             const { limit, orderBy: initialOrderBy, where: initialWhere } = constraints
 
             const where = initialWhere
@@ -185,15 +191,19 @@ const getRepository = (db: PrismaClient): RepositoryWithEvents =>
                       [field]: direction,
                   }))
                 : undefined
-            const select = fields
-                ? fields.reduce(
-                      (acc, field) => {
-                          acc[field as string] = true
-                          return acc
-                      },
-                      {} as Record<string, boolean>
-                  )
-                : undefined
+
+            const select =
+                typeof fieldsOrInclude === 'object' && Array.isArray(fieldsOrInclude)
+                    ? fieldsOrInclude.reduce(
+                          (acc, field) => {
+                              acc[field as string] = true
+                              return acc
+                          },
+                          {} as Record<string, boolean>
+                      )
+                    : typeof fieldsOrInclude === 'object' && !Array.isArray(fieldsOrInclude)
+                      ? fieldsOrInclude
+                      : undefined
 
             return await db[singularTableNames[table]].findMany({
                 orderBy,
