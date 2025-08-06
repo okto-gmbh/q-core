@@ -232,7 +232,6 @@ const getRepository = (db: PrismaClient): RepositoryWithEvents =>
         },
 
         update: async (table, id, data) => {
-            console.dir({ action: 'update', data }, { depth: null })
             await db[singularTableNames[table]].update({
                 data,
                 where: { id },
