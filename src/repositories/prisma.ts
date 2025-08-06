@@ -124,9 +124,15 @@ const mapWhere = ([field, operation, value]: [string, Operators, any]) => {
 const getRepository = (db: PrismaClient): RepositoryWithEvents =>
     withEvents({
         bulkCreate: async (table, rows) => {
-            return await db[singularTableNames[table]].createManyAndReturn({
-                data: rows,
-            })
+            // createMany doesn't support relations, so we need to loop through the rows and create
+            const rowArray = Array.isArray(rows) ? rows : [rows]
+            return Promise.all(
+                rowArray.map((row) =>
+                    db[singularTableNames[table]].create({
+                        data: row,
+                    })
+                )
+            )
         },
 
         bulkRemove: async (table, ids) => {
