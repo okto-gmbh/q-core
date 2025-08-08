@@ -21,12 +21,12 @@ export type DatabaseSchemaTemplate = {
 }
 export type Operators = (typeof operators)[keyof typeof operators]
 
-export interface Constraints<Table extends Prisma.ModelName> {
+export interface Constraints<Model extends ModelName> {
     limit?: number
     orderBy?: {
-        [key in GetModelFields<Table>]?: 'asc' | 'desc'
+        [key in GetModelFields<Model>]?: 'asc' | 'desc'
     }
-    where?: [GetModelFields<Table>, Operators, any][]
+    where?: [GetModelFields<Model>, Operators, any][]
 }
 
 export type GetIncludesFromFields<
@@ -39,17 +39,17 @@ export type GetIncludesFromFields<
 }
 
 export type GetModelReturnType<
-    Model extends Prisma.ModelName,
+    Model extends ModelName,
     Method extends Operation,
     Options extends {},
 > = Prisma.Result<PrismaClient[Uncapitalize<Model>], Options, Method>
 
-export type GetModelOperationArgs<
-    Model extends Prisma.ModelName,
-    Method extends Operation,
-> = Prisma.Args<PrismaClient[Uncapitalize<Model>], Method>
+export type GetModelOperationArgs<Model extends ModelName, Method extends Operation> = Prisma.Args<
+    PrismaClient[Uncapitalize<Model>],
+    Method
+>
 
-export type GetModelFields<Model extends Prisma.ModelName> = keyof GetModelOperationArgs<
+export type GetModelFields<Model extends ModelName> = keyof GetModelOperationArgs<
     Model,
     'update'
 >['data']
@@ -92,7 +92,7 @@ export const tableNameModelMap = {
     virtualServerLists: 'VirtualServerList',
     virtualServers: 'VirtualServer',
     workplaces: 'Workplace',
-} satisfies { [tableName: string]: Prisma.ModelName }
+} satisfies { [tableName: string]: ModelName }
 
 export interface Repository {
     bulkCreate: <
