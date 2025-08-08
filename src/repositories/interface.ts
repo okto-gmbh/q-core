@@ -124,7 +124,7 @@ export interface Repository {
     >(
         table: Table,
         id: ID,
-        include: Includes
+        include?: Includes
     ) => Promise<GetModelReturnType<Model, 'findUnique', { include: Includes }>>
 
     query: <
