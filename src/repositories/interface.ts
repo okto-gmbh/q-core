@@ -2,7 +2,9 @@ import { Prisma, PrismaClient } from '@prisma/client'
 
 import { Operation } from 'okto-core/db/types/prisma'
 
-import { GetModelByTableName, ModelName, TableName } from '~core/types/entity-types'
+import { GetModelByTableName, TableName } from '~core/types/models'
+
+import type { ModelName } from 'okto-core/db/types/prisma'
 
 import type * as operators from './operators'
 

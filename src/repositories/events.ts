@@ -1,4 +1,4 @@
-import { TableName } from '~core/types/entity-types'
+import { TableName } from '~core/types/models'
 
 import type { Repository } from '@core/repositories/interface'
 
