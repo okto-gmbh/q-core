@@ -125,11 +125,11 @@ const getRepository = (db: PrismaClient): RepositoryWithEvents =>
     withEvents({
         bulkCreate: async (table, rows) => {
             // createMany doesn't support relations, so we need to loop through the rows and create
-            const rowArray = Array.isArray(rows) ? rows : [rows]
-            return Promise.all(
-                rowArray.map((row) =>
+            rows = Array.isArray(rows) ? rows : [rows]
+            return await db.$transaction(
+                rows.map((data) =>
                     db[singularTableNames[table]].create({
-                        data: row,
+                        data,
                     })
                 )
             )
@@ -146,11 +146,12 @@ const getRepository = (db: PrismaClient): RepositoryWithEvents =>
         },
 
         bulkUpdate: async (table, rows) => {
+            // updateMany doesn't support relations, so we need to loop through the rows and create
             await db.$transaction(
-                rows.map((row) =>
+                rows.map(({ id, ...data }) =>
                     db[singularTableNames[table]].update({
-                        data: row,
-                        where: { id: row.id },
+                        data,
+                        where: { id },
                     })
                 )
             )
