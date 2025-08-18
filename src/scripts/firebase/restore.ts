@@ -72,10 +72,10 @@ const restoreStorage = async ({ backupPath, storage }: Context) => {
 
 export interface RestoreOptions extends BaseOptions {
     backupPath: string
-    schemas: Record<string, any>
-    tables: string[]
     firestore?: boolean
+    schemas?: Record<string, any>
     storage?: boolean
+    tables?: string[]
     tenants?: string[]
 }
 
