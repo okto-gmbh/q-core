@@ -1,3 +1,11 @@
+import { Prisma, PrismaClient } from '@prisma/client'
+
+import { Operation } from 'okto-core/db/types/prisma'
+
+import { GetModelByTableName, TableName } from '~core/types/models'
+
+import type { ModelName } from 'okto-core/db/types/prisma'
+
 import type * as operators from './operators'
 
 export type ID = string
@@ -13,67 +21,140 @@ export type DatabaseSchemaTemplate = {
 }
 export type Operators = (typeof operators)[keyof typeof operators]
 
-export interface Constraints<Row extends RowTemplate> {
+export interface Constraints<Model extends ModelName> {
     limit?: number
     orderBy?: {
-        [key in keyof Row]?: 'asc' | 'desc'
+        [key in GetModelFields<Model>]?: 'asc' | 'desc'
     }
-    where?: [keyof Row, Operators, any][]
+    where?: [GetModelFields<Model>, Operators, any][]
 }
 
-export interface Repository<DatabaseSchema extends DatabaseSchemaTemplate> {
-    bulkCreate: <const Table extends keyof DatabaseSchema & string>(
-        table: Table,
-        rows: DatabaseSchema[Table]['create'][]
-    ) => Promise<DatabaseSchema[Table]['all'][]>
+export type GetIncludesFromFields<
+    Model extends ModelName,
+    Fields extends GetModelFields<Model>[],
+> = {
+    [Field in Fields[number]]: {
+        select: { [Key in Field]: true }
+    }
+}
 
-    bulkRemove: <const Table extends keyof DatabaseSchema & string>(
+export type GetModelReturnType<
+    Model extends ModelName,
+    Method extends Operation,
+    Options extends {},
+> = Prisma.Result<PrismaClient[Uncapitalize<Model>], Options, Method>
+
+export type GetModelOperationArgs<Model extends ModelName, Method extends Operation> = Prisma.Args<
+    PrismaClient[Uncapitalize<Model>],
+    Method
+>
+
+export type GetModelFields<Model extends ModelName> = keyof GetModelOperationArgs<
+    Model,
+    'update'
+>['data']
+
+export const tableNameModelMap = {
+    budgets: 'Budget',
+    changes: 'Change',
+    comments: 'Comment',
+    contracts: 'Contract',
+    customers: 'Customer',
+    devices: 'Device',
+    domains: 'Domain',
+    employees: 'Employee',
+    firewallLists: 'FirewallList',
+    firewalls: 'Firewall',
+    hardware: 'Hardware',
+    hardwareLists: 'HardwareList',
+    inboxes: 'Inbox',
+    internalNumbers: 'InternalNumber',
+    internetConnections: 'InternetConnection',
+    ipAddresses: 'IpAddress',
+    licenses: 'License',
+    lists: 'List',
+    locations: 'Location',
+    networks: 'Network',
+    numberBlocks: 'NumberBlock',
+    partners: 'Partner',
+    productLists: 'ProductList',
+    products: 'Product',
+    projects: 'Project',
+    roles: 'Role',
+    rooms: 'Room',
+    sessions: 'Session',
+    software: 'Software',
+    softwareLists: 'SoftwareList',
+    tasks: 'Task',
+    tenants: 'Tenant',
+    tokens: 'Token',
+    users: 'User',
+    virtualServerLists: 'VirtualServerList',
+    virtualServers: 'VirtualServer',
+    workplaces: 'Workplace',
+} satisfies { [tableName: string]: ModelName }
+
+export interface Repository {
+    bulkCreate: <
+        Table extends TableName,
+        Options extends GetModelOperationArgs<Model, 'createManyAndReturn'>,
+        Model extends ModelName = GetModelByTableName<Table>,
+    >(
         table: Table,
-        ids: ID[]
+        rows: GetModelOperationArgs<Model, 'createManyAndReturn'>['data']
+    ) => Promise<GetModelReturnType<Model, 'createManyAndReturn', Options>>
+
+    bulkRemove: <Table extends TableName>(table: Table, ids: ID[]) => Promise<void>
+
+    bulkUpdate: <Table extends TableName, Model extends ModelName = GetModelByTableName<Table>>(
+        table: Table,
+        rows: GetModelOperationArgs<Model, 'updateMany'>['data']
     ) => Promise<void>
 
-    bulkUpdate: <const Table extends keyof DatabaseSchema & string>(
+    create: <Table extends TableName, Model extends ModelName = GetModelByTableName<Table>>(
         table: Table,
-        rows: (DatabaseSchema[Table]['partial'] & DBMeta)[]
-    ) => Promise<void>
-
-    create: <const Table extends keyof DatabaseSchema & string>(
-        table: Table,
-        data: DatabaseSchema[Table]['create'],
+        data: GetModelOperationArgs<Model, 'create'>['data'],
         createId?: ID
     ) => Promise<ID>
 
-    find: <const Table extends keyof DatabaseSchema & string>(
-        table: Table,
-        id: ID
-    ) => Promise<DatabaseSchema[Table]['all'] | undefined>
-
-    query: <
-        Table extends keyof DatabaseSchema & string,
-        Fields extends (keyof DatabaseSchema[Table]['all'] & string)[] | undefined,
+    find: <
+        const Table extends TableName,
+        const Includes extends GetModelOperationArgs<Model, 'findUnique'>['include'],
+        const Model extends ModelName = GetModelByTableName<Table>,
     >(
         table: Table,
-        constraints?: Constraints<DatabaseSchema[Table]['all']>,
-        fields?: Fields
+        id: ID,
+        include?: Includes
+    ) => Promise<GetModelReturnType<Model, 'findUnique', { include: Includes }>>
+
+    query: <
+        Table extends TableName,
+        Includes extends GetModelOperationArgs<Model, 'findUnique'>['include'],
+        Fields extends GetModelFields<Model>[],
+        FieldsOrIncludes extends Fields | Includes,
+        Model extends ModelName = GetModelByTableName<Table>,
+    >(
+        table: Table,
+        constraints?: Constraints<Model>,
+        fieldsOrInclude?: FieldsOrIncludes
     ) => Promise<
-        Fields extends string[]
-            ? Pick<DatabaseSchema[Table]['all'], Fields[number]>[]
-            : DatabaseSchema[Table]['all'][]
+        GetModelReturnType<
+            Model,
+            'findMany',
+            { include: Includes extends object ? Includes : GetIncludesFromFields<Model, Fields> }
+        >
     >
 
-    queryCount: <const Table extends keyof DatabaseSchema & string>(
+    queryCount: <Table extends TableName, Model extends ModelName = GetModelByTableName<Table>>(
         table: Table,
-        constraints?: Constraints<DatabaseSchema[Table]['all']>
+        constraints?: Constraints<Model>
     ) => Promise<number>
 
-    remove: <const Table extends keyof DatabaseSchema & string>(
-        table: Table,
-        id: ID
-    ) => Promise<void>
+    remove: <Table extends TableName>(table: Table, id: ID) => Promise<void>
 
-    update: <const Table extends keyof DatabaseSchema & string>(
+    update: <Table extends TableName, Model extends ModelName = GetModelByTableName<Table>>(
         table: Table,
         id: ID,
-        data: DatabaseSchema[Table]['partial']
+        data: GetModelOperationArgs<Model, 'update'>['data']
     ) => Promise<void>
 }

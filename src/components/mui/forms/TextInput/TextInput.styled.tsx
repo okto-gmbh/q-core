@@ -7,7 +7,7 @@ import TextField from '@mui/material/TextField'
 
 import type { TextInputProps } from './TextInput'
 
-const white = 'var(--colors-white)'
+const white = 'var(--input, --colors-white)'
 const primaryColor = 'var(--colors-primary)'
 
 export const multilineLabelProps = {
@@ -18,7 +18,7 @@ export const Input = styled(({ grow: _grow, round: _round, ...props }: TextInput
     <TextField {...props} variant="outlined" />
 ))(({ grow, round }: { grow?: 'auto'; round?: boolean }) => ({
     [`& .${formLabelClasses.root}`]: {
-        textShadow: '0 0 3px var(--colors-white)',
+        textShadow: '0 0 3px var(--input, --colors-white)',
         zIndex: 1,
     },
 
@@ -46,7 +46,7 @@ export const Input = styled(({ grow: _grow, round: _round, ...props }: TextInput
         },
 
         [`& .${outlinedInputClasses.notchedOutline}`]: {
-            borderColor: 'var(--colors-white)',
+            borderColor: 'var(--background, --colors-white)',
             borderStyle: 'solid',
             borderWidth: '1px',
             transition: 'border 0.2s ease-in',

@@ -218,10 +218,12 @@ export const objectsToOptions = (
     labelField = 'name',
     sort: boolean = true
 ): Array<{ key: string; value: string }> => {
-    objects = objects.map(({ id, [labelField]: label }) => ({
-        key: id,
-        value: label,
-    }))
+    objects = objects
+        .filter(({ id }) => id !== '$unknown')
+        .map(({ id, [labelField]: label }) => ({
+            key: id,
+            value: label,
+        }))
 
     if (sort) {
         return objects.sort((a, b) => a.value.localeCompare(b.value))
