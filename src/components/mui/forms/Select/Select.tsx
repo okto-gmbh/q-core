@@ -78,7 +78,6 @@ const Select = ({
 
         if (
             params.inputValue !== '' &&
-            filtered.length === 0 &&
             !options.find((option) => option.value === params.inputValue) &&
             (multiple
                 ? !(field.value || []).includes(params.inputValue)
