@@ -15,7 +15,7 @@ import {
     OP_NOT_IN,
 } from '@core/repositories/operators'
 
-const singularTableNames: { [tableName: string]: Uncapitalize<Prisma.ModelName> } = {
+export const singularTableNames: { [tableName: string]: Uncapitalize<Prisma.ModelName> } = {
     budgets: 'budget',
     changes: 'change',
     comments: 'comment',
