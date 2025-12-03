@@ -3,6 +3,7 @@
 import { createFilterOptions } from '@mui/material/Autocomplete'
 import match from 'autosuggest-highlight/match'
 import parse from 'autosuggest-highlight/parse'
+import { useMemo } from 'react'
 import { Controller } from 'react-hook-form'
 
 import { vars } from '../../../../utils/string'
@@ -13,8 +14,6 @@ import TextInput from '../TextInput'
 import type { AutocompleteProps, FilterOptionsState, TextFieldProps } from '@mui/material'
 import type { Ref } from 'react'
 import type { Control, ControllerRenderProps, FieldValues } from 'react-hook-form'
-
-const selectFilter = createFilterOptions()
 
 export type SelectProps = AutocompleteProps<any, any, any, any> & {
     label: string
@@ -27,6 +26,7 @@ export type SelectProps = AutocompleteProps<any, any, any, any> & {
     error?: boolean
     fieldName?: string
     helperText?: string
+    limitSuggestions?: number
     limitTags?: number
     multiple?: boolean
     slotProps?: AutocompleteProps<any, any, any, any>['slotProps'] & {
@@ -42,6 +42,7 @@ const Select = ({
     fieldName,
     helperText,
     label,
+    limitSuggestions,
     limitTags = 2,
     multiple,
     onChange,
@@ -51,6 +52,11 @@ const Select = ({
     ref,
     ...props
 }: SelectProps) => {
+    const selectFilter = useMemo(
+        () => createFilterOptions({ limit: limitSuggestions }),
+        [limitSuggestions]
+    )
+
     const handleChange = (values: any[] | any, field: ControllerRenderProps<FieldValues, any>) => {
         field.onChange(values)
 
