@@ -10,7 +10,11 @@ type GoogleAnalyticsProps = ScriptProps & {
     prodOnly?: boolean
 }
 
-const GoogleAnalytics: FC<GoogleAnalyticsProps> = ({ id, prodOnly = true, strategy = 'worker' }) =>
+const GoogleAnalytics: FC<GoogleAnalyticsProps> = ({
+    id,
+    prodOnly = true,
+    strategy = 'afterInteractive',
+}) =>
     (id && (!prodOnly || process.env.NODE_ENV === 'production') && (
         <>
             <Script src={getTagManagerUrl(id)} strategy={strategy} />
