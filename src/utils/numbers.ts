@@ -7,7 +7,13 @@ export const formatNumber = (number?: number, locale: Intl.LocalesArgument = 'de
         style: 'decimal',
     })
 
-export const formatPhone = (phone?: string | null, locale: CountryCode = 'CH') => {
+export const formatPhone = (
+    phone?: string | null,
+    {
+        locale = 'CH',
+        style = 'international',
+    }: { locale?: CountryCode; style?: 'international' | 'national' } = {}
+) => {
     if (!phone) return ''
 
     // Do not format short numbers like 118
@@ -17,5 +23,5 @@ export const formatPhone = (phone?: string | null, locale: CountryCode = 'CH') =
 
     if (!phoneParser) return phone
 
-    return phoneParser.formatInternational()
+    return style === 'national' ? phoneParser.formatNational() : phoneParser.formatInternational()
 }
