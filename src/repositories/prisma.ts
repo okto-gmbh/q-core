@@ -180,7 +180,7 @@ const getRepository = (db: PrismaClient): RepositoryWithEvents =>
         },
 
         query: async (table, constraints = {}, fieldsOrInclude?) => {
-            const { limit, orderBy: initialOrderBy, where: initialWhere } = constraints
+            const { limit, offset, orderBy: initialOrderBy, where: initialWhere } = constraints
 
             const where = initialWhere
                 ? initialWhere.map(mapWhere).reduce((acc, condition) => {
@@ -209,6 +209,7 @@ const getRepository = (db: PrismaClient): RepositoryWithEvents =>
             return await db[singularTableNames[table]].findMany({
                 orderBy,
                 select,
+                skip: offset,
                 take: limit,
                 where,
             })
