@@ -1,5 +1,6 @@
 'use client'
 
+import { Chip } from '@mui/material'
 import { createFilterOptions } from '@mui/material/Autocomplete'
 import match from 'autosuggest-highlight/match'
 import parse from 'autosuggest-highlight/parse'
@@ -148,6 +149,13 @@ const Select = ({
             limitTags={limitTags}
             multiple={multiple}
             options={options}
+            renderTags={(params, getTagProps) => {
+                return params.map(({ archived, value }, index) => {
+                    if (archived) return null
+
+                    return <Chip label={value} size="medium" {...getTagProps({ index })} />
+                })
+            }}
             {...props}
             clearOnBlur={!!props.blurOnSelect}
             filterOptions={(options, params) => filterOptions(options, params, field)}
@@ -174,8 +182,8 @@ const Select = ({
                     variant="filled"
                 />
             )}
-            renderOption={(props, { key, value }, { inputValue }) => {
-                if (!value) return null
+            renderOption={(props, { archived, key, value }, { inputValue }) => {
+                if (!value || !!archived) return null
 
                 const matches = match(value, inputValue)
                 const parts = parse(value, matches)
@@ -225,7 +233,8 @@ export const objectsToOptions = (
 ): Array<{ key: string; value: string }> => {
     objects = objects
         .filter(({ id }) => id !== '$unknown')
-        .map(({ id, [labelField]: label }) => ({
+        .map(({ archived, id, [labelField]: label }) => ({
+            archived,
             key: id,
             value: label,
         }))
