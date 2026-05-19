@@ -159,7 +159,7 @@ const Select = ({
             {...props}
             clearOnBlur={!!props.blurOnSelect}
             filterOptions={(options, params) => filterOptions(options, params, field)}
-            getOptionLabel={({ value }) => value}
+            getOptionLabel={({ archived, value }) => (!archived ? value : '')}
             onChange={(_, values) => onSelectChange(values, field)}
             ref={ref}
             renderInput={(params) => (
