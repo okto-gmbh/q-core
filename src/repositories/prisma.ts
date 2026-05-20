@@ -1,7 +1,8 @@
-import { Prisma, PrismaClient } from '@prisma/client'
+import type { Prisma, PrismaClient } from '@prisma/client'
 
-import { RepositoryWithEvents, withEvents } from '@core/repositories/events'
-import { Operators } from '@core/repositories/interface'
+import type { RepositoryWithEvents} from '@core/repositories/events';
+import { withEvents } from '@core/repositories/events'
+import type { Operators } from '@core/repositories/interface'
 import {
     OP_CONTAINS,
     OP_CONTAINS_ANY,

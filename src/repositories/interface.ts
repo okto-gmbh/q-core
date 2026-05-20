@@ -1,8 +1,8 @@
-import { Prisma, PrismaClient } from '@prisma/client'
+import type { Prisma, PrismaClient } from '@prisma/client'
 
-import { Operation } from 'okto-core/db/types/prisma'
+import type { Operation } from 'okto-core/db/types/prisma'
 
-import { GetModelByTableName, TableName } from '~core/types/models'
+import type { GetModelByTableName, TableName } from '~core/types/models'
 
 import type { ModelName } from 'okto-core/db/types/prisma'
 
