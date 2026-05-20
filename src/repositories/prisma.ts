@@ -1,7 +1,8 @@
-import { Prisma, PrismaClient } from '@prisma/client'
+import type { Prisma, PrismaClient } from '@prisma/client'
 
-import { RepositoryWithEvents, withEvents } from '@core/repositories/events'
-import { Operators } from '@core/repositories/interface'
+import type { RepositoryWithEvents} from '@core/repositories/events';
+import { withEvents } from '@core/repositories/events'
+import type { Operators } from '@core/repositories/interface'
 import {
     OP_CONTAINS,
     OP_CONTAINS_ANY,
@@ -180,7 +181,7 @@ const getRepository = (db: PrismaClient): RepositoryWithEvents =>
         },
 
         query: async (table, constraints = {}, fieldsOrInclude?) => {
-            const { limit, orderBy: initialOrderBy, where: initialWhere } = constraints
+            const { limit, offset, orderBy: initialOrderBy, where: initialWhere } = constraints
 
             const where = initialWhere
                 ? initialWhere.map(mapWhere).reduce((acc, condition) => {
@@ -209,6 +210,7 @@ const getRepository = (db: PrismaClient): RepositoryWithEvents =>
             return await db[singularTableNames[table]].findMany({
                 orderBy,
                 select,
+                skip: offset,
                 take: limit,
                 where,
             })

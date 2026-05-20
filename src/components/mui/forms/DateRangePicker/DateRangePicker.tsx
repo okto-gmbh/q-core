@@ -74,7 +74,7 @@ const DateRangePicker: FC<DateRangePickerProps> = ({
                 textField: function TextField(props: TextFieldProps) {
                     return <TextInput {...props} error={error} helperText={helperText} />
                 },
-                ...(slots ?? {}),
+                ...slots,
             }}
             {...props}
         />

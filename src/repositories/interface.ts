@@ -1,10 +1,12 @@
-import { Prisma, PrismaClient } from '@prisma/client'
+import type { Prisma, PrismaClient } from '@prisma/client'
 
-import { Operation } from 'okto-core/db/types/prisma'
+import type { Operation } from 'okto-core/db/types/prisma'
 
-import { GetModelByTableName, TableName } from '~core/types/models'
+import type { GetModelByTableName, TableName } from '~core/types/models'
 
 import type { ModelName } from 'okto-core/db/types/prisma'
+
+import type { SwapMap } from '~core/types/type-utils'
 
 import type * as operators from './operators'
 
@@ -23,6 +25,7 @@ export type Operators = (typeof operators)[keyof typeof operators]
 
 export interface Constraints<Model extends ModelName> {
     limit?: number
+    offset?: number
     orderBy?: {
         [key in GetModelFields<Model>]?: 'asc' | 'desc'
     }
@@ -93,6 +96,10 @@ export const tableNameModelMap = {
     virtualServers: 'VirtualServer',
     workplaces: 'Workplace',
 } satisfies { [tableName: string]: ModelName }
+
+export const modelTableNameMap = Object.fromEntries(
+    Object.entries(tableNameModelMap).map(([tableName, modelName]) => [modelName, tableName])
+) as SwapMap<typeof tableNameModelMap>
 
 export interface Repository {
     bulkCreate: <

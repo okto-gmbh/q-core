@@ -26,7 +26,7 @@ const GridArea: FC<GridAreaProps> = ({
         areas={areas}
         gapX={gapX}
         gapY={gapY}
-        items={[...new Array((children as any[]).length)]}>
+        items={new Array((children as any[]).length).fill()}>
         {children}
     </Styled.Grid>
 )

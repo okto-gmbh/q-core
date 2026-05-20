@@ -1,4 +1,4 @@
-import { TableName } from '~core/types/models'
+import type { TableName } from '~core/types/models'
 
 import type { Repository } from '@core/repositories/interface'
 
@@ -91,10 +91,10 @@ export function withEvents(repository: Repository): RepositoryWithEvents {
 
         on: (event, table, callback) => {
             listeners[event] ??= {}
-            if (!listeners[event]![table]) {
-                listeners[event]![table] = [callback]
+            if (!listeners[event][table]) {
+                listeners[event][table] = [callback]
             } else {
-                listeners[event]![table].push(callback)
+                listeners[event][table].push(callback)
             }
         },
 

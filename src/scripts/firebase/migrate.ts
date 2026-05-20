@@ -1,4 +1,4 @@
-import { PrismaClient } from '@prisma/client'
+import type { PrismaClient } from '@prisma/client'
 import * as dotenv from 'dotenv'
 
 import type { Repository } from '@core/repositories/interface'
