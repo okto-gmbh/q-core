@@ -1,5 +1,6 @@
-import type { PrismaClient } from '@prisma/client'
 import * as dotenv from 'dotenv'
+
+import type { PrismaClient } from '@prisma/client'
 
 import type { Repository } from '@core/repositories/interface'
 import type { BaseOptions } from '@core/scripts/common'
@@ -62,11 +63,10 @@ export default async ({ env = 'dev', migrations, tenant = ALL_TENANTS }: Migrati
     console.log(`Loading .env.${scope}`)
     dotenv.config({ path: `.env.${scope}` })
 
-    const { getBucket } = await import('@core/services/firebaseAdmin')
-    const { getStorage } = await import('@core/storage/firebase/admin')
+    const { getStorage } = await import('@core/storage/local')
     const { db: prisma } = await import('~db/services/prisma')
 
-    const storage = getStorage(getBucket())
+    const storage = getStorage()
 
     const { db, default: repo, deleteField } = await import('@core/repositories/firestore')
 

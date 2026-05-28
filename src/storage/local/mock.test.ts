@@ -2,7 +2,6 @@ import { Readable } from 'node:stream'
 
 import { afterEach, beforeAll, describe, expect, it, vi } from 'vitest'
 
-import getStorage from '@core/storage/firebase/admin'
 import {
     getMockBucket,
     getRawMockStorage,
@@ -10,10 +9,11 @@ import {
     seedMockStorage,
     verifyMock,
 } from '@core/storage/firebase/mock'
+import getStorage from '@core/storage/local'
 
 describe('firebase storage', () => {
     beforeAll(() => {
-        vi.mock('@core/storage/firebase/admin', () => import('@core/storage/firebase/mock'))
+        vi.mock('@core/storage/local', () => import('@core/storage/firebase/mock'))
 
         const spy = vi.spyOn(verifyMock, 'verifyMock')
         getStorage(getMockBucket())

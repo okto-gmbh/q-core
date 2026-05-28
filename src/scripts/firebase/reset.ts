@@ -33,10 +33,9 @@ export default async ({
     console.log(`Loading .env.${scope}`)
     dotenv.config({ path: `.env.${scope}` })
 
-    const { getBucket } = await import('@core/services/firebaseAdmin')
-    const { getStorage } = await import('@core/storage/firebase/admin')
+    const { getStorage } = await import('@core/storage/local')
 
-    const storage = getStorage(getBucket())
+    const storage = getStorage()
 
     if (firestore) {
         // Clear firestore

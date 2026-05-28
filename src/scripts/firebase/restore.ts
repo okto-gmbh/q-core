@@ -102,10 +102,9 @@ export default async ({
     dotenv.config({ path: `.env.${scope}` })
 
     const { default: repo } = await import('@core/repositories/firestore')
-    const { getBucket } = await import('@core/services/firebaseAdmin')
-    const { getStorage } = await import('@core/storage/firebase/admin')
+    const { getStorage } = await import('@core/storage/local')
 
-    const storage = getStorage(getBucket())
+    const storage = getStorage()
 
     const ctx: Context = {
         backupPath,
