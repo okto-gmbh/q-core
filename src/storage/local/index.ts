@@ -1,22 +1,26 @@
 import { createHash } from 'node:crypto'
 import { createReadStream, existsSync } from 'node:fs'
-import { readdir, readFile, rm, stat, writeFile } from 'node:fs/promises'
+import { mkdir, readdir, readFile, rm, stat, writeFile } from 'node:fs/promises'
+import { dirname } from 'node:path'
 
 import type { Metadata, Storage } from '@core/storage/interface'
 
+const UPLOAD_DIR = (process.env.UPLOAD_DIR?.replace(/\/$/, '') || './uploads') + '/'
+
 export const getStorage = (): Storage => ({
     download: async (path: string) => {
-        return await readFile(path)
+        return await readFile(UPLOAD_DIR + path)
     },
     exists: async (path: string) => {
-        return existsSync(path)
+        return existsSync(UPLOAD_DIR + path)
     },
     getFiles: async (path?: string) => {
-        return await readdir(path || '.', { recursive: true })
+        return await readdir(UPLOAD_DIR + (path || ''), { recursive: true })
     },
     getMetadata: async (path: string) => {
-        const stats = await stat(path)
-        const content = await readFile(path)
+        const fullPath = UPLOAD_DIR + path
+        const stats = await stat(fullPath)
+        const content = await readFile(fullPath)
 
         const hash = createHash('sha256').update(content).digest('hex')
         let contentType = ''
@@ -39,7 +43,7 @@ export const getStorage = (): Storage => ({
         } satisfies Metadata
     },
     remove: async (path: string) => {
-        await rm(path, {
+        await rm(UPLOAD_DIR + path, {
             recursive: true,
         })
     },
@@ -47,10 +51,11 @@ export const getStorage = (): Storage => ({
         // Not supported in local storage, so this is a no-op
     },
     stream: (path: string) => {
-        return createReadStream(path)
+        return createReadStream(UPLOAD_DIR + path)
     },
     upload: async (path: string, data: Buffer, metadata?: Partial<Metadata>) => {
-        await writeFile(path, data)
+        await mkdir(dirname(UPLOAD_DIR + path), { recursive: true })
+        await writeFile(UPLOAD_DIR + path, data)
     },
 })
 
