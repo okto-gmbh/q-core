@@ -66,7 +66,7 @@ export default async ({
 }: BackupOptions) => {
     const scope = env === 'dev' ? 'local' : env
     console.log(`Loading .env.${scope}`)
-    dotenv.config({ path: `.env.${scope}` })
+    dotenv.config({ path: `.env.${scope}`, override: true })
 
     const { getStorage } = await import('@core/storage/firebase/admin')
     const { getBucket } = await import('@core/services/firebaseAdmin')
