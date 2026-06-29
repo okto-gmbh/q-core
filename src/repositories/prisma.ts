@@ -1,8 +1,4 @@
-import type { Prisma, PrismaClient } from '@prisma/client'
-
-import type { RepositoryWithEvents} from '@core/repositories/events';
 import { withEvents } from '@core/repositories/events'
-import type { Operators } from '@core/repositories/interface'
 import {
     OP_CONTAINS,
     OP_CONTAINS_ANY,
@@ -15,6 +11,11 @@ import {
     OP_NOT_EQUALS,
     OP_NOT_IN,
 } from '@core/repositories/operators'
+
+import type { Prisma, PrismaClient } from '@prisma/client'
+
+import type { RepositoryWithEvents } from '@core/repositories/events'
+import type { Operators } from '@core/repositories/interface'
 
 export const singularTableNames: { [tableName: string]: Uncapitalize<Prisma.ModelName> } = {
     budgets: 'budget',
@@ -47,6 +48,7 @@ export const singularTableNames: { [tableName: string]: Uncapitalize<Prisma.Mode
     sessions: 'session',
     software: 'software',
     softwareLists: 'softwareList',
+    softwareInterfaces: 'softwareInterface',
     tasks: 'task',
     tenants: 'tenant',
     tokens: 'token',
