@@ -1,12 +1,9 @@
 import type { Prisma, PrismaClient } from '@prisma/client'
+import type { GetModelByTableName, TableName } from '~core/types/models'
+import type { SwapMap } from '~core/types/type-utils'
 
 import type { Operation } from 'okto-core/db/types/prisma'
-
-import type { GetModelByTableName, TableName } from '~core/types/models'
-
 import type { ModelName } from 'okto-core/db/types/prisma'
-
-import type { SwapMap } from '~core/types/type-utils'
 
 import type * as operators from './operators'
 
@@ -87,6 +84,7 @@ export const tableNameModelMap = {
     rooms: 'Room',
     sessions: 'Session',
     software: 'Software',
+    softwareInterfaces: 'SoftwareInterface',
     softwareLists: 'SoftwareList',
     tasks: 'Task',
     tenants: 'Tenant',
