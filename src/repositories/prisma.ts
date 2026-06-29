@@ -49,6 +49,8 @@ export const singularTableNames: { [tableName: string]: Uncapitalize<Prisma.Mode
     software: 'software',
     softwareLists: 'softwareList',
     softwareInterfaces: 'softwareInterface',
+    softwareLogins: 'softwareLogin',
+    softwareServiceProviders: 'softwareServiceProvider',
     tasks: 'task',
     tenants: 'tenant',
     tokens: 'token',

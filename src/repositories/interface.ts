@@ -85,6 +85,8 @@ export const tableNameModelMap = {
     sessions: 'Session',
     software: 'Software',
     softwareInterfaces: 'SoftwareInterface',
+    softwareLogins: 'SoftwareLogin',
+    softwareServiceProviders: 'SoftwareServiceProvider',
     softwareLists: 'SoftwareList',
     tasks: 'Task',
     tenants: 'Tenant',
