@@ -34,7 +34,6 @@ export const singularTableNames: { [tableName: string]: Uncapitalize<Prisma.Mode
     internalNumbers: 'internalNumber',
     internetConnections: 'internetConnection',
     ipAddresses: 'ipAddress',
-    licenses: 'license',
     lists: 'list',
     locations: 'location',
     networks: 'network',
