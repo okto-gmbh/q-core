@@ -71,7 +71,6 @@ export const tableNameModelMap = {
     internalNumbers: 'InternalNumber',
     internetConnections: 'InternetConnection',
     ipAddresses: 'IpAddress',
-    licenses: 'License',
     lists: 'List',
     locations: 'Location',
     networks: 'Network',
