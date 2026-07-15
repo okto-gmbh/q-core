@@ -61,7 +61,6 @@ export const tableNameModelMap = {
     contracts: 'Contract',
     customers: 'Customer',
     devices: 'Device',
-    documents: 'Document',
     domains: 'Domain',
     employees: 'Employee',
     firewallLists: 'FirewallList',
