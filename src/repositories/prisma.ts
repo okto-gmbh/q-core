@@ -24,7 +24,6 @@ export const singularTableNames: { [tableName: string]: Uncapitalize<Prisma.Mode
     contracts: 'contract',
     customers: 'customer',
     devices: 'device',
-    documents: 'document',
     domains: 'domain',
     employees: 'employee',
     firewallLists: 'firewallList',
