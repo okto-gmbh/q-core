@@ -1,8 +1,4 @@
-import type { Prisma, PrismaClient } from '@prisma/client'
-
-import type { RepositoryWithEvents} from '@core/repositories/events';
 import { withEvents } from '@core/repositories/events'
-import type { Operators } from '@core/repositories/interface'
 import {
     OP_CONTAINS,
     OP_CONTAINS_ANY,
@@ -16,6 +12,11 @@ import {
     OP_NOT_IN,
 } from '@core/repositories/operators'
 
+import type { Prisma, PrismaClient } from '@prisma/client'
+
+import type { RepositoryWithEvents } from '@core/repositories/events'
+import type { Operators } from '@core/repositories/interface'
+
 export const singularTableNames: { [tableName: string]: Uncapitalize<Prisma.ModelName> } = {
     budgets: 'budget',
     changes: 'change',
@@ -23,6 +24,7 @@ export const singularTableNames: { [tableName: string]: Uncapitalize<Prisma.Mode
     contracts: 'contract',
     customers: 'customer',
     devices: 'device',
+    documents: 'document',
     domains: 'domain',
     employees: 'employee',
     firewallLists: 'firewallList',
@@ -33,7 +35,6 @@ export const singularTableNames: { [tableName: string]: Uncapitalize<Prisma.Mode
     internalNumbers: 'internalNumber',
     internetConnections: 'internetConnection',
     ipAddresses: 'ipAddress',
-    licenses: 'license',
     lists: 'list',
     locations: 'location',
     networks: 'network',
@@ -46,7 +47,10 @@ export const singularTableNames: { [tableName: string]: Uncapitalize<Prisma.Mode
     rooms: 'room',
     sessions: 'session',
     software: 'software',
+    softwareInterfaces: 'softwareInterface',
     softwareLists: 'softwareList',
+    softwareLogins: 'softwareLogin',
+    softwareServiceProviders: 'softwareServiceProvider',
     tasks: 'task',
     tenants: 'tenant',
     tokens: 'token',

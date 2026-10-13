@@ -50,7 +50,9 @@ export const imageOptimizer =
 
             const response = await fetch(src.startsWith('http') ? src : `${baseUrl}/${src}`, {
                 credentials:
-                    process.env.NEXT_PUBLIC_NODE_ENV === 'preview' ? 'include' : 'same-origin',
+                    (process.env.NEXT_PUBLIC_ENV || process.env.VERCEL_ENV) === 'preview'
+                        ? 'include'
+                        : 'same-origin',
                 headers: {
                     cookie: req.headers.cookie!,
                 },
