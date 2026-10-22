@@ -2,21 +2,21 @@ import { Readable } from 'node:stream'
 
 import { afterEach, beforeAll, describe, expect, it, vi } from 'vitest'
 
+import getStorage from '@core/storage/local'
 import {
     getMockBucket,
     getRawMockStorage,
     resetMockStorage,
     seedMockStorage,
     verifyMock,
-} from '@core/storage/firebase/mock'
-import getStorage from '@core/storage/local'
+} from '@core/storage/local/mock'
 
-describe('firebase storage', () => {
+describe('local storage', () => {
     beforeAll(() => {
-        vi.mock('@core/storage/local', () => import('@core/storage/firebase/mock'))
+        vi.mock('@core/storage/local', () => import('@core/storage/local/mock'))
 
         const spy = vi.spyOn(verifyMock, 'verifyMock')
-        getStorage(getMockBucket())
+        getStorage()
         expect(spy).toHaveBeenCalled()
         resetMockStorage()
 
@@ -31,7 +31,7 @@ describe('firebase storage', () => {
 
     it('should mock the storage', async () => {
         const spy = vi.spyOn(verifyMock, 'verifyMock')
-        getStorage(getMockBucket())
+        getStorage()
         expect(spy).toHaveBeenCalled()
     })
 
@@ -92,7 +92,7 @@ describe('firebase storage', () => {
         }
 
         seedMockStorage(testData)
-        const storage = getStorage(getMockBucket())
+        const storage = getStorage()
         const files = await storage.getFiles()
         expect(files).toHaveLength(3)
     })
@@ -111,37 +111,33 @@ describe('firebase storage', () => {
         }
 
         seedMockStorage(testData)
-        const storage = getStorage(getMockBucket())
+        const storage = getStorage()
         const files = await storage.getFiles('directory/')
         expect(files).toHaveLength(2)
     })
 
     it('should upload a file', async () => {
-        const bucket = getMockBucket()
-        const storage = getStorage(bucket)
+        const storage = getStorage()
         await storage.upload('test.txt', Buffer.from('test'))
         expect(Object.entries(getRawMockStorage())).toHaveLength(1)
     })
 
     it('should stream a file', async () => {
-        const bucket = getMockBucket()
-        const storage = getStorage(bucket)
+        const storage = getStorage()
         await storage.upload('test.txt', Buffer.from('test'))
         const stream = storage.stream('test.txt')
         expect(stream).toBeInstanceOf(Readable)
     })
 
     it('should download a file', async () => {
-        const bucket = getMockBucket()
-        const storage = getStorage(bucket)
+        const storage = getStorage()
         await storage.upload('test.txt', Buffer.from('test'))
         const buffer = await storage.download('test.txt')
         expect(buffer.toString()).toBe('test')
     })
 
     it('should remove a file', async () => {
-        const bucket = getMockBucket()
-        const storage = getStorage(bucket)
+        const storage = getStorage()
         await storage.upload('test.txt', Buffer.from('test'))
         expect(Object.entries(getRawMockStorage())).toHaveLength(1)
         await storage.remove('test.txt')
@@ -149,8 +145,7 @@ describe('firebase storage', () => {
     })
 
     it('should remove multiple files', async () => {
-        const bucket = getMockBucket()
-        const storage = getStorage(bucket)
+        const storage = getStorage()
         await storage.upload('directory/test.txt', Buffer.from('test'))
         await storage.upload('directory/test2.txt', Buffer.from('test'))
         await storage.upload('other/directory/test3.txt', Buffer.from('test'))
@@ -160,16 +155,14 @@ describe('firebase storage', () => {
     })
 
     it('should check if a file exists', async () => {
-        const bucket = getMockBucket()
-        const storage = getStorage(bucket)
+        const storage = getStorage()
         await storage.upload('test.txt', Buffer.from('test'))
         expect(await storage.exists('test.txt')).toBe(true)
         expect(await storage.exists('test2.txt')).toBe(false)
     })
 
     it('should be possible to upload a file with metadata', async () => {
-        const bucket = getMockBucket()
-        const storage = getStorage(bucket)
+        const storage = getStorage()
         await storage.upload('test.json', Buffer.from('{}'), {
             contentType: 'text/json',
         })
@@ -178,16 +171,14 @@ describe('firebase storage', () => {
     })
 
     it("should get the file's metadata", async () => {
-        const bucket = getMockBucket()
-        const storage = getStorage(bucket)
+        const storage = getStorage()
         await storage.upload('test.txt', Buffer.from('test'))
         const metadata = await storage.getMetadata('test.txt')
         expect(metadata?.size).toBe(4)
     })
 
     it("should be possible to set the file's metadata", async () => {
-        const bucket = getMockBucket()
-        const storage = getStorage(bucket)
+        const storage = getStorage()
         await storage.upload('test.txt', Buffer.from('test'))
         await storage.setMetadata('test.txt', {
             contentType: 'text/modified',
